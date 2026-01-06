@@ -62,6 +62,45 @@
             font-weight: bold;
             width: 200px;
         }
+        /* Track Changes Styling */
+        .added {
+            background-color: #d4edda;
+            border-left: 3px solid #28a745;
+            padding-left: 10px;
+            margin: 10px 0;
+        }
+        .modified {
+            background-color: #fff3cd;
+            border-left: 3px solid #ffc107;
+            padding-left: 10px;
+            margin: 10px 0;
+        }
+        .deleted {
+            text-decoration: line-through;
+            color: #dc3545;
+            background-color: #f8d7da;
+            padding: 2px 4px;
+            margin-right: 5px;
+        }
+        .inserted {
+            background-color: #d4edda;
+            padding: 2px 4px;
+            margin-left: 5px;
+        }
+        .change-indicator {
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.75em;
+            margin-left: 8px;
+            font-weight: bold;
+        }
+        .change-indicator.modified {
+            background-color: #ffc107;
+            color: #333;
+        }
     </style>
 </head>
 <body>
@@ -111,13 +150,84 @@
                 <li><strong>Secondary Body Part:</strong> Secondary body parts engaged during the exercise</li>
                 <li><strong>Equipment:</strong> Required equipment for the exercise</li>
                 <li><strong>Is Mastered:</strong> Boolean flag indicating whether the exercise has been learned/mastered</li>
+                <li class="added"><strong>Notes:</strong> Free-text field for additional information or instructions about the exercise <span class="change-indicator">ADDED</span></li>
             </ul>
 
             <h4>1.2 Data Migration</h4>
             <p>Initial exercise data will be imported via CSV file upload.</p>
 
             <h4>1.3 CRUD Operations</h4>
-            <p>Phase 1 will support <strong>Read-only</strong> operations for exercises. Full CRUD (Create, Read, Update, Delete) functionality will be considered for future phases.</p>
+            <div class="modified">
+                <p>Phase 1 will support <strong>Read-only</strong> operations for exercises<span class="deleted">.</span><span class="inserted">, with the exception of the Notes field which will be editable.</span> Full CRUD (Create, Read, Update, Delete) functionality will be considered for future phases. <span class="change-indicator modified">MODIFIED</span></p>
+            </div>
+
+            <div class="added">
+                <h4>1.4 Exercise Library View <span class="change-indicator">ADDED</span></h4>
+                <p>The application will provide a library view to browse and access all exercises in the system.</p>
+
+                <h5>1.4.1 Search Functionality</h5>
+                <ul>
+                    <li>Users can search exercises by exercise name</li>
+                </ul>
+
+                <h5>1.4.2 Filter Functionality</h5>
+                <p>Users can filter the exercise library by the following criteria:</p>
+                <ul>
+                    <li>Movement Type</li>
+                    <li>Pattern</li>
+                    <li>Primary Body Part</li>
+                    <li>Secondary Body Part</li>
+                    <li>Equipment</li>
+                    <li>Is Mastered (Yes/No)</li>
+                </ul>
+
+                <h5>1.4.3 Sorting Functionality</h5>
+                <p>Users can sort exercises by:</p>
+                <ul>
+                    <li><strong>Alphabetical by Name</strong> (default)</li>
+                    <li>Last Used Date</li>
+                </ul>
+            </div>
+
+            <div class="added">
+                <h4>1.5 Exercise Detail View <span class="change-indicator">ADDED</span></h4>
+                <p>When a user selects an exercise from the library, a detailed view will be displayed with the following information and capabilities:</p>
+
+                <h5>1.5.1 Exercise Attributes Display</h5>
+                <ul>
+                    <li>Display all exercise attributes (Name, Video URL Link, Movement Type, Pattern, Primary Body Part, Secondary Body Part, Equipment, Is Mastered) in read-only mode</li>
+                    <li>The <strong>Notes</strong> field will be editable, allowing users to update equipment settings and other relevant information</li>
+                </ul>
+
+                <h5>1.5.2 Video Display</h5>
+                <ul>
+                    <li>Display a video thumbnail when a Video URL Link is present</li>
+                    <li>When the thumbnail is clicked, display the playable video in a modal window</li>
+                    <li>When no Video URL Link is present, display "No video available" text</li>
+                </ul>
+
+                <h5>1.5.3 Historical Performance Data</h5>
+                <p>Display a table showing all historical workout data for the exercise, grouped by session:</p>
+                <ul>
+                    <li><strong>Columns:</strong> Date, Set Number, Reps, Weight</li>
+                    <li>Each session groups all sets performed on that date</li>
+                </ul>
+
+                <h5>1.5.4 Maximum Weight Score</h5>
+                <ul>
+                    <li>Display the single heaviest weight where the user completed at least 6 reps in any set</li>
+                    <li>This serves as the current "score" or personal record for the exercise</li>
+                </ul>
+
+                <h5>1.5.5 Progress Chart</h5>
+                <p>Display a line chart showing progression over time:</p>
+                <ul>
+                    <li><strong>X-axis:</strong> Actual dates</li>
+                    <li><strong>Y-axes:</strong> Two Y-axes (left and right) for Weight and Reps, color-coded</li>
+                    <li><strong>Data range:</strong> Last 12 months of historical data</li>
+                    <li><strong>Chart type:</strong> Line chart with two color-coded lines (one for weight, one for reps)</li>
+                </ul>
+            </div>
 
             <h3>2. Session Planning</h3>
             <div class="placeholder">
