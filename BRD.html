@@ -232,7 +232,7 @@
                     <li><strong>Create:</strong> Create a new workout for any date (past or future)</li>
                     <li><strong>Read:</strong> View workout details and assigned exercises</li>
                     <li><strong>Update:</strong> Modify workout details and exercise assignments</li>
-                    <li class="added"><strong>Delete:</strong> Remove a workout from the system <span class="change-indicator">MODIFIED</span>
+                    <li><strong>Delete:</strong> Remove a workout from the system
                         <ul>
                             <li>Requires confirmation before deletion</li>
                             <li>Confirmation message displays summary including: date, number of exercises, and any recorded data</li>
@@ -280,6 +280,7 @@
                     <li><strong>Layout:</strong> Vertical stack of cards, one per workout_exercise</li>
                     <li><strong>Summary Text:</strong> Each card displays exercise name and completion summary (e.g., "Bench Press - 4 sets completed")</li>
                     <li><strong>Historical Max Weight:</strong> Display the maximum weight (6+ reps) for this exercise</li>
+                    <li class="added"><strong>Video Thumbnail:</strong> If the exercise has a video URL, display a small thumbnail on the left side of the card. If no video exists, no thumbnail is shown <span class="change-indicator">ADDED</span></li>
                     <li><strong>Re-ordering:</strong> Cards can be re-ordered by dragging (order is not preserved between workouts)</li>
                 </ul>
 
@@ -349,6 +350,13 @@
                 <h5>3.3.2 Exercise Information Display</h5>
                 <ul>
                     <li><strong>Exercise Name:</strong> Display the exercise name</li>
+                    <li class="added"><strong>Video Display:</strong> Display below the exercise name but above the sets list <span class="change-indicator">ADDED</span>
+                        <ul>
+                            <li>If the exercise has a video URL, display a video thumbnail</li>
+                            <li>When the thumbnail is clicked, display the playable video in a modal window (same functionality as in Exercise Library)</li>
+                            <li>If no video URL exists, display "No video available" text</li>
+                        </ul>
+                    </li>
                     <li><strong>Historical Max Weight:</strong> Display the maximum weight (6+ reps) achieved for this exercise across all workouts</li>
                     <li><strong>Exercise Notes:</strong> Display and allow editing of global exercise notes (same notes field as in Exercise Management)</li>
                 </ul>
@@ -401,20 +409,18 @@
                     <li>User can edit weight and reps for any set in the list (when in "in progress" mode)</li>
                     <li>Weight: numeric value in kg, can be decimal (e.g., 22.5 kg)</li>
                     <li>Reps: positive integer, minimum 0</li>
-                    <li class="added">If weight is entered but reps is left empty, assume reps = 0 <span class="change-indicator">ADDED</span></li>
-                    <li class="added">If reps is entered but weight is left empty, assume weight = 0 <span class="change-indicator">ADDED</span></li>
-                    <li class="added">A set is considered "completed" (has data) if either weight OR reps has a value (including 0) <span class="change-indicator">ADDED</span></li>
-                    <li class="added">A set is only considered "empty" if both weight AND reps are not entered <span class="change-indicator">ADDED</span></li>
+                    <li>If weight is entered but reps is left empty, assume reps = 0</li>
+                    <li>If reps is entered but weight is left empty, assume weight = 0</li>
+                    <li>A set is considered "completed" (has data) if either weight OR reps has a value (including 0)</li>
+                    <li>A set is only considered "empty" if both weight AND reps are not entered</li>
                 </ul>
 
-                <div class="added">
-                    <p><strong>Empty Set Removal:</strong> <span class="change-indicator">ADDED</span></p>
-                    <ul>
-                        <li>When saving (both manual Save and auto-save), automatically remove all empty sets</li>
-                        <li>After removal, renumber remaining sets sequentially</li>
-                        <li>Example: Set 1 (completed), Set 2 (empty), Set 3 (completed), Set 4 (empty) → After save: Set 1 (completed), Set 2 (completed - previously Set 3)</li>
-                    </ul>
-                </div>
+                <p><strong>Empty Set Removal:</strong></p>
+                <ul>
+                    <li>When saving (both manual Save and auto-save), automatically remove all empty sets</li>
+                    <li>After removal, renumber remaining sets sequentially</li>
+                    <li>Example: Set 1 (completed), Set 2 (empty), Set 3 (completed), Set 4 (empty) → After save: Set 1 (completed), Set 2 (completed - previously Set 3)</li>
+                </ul>
 
                 <h5>3.3.4 Historical Data View</h5>
                 <p>A separate section/panel within the workout_exercise detail view displays historical performance data:</p>

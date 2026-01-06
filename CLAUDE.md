@@ -27,10 +27,25 @@ When receiving requirements:
 - Living document that evolves as requirements are refined
 
 **BRD Change Tracking:**
-- Before updating the BRD, check `git show HEAD:BRD.html` to see what was in the last commit
-- Only mark content as "ADDED" or "MODIFIED" if it's genuinely new since the last commit
-- Remove change indicators from content that was already in the previous commit
-- This ensures change tracking is accurate and only highlights true deltas
+- Before updating the BRD, ALWAYS check `git show HEAD:BRD.html` to see what was in the last commit
+- **CRITICAL:** If content in `git show HEAD:BRD.html` already has "ADDED" or "MODIFIED" markers, those markers MUST BE REMOVED from the current BRD because they are old markers from a previous update cycle
+- Only mark content as "ADDED" or "MODIFIED" if:
+  - The content itself doesn't exist in `git show HEAD:BRD.html` at all (truly new), OR
+  - The content exists but has been changed since the last commit (modified)
+- This ensures change tracking is accurate and only highlights true deltas from THIS update session
+
+**CRITICAL - Change Tracking Lifecycle:**
+IMPORTANT: Claude does NOT commit to git. The user commits manually.
+
+The change tracking lifecycle works as follows:
+1. **During requirements gathering:** Claude adds new requirements to BRD with "ADDED" or "MODIFIED" markers
+2. **User commits:** User reviews and commits the BRD WITH the change indicators
+3. **After user commits:** Claude must remove ALL change indicators from the BRD immediately after the user commits
+4. **Next session:** The next session starts with a clean baseline - no old markers polluting future comparisons
+
+This means:
+- When the user asks Claude to update the BRD, Claude checks `git show HEAD:BRD.html` and only marks truly new content
+- After the user commits, Claude should be instructed to clean up all markers (or user does this manually)
 
 ### Phase 2: Technical Specification
 **Role: Solutions Architect / Senior Software Developer**
