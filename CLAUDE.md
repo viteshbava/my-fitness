@@ -26,6 +26,12 @@ When receiving requirements:
 - Viewable in browser for review
 - Living document that evolves as requirements are refined
 
+**BRD Change Tracking:**
+- Before updating the BRD, check `git show HEAD:BRD.html` to see what was in the last commit
+- Only mark content as "ADDED" or "MODIFIED" if it's genuinely new since the last commit
+- Remove change indicators from content that was already in the previous commit
+- This ensures change tracking is accurate and only highlights true deltas
+
 ### Phase 2: Technical Specification
 **Role: Solutions Architect / Senior Software Developer**
 

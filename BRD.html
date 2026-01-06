@@ -223,9 +223,8 @@
                 <li><strong>Chart type:</strong> Line chart with two color-coded lines (one for weight, one for reps)</li>
             </ul>
 
-            <div class="added">
-                <h3>2. Workout Management <span class="change-indicator">ADDED</span></h3>
-                <p>A <strong>workout</strong> represents a visit to the gym where exercises are performed. Users can manage workouts both retroactively and for future dates.</p>
+            <h3>2. Workout Management</h3>
+            <p>A <strong>workout</strong> represents a visit to the gym where exercises are performed. Users can manage workouts both retroactively and for future dates.</p>
 
                 <h4>2.1 Workout CRUD Operations</h4>
                 <p>Users can perform full CRUD operations on workouts:</p>
@@ -233,7 +232,12 @@
                     <li><strong>Create:</strong> Create a new workout for any date (past or future)</li>
                     <li><strong>Read:</strong> View workout details and assigned exercises</li>
                     <li><strong>Update:</strong> Modify workout details and exercise assignments</li>
-                    <li><strong>Delete:</strong> Remove a workout from the system</li>
+                    <li class="added"><strong>Delete:</strong> Remove a workout from the system <span class="change-indicator">MODIFIED</span>
+                        <ul>
+                            <li>Requires confirmation before deletion</li>
+                            <li>Confirmation message displays summary including: date, number of exercises, and any recorded data</li>
+                        </ul>
+                    </li>
                 </ul>
 
                 <h4>2.2 Workout Attributes</h4>
@@ -255,11 +259,9 @@
                     <li><strong>Selection:</strong> Each individual workout can be selected from the calendar</li>
                     <li><strong>Preview information:</strong> No preview information displayed on calendar (Phase 1)</li>
                 </ul>
-            </div>
 
-            <div class="added">
-                <h3>3. Workout Exercise Management <span class="change-indicator">ADDED</span></h3>
-                <p>A <strong>workout_exercise</strong> represents a specific exercise assigned to a workout, along with its associated sets, reps, and weight data.</p>
+            <h3>3. Workout Exercise Management</h3>
+            <p>A <strong>workout_exercise</strong> represents a specific exercise assigned to a workout, along with its associated sets, reps, and weight data.</p>
 
                 <h4>3.1 Workout Exercise CRUD Operations</h4>
                 <p>Users can perform full CRUD operations on workout_exercises:</p>
@@ -399,7 +401,20 @@
                     <li>User can edit weight and reps for any set in the list (when in "in progress" mode)</li>
                     <li>Weight: numeric value in kg, can be decimal (e.g., 22.5 kg)</li>
                     <li>Reps: positive integer, minimum 0</li>
+                    <li class="added">If weight is entered but reps is left empty, assume reps = 0 <span class="change-indicator">ADDED</span></li>
+                    <li class="added">If reps is entered but weight is left empty, assume weight = 0 <span class="change-indicator">ADDED</span></li>
+                    <li class="added">A set is considered "completed" (has data) if either weight OR reps has a value (including 0) <span class="change-indicator">ADDED</span></li>
+                    <li class="added">A set is only considered "empty" if both weight AND reps are not entered <span class="change-indicator">ADDED</span></li>
                 </ul>
+
+                <div class="added">
+                    <p><strong>Empty Set Removal:</strong> <span class="change-indicator">ADDED</span></p>
+                    <ul>
+                        <li>When saving (both manual Save and auto-save), automatically remove all empty sets</li>
+                        <li>After removal, renumber remaining sets sequentially</li>
+                        <li>Example: Set 1 (completed), Set 2 (empty), Set 3 (completed), Set 4 (empty) → After save: Set 1 (completed), Set 2 (completed - previously Set 3)</li>
+                    </ul>
+                </div>
 
                 <h5>3.3.4 Historical Data View</h5>
                 <p>A separate section/panel within the workout_exercise detail view displays historical performance data:</p>
@@ -414,7 +429,6 @@
                     <li><strong>Number of sessions:</strong> Display last 3 workouts by default</li>
                     <li><strong>Accessibility:</strong> Available while working out (within the workout_exercise detail view)</li>
                 </ul>
-            </div>
 
             <h3>4. Data Management & Storage</h3>
             <div class="placeholder">
