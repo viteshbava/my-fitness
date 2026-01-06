@@ -120,7 +120,7 @@
                 </tr>
                 <tr>
                     <td>Last Updated:</td>
-                    <td>January 5, 2026</td>
+                    <td>January 6, 2026</td>
                 </tr>
                 <tr>
                     <td>Status:</td>
@@ -150,93 +150,270 @@
                 <li><strong>Secondary Body Part:</strong> Secondary body parts engaged during the exercise</li>
                 <li><strong>Equipment:</strong> Required equipment for the exercise</li>
                 <li><strong>Is Mastered:</strong> Boolean flag indicating whether the exercise has been learned/mastered</li>
-                <li class="added"><strong>Notes:</strong> Free-text field for additional information or instructions about the exercise <span class="change-indicator">ADDED</span></li>
+                <li><strong>Notes:</strong> Free-text field for additional information or instructions about the exercise</li>
             </ul>
 
             <h4>1.2 Data Migration</h4>
             <p>Initial exercise data will be imported via CSV file upload.</p>
 
             <h4>1.3 CRUD Operations</h4>
-            <div class="modified">
-                <p>Phase 1 will support <strong>Read-only</strong> operations for exercises<span class="deleted">.</span><span class="inserted">, with the exception of the Notes field which will be editable.</span> Full CRUD (Create, Read, Update, Delete) functionality will be considered for future phases. <span class="change-indicator modified">MODIFIED</span></p>
+            <p>Phase 1 will support <strong>Read-only</strong> operations for exercises, with the exception of the Notes field which will be editable. Full CRUD (Create, Read, Update, Delete) functionality will be considered for future phases.</p>
+
+            <h4>1.4 Exercise Library View</h4>
+            <p>The application will provide a library view to browse and access all exercises in the system.</p>
+
+            <h5>1.4.1 Search Functionality</h5>
+            <ul>
+                <li>Users can search exercises by exercise name</li>
+            </ul>
+
+            <h5>1.4.2 Filter Functionality</h5>
+            <p>Users can filter the exercise library by the following criteria:</p>
+            <ul>
+                <li>Movement Type</li>
+                <li>Pattern</li>
+                <li>Primary Body Part</li>
+                <li>Secondary Body Part</li>
+                <li>Equipment</li>
+                <li>Is Mastered (Yes/No)</li>
+            </ul>
+
+            <h5>1.4.3 Sorting Functionality</h5>
+            <p>Users can sort exercises by:</p>
+            <ul>
+                <li><strong>Alphabetical by Name</strong> (default)</li>
+                <li>Last Used Date</li>
+            </ul>
+
+            <h4>1.5 Exercise Detail View</h4>
+            <p>When a user selects an exercise from the library, a detailed view will be displayed with the following information and capabilities:</p>
+
+            <h5>1.5.1 Exercise Attributes Display</h5>
+            <ul>
+                <li>Display all exercise attributes (Name, Video URL Link, Movement Type, Pattern, Primary Body Part, Secondary Body Part, Equipment, Is Mastered) in read-only mode</li>
+                <li>The <strong>Notes</strong> field will be editable, allowing users to update equipment settings and other relevant information</li>
+            </ul>
+
+            <h5>1.5.2 Video Display</h5>
+            <ul>
+                <li>Display a video thumbnail when a Video URL Link is present</li>
+                <li>When the thumbnail is clicked, display the playable video in a modal window</li>
+                <li>When no Video URL Link is present, display "No video available" text</li>
+            </ul>
+
+            <h5>1.5.3 Historical Performance Data</h5>
+            <p>Display a table showing all historical workout data for the exercise, grouped by session:</p>
+            <ul>
+                <li><strong>Columns:</strong> Date, Set Number, Reps, Weight</li>
+                <li>Each session groups all sets performed on that date</li>
+            </ul>
+
+            <h5>1.5.4 Maximum Weight Score</h5>
+            <ul>
+                <li>Display the single heaviest weight where the user completed at least 6 reps in any set</li>
+                <li>This serves as the current "score" or personal record for the exercise</li>
+            </ul>
+
+            <h5>1.5.5 Progress Chart</h5>
+            <p>Display a line chart showing progression over time:</p>
+            <ul>
+                <li><strong>X-axis:</strong> Actual dates</li>
+                <li><strong>Y-axes:</strong> Two Y-axes (left and right) for Weight and Reps, color-coded</li>
+                <li><strong>Data range:</strong> Last 12 months of historical data</li>
+                <li><strong>Chart type:</strong> Line chart with two color-coded lines (one for weight, one for reps)</li>
+            </ul>
+
+            <div class="added">
+                <h3>2. Workout Management <span class="change-indicator">ADDED</span></h3>
+                <p>A <strong>workout</strong> represents a visit to the gym where exercises are performed. Users can manage workouts both retroactively and for future dates.</p>
+
+                <h4>2.1 Workout CRUD Operations</h4>
+                <p>Users can perform full CRUD operations on workouts:</p>
+                <ul>
+                    <li><strong>Create:</strong> Create a new workout for any date (past or future)</li>
+                    <li><strong>Read:</strong> View workout details and assigned exercises</li>
+                    <li><strong>Update:</strong> Modify workout details and exercise assignments</li>
+                    <li><strong>Delete:</strong> Remove a workout from the system</li>
+                </ul>
+
+                <h4>2.2 Workout Attributes</h4>
+                <p>Each workout has the following attributes:</p>
+                <ul>
+                    <li><strong>Date:</strong> The date of the workout</li>
+                    <li><strong>Exercises:</strong> A list of exercises assigned to this workout (workout_exercises)</li>
+                </ul>
+                <p><em>Note: Start time, end time, duration, and workout status are not captured in Phase 1.</em></p>
+
+                <h4>2.3 Multiple Workouts Per Day</h4>
+                <p>Users can create multiple workouts on the same day (e.g., morning and evening sessions).</p>
+
+                <h4>2.4 Calendar View</h4>
+                <p>Workouts will be displayed in a calendar interface:</p>
+                <ul>
+                    <li><strong>Granularity:</strong> Individual days grouped into weeks and months</li>
+                    <li><strong>Multiple workouts per day:</strong> Displayed as stacked entries within the day cell</li>
+                    <li><strong>Selection:</strong> Each individual workout can be selected from the calendar</li>
+                    <li><strong>Preview information:</strong> No preview information displayed on calendar (Phase 1)</li>
+                </ul>
             </div>
 
             <div class="added">
-                <h4>1.4 Exercise Library View <span class="change-indicator">ADDED</span></h4>
-                <p>The application will provide a library view to browse and access all exercises in the system.</p>
+                <h3>3. Workout Exercise Management <span class="change-indicator">ADDED</span></h3>
+                <p>A <strong>workout_exercise</strong> represents a specific exercise assigned to a workout, along with its associated sets, reps, and weight data.</p>
 
-                <h5>1.4.1 Search Functionality</h5>
+                <h4>3.1 Workout Exercise CRUD Operations</h4>
+                <p>Users can perform full CRUD operations on workout_exercises:</p>
                 <ul>
-                    <li>Users can search exercises by exercise name</li>
+                    <li><strong>Create:</strong> Add an exercise to a workout (with default empty sets)</li>
+                    <li><strong>Read:</strong> View exercise details, sets, and historical data</li>
+                    <li><strong>Update:</strong> Modify sets, weight, reps, and other details</li>
+                    <li><strong>Delete:</strong> Remove an exercise from a workout (with confirmation)</li>
                 </ul>
 
-                <h5>1.4.2 Filter Functionality</h5>
-                <p>Users can filter the exercise library by the following criteria:</p>
+                <h4>3.2 Workout Exercise List View (Card Interface)</h4>
+                <p>When viewing a workout, exercises are displayed as a stacked list of cards:</p>
+
+                <h5>3.2.1 Card Display</h5>
                 <ul>
-                    <li>Movement Type</li>
-                    <li>Pattern</li>
-                    <li>Primary Body Part</li>
-                    <li>Secondary Body Part</li>
-                    <li>Equipment</li>
-                    <li>Is Mastered (Yes/No)</li>
+                    <li><strong>Layout:</strong> Vertical stack of cards, one per workout_exercise</li>
+                    <li><strong>Summary Text:</strong> Each card displays exercise name and completion summary (e.g., "Bench Press - 4 sets completed")</li>
+                    <li><strong>Historical Max Weight:</strong> Display the maximum weight (6+ reps) for this exercise</li>
+                    <li><strong>Re-ordering:</strong> Cards can be re-ordered by dragging (order is not preserved between workouts)</li>
                 </ul>
 
-                <h5>1.4.3 Sorting Functionality</h5>
-                <p>Users can sort exercises by:</p>
+                <h5>3.2.2 Visual Indicators (Color Coding)</h5>
+                <p>Cards use color to indicate data completion status:</p>
                 <ul>
-                    <li><strong>Alphabetical by Name</strong> (default)</li>
-                    <li>Last Used Date</li>
-                </ul>
-            </div>
-
-            <div class="added">
-                <h4>1.5 Exercise Detail View <span class="change-indicator">ADDED</span></h4>
-                <p>When a user selects an exercise from the library, a detailed view will be displayed with the following information and capabilities:</p>
-
-                <h5>1.5.1 Exercise Attributes Display</h5>
-                <ul>
-                    <li>Display all exercise attributes (Name, Video URL Link, Movement Type, Pattern, Primary Body Part, Secondary Body Part, Equipment, Is Mastered) in read-only mode</li>
-                    <li>The <strong>Notes</strong> field will be editable, allowing users to update equipment settings and other relevant information</li>
+                    <li><strong>No data:</strong> Gray/neutral color (no sets have weight/reps recorded)</li>
+                    <li><strong>Partial data:</strong> Yellow/amber color (some sets filled, some empty)</li>
+                    <li><strong>All sets filled:</strong> Green color (all sets have weight/reps recorded)</li>
                 </ul>
 
-                <h5>1.5.2 Video Display</h5>
+                <h5>3.2.3 Card Interactions</h5>
                 <ul>
-                    <li>Display a video thumbnail when a Video URL Link is present</li>
-                    <li>When the thumbnail is clicked, display the playable video in a modal window</li>
-                    <li>When no Video URL Link is present, display "No video available" text</li>
+                    <li><strong>Click to open:</strong> Clicking a card opens the workout_exercise detail view</li>
+                    <li><strong>Delete with confirmation:</strong> Option to delete a workout_exercise
+                        <ul>
+                            <li>Confirmation message required before deletion</li>
+                            <li>If data is recorded, display summary of recorded data in confirmation message</li>
+                        </ul>
+                    </li>
                 </ul>
 
-                <h5>1.5.3 Historical Performance Data</h5>
-                <p>Display a table showing all historical workout data for the exercise, grouped by session:</p>
+                <h5>3.2.4 Duplicate Exercises</h5>
+                <p>The same exercise can be added multiple times to a single workout (e.g., warm-up sets and working sets as separate entries).</p>
+
+                <h4>3.3 Workout Exercise Detail View</h4>
+                <p>When a workout_exercise card is opened, users can view and edit exercise details, sets, and historical data.</p>
+
+                <h5>3.3.1 "In Progress" Mode</h5>
+                <p>The detail view has two modes: read-only and "in progress" (editable):</p>
+
+                <p><strong>Read-Only Mode (Default):</strong></p>
                 <ul>
-                    <li><strong>Columns:</strong> Date, Set Number, Reps, Weight</li>
-                    <li>Each session groups all sets performed on that date</li>
+                    <li>All data is displayed but not editable</li>
+                    <li>User can enter "in progress" mode to make changes</li>
+                    <li>Navigation to other views is allowed</li>
                 </ul>
 
-                <h5>1.5.4 Maximum Weight Score</h5>
+                <p><strong>"In Progress" Mode (Editable):</strong></p>
                 <ul>
-                    <li>Display the single heaviest weight where the user completed at least 6 reps in any set</li>
-                    <li>This serves as the current "score" or personal record for the exercise</li>
+                    <li>All fields become editable</li>
+                    <li>Navigation is blocked - user cannot leave this view</li>
+                    <li>Changes are auto-saved to database continuously as they are made</li>
+                    <li>A snapshot of the initial state is maintained for Cancel functionality</li>
+                    <li>Two exit options:
+                        <ul>
+                            <li><strong>Save:</strong> Clears draft snapshot, exits "in progress" mode, returns to read-only view</li>
+                            <li><strong>Cancel:</strong> Shows "are you sure" prompt, restores data from snapshot if confirmed, exits "in progress" mode</li>
+                        </ul>
+                    </li>
+                    <li>If user refreshes browser while in progress:
+                        <ul>
+                            <li>Auto-saved changes remain in database</li>
+                            <li>Status automatically returns to read-only mode</li>
+                            <li>Draft snapshot is cleared</li>
+                        </ul>
+                    </li>
                 </ul>
 
-                <h5>1.5.5 Progress Chart</h5>
-                <p>Display a line chart showing progression over time:</p>
+                <p><strong>Multi-Device Behavior:</strong></p>
                 <ul>
-                    <li><strong>X-axis:</strong> Actual dates</li>
-                    <li><strong>Y-axes:</strong> Two Y-axes (left and right) for Weight and Reps, color-coded</li>
-                    <li><strong>Data range:</strong> Last 12 months of historical data</li>
-                    <li><strong>Chart type:</strong> Line chart with two color-coded lines (one for weight, one for reps)</li>
+                    <li>Application is designed for single-user, single-device use</li>
+                    <li>If accessed from multiple devices (rare scenario): last-write-wins approach</li>
+                    <li>No conflict detection or device locking in Phase 1</li>
                 </ul>
-            </div>
 
-            <h3>2. Session Planning</h3>
-            <div class="placeholder">
-                To be completed - Requirements for organizing and planning workout sessions.
-            </div>
+                <h5>3.3.2 Exercise Information Display</h5>
+                <ul>
+                    <li><strong>Exercise Name:</strong> Display the exercise name</li>
+                    <li><strong>Historical Max Weight:</strong> Display the maximum weight (6+ reps) achieved for this exercise across all workouts</li>
+                    <li><strong>Exercise Notes:</strong> Display and allow editing of global exercise notes (same notes field as in Exercise Management)</li>
+                </ul>
 
-            <h3>3. Workout Logging</h3>
-            <div class="placeholder">
-                To be completed - Requirements for logging workout details during gym sessions.
+                <h5>3.3.3 Sets Management</h5>
+                <p><strong>Set Display:</strong></p>
+                <ul>
+                    <li>Sets are displayed as a list of rows</li>
+                    <li>Each row shows: Set number, Weight (kg), Reps</li>
+                    <li>Weight and reps are editable when in "in progress" mode</li>
+                </ul>
+
+                <p><strong>Default Empty Sets:</strong></p>
+                <ul>
+                    <li>When creating a workout_exercise, empty sets are added automatically:
+                        <ul>
+                            <li>If this exercise was done in a previous workout: default to the number of <strong>completed sets</strong> from the most recent workout where this exercise was done (only count sets with weight/reps recorded, ignore empty sets)</li>
+                            <li>If no previous workout exists: default to 3 empty sets</li>
+                            <li>This logic applies to each instance if the same exercise is added multiple times to a workout</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <p><strong>Set Placeholders:</strong></p>
+                <ul>
+                    <li>For each set, display placeholder text showing the weight/reps from the most recent workout where this exercise was done:
+                        <ul>
+                            <li>Match by set number (set 1 shows previous set 1, set 2 shows previous set 2, etc.)</li>
+                            <li>If current set number exceeds previous workout's set count, show blank placeholder</li>
+                            <li>Example: Previous workout had 5 sets, current workout has 6 sets - sets 1-5 show previous data, set 6 has blank placeholder</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <p><strong>Adding Sets:</strong></p>
+                <ul>
+                    <li>User can add new empty sets</li>
+                    <li>New sets are always added at the end of the list</li>
+                </ul>
+
+                <p><strong>Deleting Sets:</strong></p>
+                <ul>
+                    <li>User can only delete the last set in the list</li>
+                    <li>Deletion happens immediately without confirmation</li>
+                    <li>At least one set must always remain (cannot delete the first/only set)</li>
+                </ul>
+
+                <p><strong>Editing Sets:</strong></p>
+                <ul>
+                    <li>User can edit weight and reps for any set in the list (when in "in progress" mode)</li>
+                    <li>Weight: numeric value in kg, can be decimal (e.g., 22.5 kg)</li>
+                    <li>Reps: positive integer, minimum 0</li>
+                </ul>
+
+                <h5>3.3.4 Historical Data View</h5>
+                <p>A separate section/panel within the workout_exercise detail view displays historical performance data:</p>
+                <ul>
+                    <li><strong>Display format:</strong> Scrollable list of previous workouts</li>
+                    <li><strong>Data shown:</strong> Each historical workout entry shows:
+                        <ul>
+                            <li>Date of the workout</li>
+                            <li>All sets from that workout displayed as rows with weight and reps</li>
+                        </ul>
+                    </li>
+                    <li><strong>Number of sessions:</strong> Display last 3 workouts by default</li>
+                    <li><strong>Accessibility:</strong> Available while working out (within the workout_exercise detail view)</li>
+                </ul>
             </div>
 
             <h3>4. Data Management & Storage</h3>
