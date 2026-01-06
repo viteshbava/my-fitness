@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fitness Training App - Project Implementation Plan</title>
+    <style>
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+      }
+
+      body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+          line-height: 1.6;
+          color: #333;
+          background: #f5f7fa;
+          padding: 20px;
+      }
+
+      .container {
+          max-width: 1200px;
+          margin: 0 auto;
+          background: white;
+          padding: 40px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          border-radius: 8px;
+      }
+
+      header {
+          border-bottom: 3px solid #2c3e50;
+          padding-bottom: 20px;
+          margin-bottom: 30px;
+      }
+
+      h1 {
+          color: #2c3e50;
+          font-size: 2.2rem;
+          margin-bottom: 15px;
+      }
+
+      .metadata {
+          display: flex;
+          gap: 30px;
+          color: #666;
+          font-size: 0.95rem;
+      }
+
+      .metadata-item {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+      }
+
+      .metadata-item strong {
+          color: #2c3e50;
+      }
+
+      h2 {
+          color: #2c3e50;
+          font-size: 1.8rem;
+          margin-top: 40px;
+          margin-bottom: 20px;
+          padding-bottom: 10px;
+          border-bottom: 2px solid #e0e0e0;
+      }
+
+      h3 {
+          color: #34495e;
+          font-size: 1.4rem;
+          margin-top: 30px;
+          margin-bottom: 15px;
+      }
+
+      h4 {
+          color: #34495e;
+          font-size: 1.1rem;
+          margin-top: 20px;
+          margin-bottom: 10px;
+      }
+
+      p {
+          margin-bottom: 15px;
+          color: #555;
+      }
+
+      ul, ol {
+          margin-left: 25px;
+          margin-bottom: 15px;
+      }
+
+      li {
+          margin-bottom: 8px;
+          color: #555;
+      }
+
+      .sprint-card {
+          background: #f8f9fa;
+          border-left: 5px solid #3498db;
+          padding: 25px;
+          margin: 25px 0;
+          border-radius: 6px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      .sprint-card.foundation {
+          border-left-color: #4caf50;
+          background: #e8f5e9;
+      }
+
+      .sprint-card.core {
+          border-left-color: #2196f3;
+          background: #e3f2fd;
+      }
+
+      .sprint-card.advanced {
+          border-left-color: #ff9800;
+          background: #fff3e0;
+      }
+
+      .sprint-card.polish {
+          border-left-color: #9c27b0;
+          background: #f3e5f5;
+      }
+
+      .sprint-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 15px;
+      }
+
+      .sprint-title {
+          font-size: 1.3rem;
+          font-weight: 600;
+          color: #2c3e50;
+      }
+
+      .sprint-badge {
+          background: #3498db;
+          color: white;
+          padding: 5px 12px;
+          border-radius: 4px;
+          font-size: 0.85rem;
+          font-weight: 600;
+      }
+
+      .sprint-badge.foundation { background: #4caf50; }
+      .sprint-badge.core { background: #2196f3; }
+      .sprint-badge.advanced { background: #ff9800; }
+      .sprint-badge.polish { background: #9c27b0; }
+
+      .sprint-description {
+          font-size: 1.05rem;
+          color: #555;
+          margin-bottom: 20px;
+          font-style: italic;
+      }
+
+      .deliverables {
+          background: white;
+          padding: 15px;
+          border-radius: 4px;
+          margin-top: 15px;
+      }
+
+      .deliverables h4 {
+          margin-top: 0;
+          color: #2c3e50;
+      }
+
+      .testing-box {
+          background: #e8f5e9;
+          border: 2px solid #4caf50;
+          border-radius: 6px;
+          padding: 15px;
+          margin: 15px 0;
+      }
+
+      .testing-box h4 {
+          color: #2e7d32;
+          margin-top: 0;
+          margin-bottom: 10px;
+      }
+
+      .info-box {
+          background: #e3f2fd;
+          border-left: 4px solid #2196f3;
+          padding: 15px;
+          margin: 20px 0;
+          border-radius: 4px;
+      }
+
+      .info-box h4 {
+          margin-top: 0;
+          color: #1565c0;
+      }
+
+      .warning-box {
+          background: #ffebee;
+          border-left: 4px solid #f44336;
+          padding: 15px;
+          margin: 20px 0;
+          border-radius: 4px;
+      }
+
+      .warning-box h4 {
+          margin-top: 0;
+          color: #c62828;
+      }
+
+      table {
+          width: 100%;
+          border-collapse: collapse;
+          margin: 20px 0;
+      }
+
+      table th {
+          background: #34495e;
+          color: white;
+          padding: 12px;
+          text-align: left;
+          font-weight: 600;
+      }
+
+      table td {
+          padding: 12px;
+          border: 1px solid #ddd;
+      }
+
+      table tr:nth-child(even) {
+          background: #f9f9f9;
+      }
+
+      .dependencies {
+          background: #fff3e0;
+          border-left: 4px solid #ff9800;
+          padding: 15px;
+          margin: 15px 0;
+          border-radius: 4px;
+      }
+
+      .dependencies h4 {
+          margin-top: 0;
+          color: #e65100;
+      }
+
+      code {
+          background: #f4f4f4;
+          padding: 2px 6px;
+          border-radius: 3px;
+          font-family: 'Courier New', monospace;
+          font-size: 0.9em;
+          color: #c7254e;
+      }
+
+      strong {
+          color: #2c3e50;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Fitness Training App - Project Implementation Plan</h1>
+        <div class="metadata">
+          <div class="metadata-item">
+            <strong>Version:</strong> 1.0
+          </div>
+          <div class="metadata-item">
+            <strong>Last Updated:</strong> <span id="current-date"></span>
+          </div>
+          <div class="metadata-item">
+            <strong>Status:</strong> Ready for Implementation
+          </div>
+        </div>
+      </header>
+
+      <section>
+        <h2>1. Overview</h2>
+        <p>
+          This document outlines a step-by-step implementation plan for building the Fitness Training App.
+          The project is divided into <strong>6 sprints</strong>, each representing a logically independent unit of work
+          that can be implemented, tested, reviewed, and refined before moving to the next sprint.
+        </p>
+
+        <div class="info-box">
+          <h4>Implementation Approach</h4>
+          <p>
+            Each sprint follows an <strong>iterative review cycle</strong>:
+          </p>
+          <ol style="margin-bottom: 0;">
+            <li><strong>Implementation:</strong> Developer implements the sprint deliverables</li>
+            <li><strong>Review:</strong> User reviews the implementation and tests functionality</li>
+            <li><strong>Feedback:</strong> User provides feedback and requests changes if needed</li>
+            <li><strong>Refinement:</strong> Developer makes adjustments based on feedback</li>
+            <li><strong>Documentation Update:</strong> BRD and ProjectPlan updated if changes affect requirements</li>
+            <li><strong>Approval:</strong> User approves sprint completion before moving to next sprint</li>
+          </ol>
+        </div>
+      </section>
+
+      <section>
+        <h2>2. Sprint Overview</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Sprint</th>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Sprint 1</strong></td>
+              <td>Project Foundation & Database Setup</td>
+              <td><span style="background: #4caf50; color: white; padding: 3px 8px; border-radius: 3px; font-size: 0.8rem;">FOUNDATION</span></td>
+              <td>Next.js setup, Supabase configuration, exercise data migration</td>
+            </tr>
+            <tr>
+              <td><strong>Sprint 2</strong></td>
+              <td>Exercise Library & Detail Views</td>
+              <td><span style="background: #2196f3; color: white; padding: 3px 8px; border-radius: 3px; font-size: 0.8rem;">CORE</span></td>
+              <td>Exercise browsing, search, filters, and detail display</td>
+            </tr>
+            <tr>
+              <td><strong>Sprint 3</strong></td>
+              <td>Workout Management & Calendar</td>
+              <td><span style="background: #2196f3; color: white; padding: 3px 8px; border-radius: 3px; font-size: 0.8rem;">CORE</span></td>
+              <td>Create/manage workouts, calendar view, exercise assignment</td>
+            </tr>
+            <tr>
+              <td><strong>Sprint 4</strong></td>
+              <td>Workout Exercise Management</td>
+              <td><span style="background: #2196f3; color: white; padding: 3px 8px; border-radius: 3px; font-size: 0.8rem;">CORE</span></td>
+              <td>Card interface, set management, "in progress" mode</td>
+            </tr>
+            <tr>
+              <td><strong>Sprint 5</strong></td>
+              <td>Historical Data & Progress Tracking</td>
+              <td><span style="background: #ff9800; color: white; padding: 3px 8px; border-radius: 3px; font-size: 0.8rem;">ADVANCED</span></td>
+              <td>Performance history, charts, max weight tracking</td>
+            </tr>
+            <tr>
+              <td><strong>Sprint 6</strong></td>
+              <td>Video Integration & Final Polish</td>
+              <td><span style="background: #9c27b0; color: white; padding: 3px 8px; border-radius: 3px; font-size: 0.8rem;">POLISH</span></td>
+              <td>Google Drive video playback, UX improvements, deployment</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>3. Detailed Sprint Plans</h2>
+
+        <!-- SPRINT 1 -->
+        <div class="sprint-card foundation">
+          <div class="sprint-header">
+            <div class="sprint-title">Sprint 1: Project Foundation & Database Setup</div>
+            <div class="sprint-badge foundation">FOUNDATION</div>
+          </div>
+          <div class="sprint-description">
+            Set up Next.js application, configure Supabase database, and migrate initial exercise data from CSV.
+          </div>
+
+          <div class="deliverables">
+            <h4>BRD Reference</h4>
+            <p><em>See BRD.html Section 4 (Technical Requirements) and Section 1.1-1.2 (Exercise Database & Data Migration)</em></p>
+
+            <h4>Implementation Scope</h4>
+            <ul>
+              <li>Initialize Next.js project with TypeScript and App Router (latest version)</li>
+              <li>Set up Tailwind CSS for styling</li>
+              <li>Configure Supabase client and environment variables</li>
+              <li>Create <code>exercises</code> table in Supabase with all required fields (per BRD Section 1.1):
+                <ul>
+                  <li>name (text)</li>
+                  <li>video_url (text, nullable)</li>
+                  <li>movement_type (text)</li>
+                  <li>pattern (text)</li>
+                  <li>primary_body_part (text)</li>
+                  <li>secondary_body_part (text)</li>
+                  <li>equipment (text)</li>
+                  <li>is_mastered (boolean, default false)</li>
+                  <li>notes (text, nullable)</li>
+                  <li>last_used_date (date, nullable) - for sorting</li>
+                  <li>created_at, updated_at (timestamps)</li>
+                </ul>
+              </li>
+              <li>Create CSV import script/utility to load exercise data into Supabase</li>
+              <li>Create basic home page and navigation structure</li>
+              <li>Move BRD and ProjectPlan to /docs folder for organization</li>
+            </ul>
+          </div>
+
+          <div class="warning-box">
+            <h4>⚠️ USER ACTIONS REQUIRED BEFORE SPRINT 1</h4>
+            <ol style="margin-bottom: 0;">
+              <li><strong>Create Supabase Account:</strong>
+                <ul>
+                  <li>Go to <a href="https://supabase.com" target="_blank">supabase.com</a> and sign up</li>
+                  <li>Create a new project (choose a region close to you)</li>
+                  <li>Note your database password (you'll need it)</li>
+                  <li>Get your Project URL and anon/public key from Settings → API</li>
+                </ul>
+              </li>
+              <li><strong>Prepare Exercise CSV File:</strong>
+                <ul>
+                  <li>Ensure your CSV has columns matching the exercise database fields</li>
+                  <li>Place the CSV file in the project root or a data folder</li>
+                  <li>Confirm the CSV file path with the developer</li>
+                </ul>
+              </li>
+              <li><strong>Create .env.local file:</strong>
+                <ul>
+                  <li>In the project root, create a file named <code>.env.local</code></li>
+                  <li>Add the following variables:
+                    <pre style="background: #f4f4f4; padding: 10px; margin-top: 10px; border-radius: 4px;">
+NEXT_PUBLIC_SUPABASE_URL=your-project-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key</pre>
+                  </li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+
+          <div class="testing-box">
+            <h4>Testing & Review</h4>
+            <ul>
+              <li>Run <code>npm run dev</code> and verify app starts at localhost:3000</li>
+              <li>Verify Supabase connection is working (no console errors)</li>
+              <li>Run CSV import script and verify exercises appear in Supabase dashboard</li>
+              <li>Check that all exercise fields are populated correctly from CSV</li>
+              <li>Verify <code>npm run build</code> completes successfully</li>
+            </ul>
+          </div>
+
+          <div class="info-box">
+            <h4>Success Criteria</h4>
+            <p style="margin-bottom: 0;">
+              ✅ Next.js app runs locally with latest version<br>
+              ✅ Supabase is configured and connected<br>
+              ✅ exercises table created with all required fields<br>
+              ✅ CSV data successfully imported into Supabase<br>
+              ✅ Can view exercises in Supabase dashboard<br>
+              ✅ Project builds successfully
+            </p>
+          </div>
+        </div>
+
+        <!-- SPRINT 2 -->
+        <div class="sprint-card core">
+          <div class="sprint-header">
+            <div class="sprint-title">Sprint 2: Exercise Library & Detail Views</div>
+            <div class="sprint-badge core">CORE</div>
+          </div>
+          <div class="sprint-description">
+            Build the exercise library with search, filtering, sorting, and detailed exercise view.
+          </div>
+
+          <div class="dependencies">
+            <h4>Dependencies</h4>
+            <ul style="margin-bottom: 0;">
+              <li>Sprint 1 completed (exercises table populated with data)</li>
+            </ul>
+          </div>
+
+          <div class="deliverables">
+            <h4>BRD Reference</h4>
+            <p><em>See BRD.html Section 1.3-1.5 (CRUD Operations, Exercise Library View, Exercise Detail View)</em></p>
+
+            <h4>Implementation Scope</h4>
+            <ul>
+              <li><strong>Exercise Library View (Section 1.4):</strong>
+                <ul>
+                  <li>Build exercise list page with grid or card layout</li>
+                  <li>Implement search by exercise name (Section 1.4.1)</li>
+                  <li>Implement filters for: Movement Type, Pattern, Primary Body Part, Secondary Body Part, Equipment, Is Mastered (Section 1.4.2)</li>
+                  <li>Implement sorting: Alphabetical (default), Last Used Date (Section 1.4.3)</li>
+                  <li>Display exercise cards with key information</li>
+                </ul>
+              </li>
+              <li><strong>Exercise Detail View (Section 1.5):</strong>
+                <ul>
+                  <li>Create detail page showing all exercise attributes in read-only mode (Section 1.5.1)</li>
+                  <li>Make Notes field editable (Section 1.3, 1.5.1)</li>
+                  <li>Display placeholder for video (implementation in Sprint 6) (Section 1.5.2)</li>
+                  <li>Display "No historical data yet" placeholder for performance data (implementation in Sprint 5) (Section 1.5.3-1.5.5)</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+
+          <div class="testing-box">
+            <h4>Testing & Review</h4>
+            <ul>
+              <li>Navigate to exercise library and verify all exercises display</li>
+              <li>Test search functionality with various exercise names</li>
+              <li>Test each filter individually and in combination</li>
+              <li>Test sorting by name and last used date</li>
+              <li>Click on exercise to view detail page</li>
+              <li>Verify all exercise attributes display correctly</li>
+              <li>Edit Notes field and verify changes save to database</li>
+              <li>Refresh page and verify Notes changes persist</li>
+            </ul>
+          </div>
+
+          <div class="info-box">
+            <h4>Success Criteria</h4>
+            <p style="margin-bottom: 0;">
+              ✅ Exercise library displays all exercises from database<br>
+              ✅ Search by exercise name works correctly<br>
+              ✅ All filters work individually and in combination<br>
+              ✅ Sorting by name and last used date works<br>
+              ✅ Exercise detail page shows all attributes<br>
+              ✅ Notes field is editable and saves correctly<br>
+              ✅ All other fields are read-only (per BRD Section 1.3)
+            </p>
+          </div>
+        </div>
+
+        <!-- SPRINT 3 -->
+        <div class="sprint-card core">
+          <div class="sprint-header">
+            <div class="sprint-title">Sprint 3: Workout Management & Calendar</div>
+            <div class="sprint-badge core">CORE</div>
+          </div>
+          <div class="sprint-description">
+            Implement workout CRUD operations, calendar view, and exercise assignment to workouts.
+          </div>
+
+          <div class="dependencies">
+            <h4>Dependencies</h4>
+            <ul style="margin-bottom: 0;">
+              <li>Sprint 1 completed (database setup)</li>
+            </ul>
+          </div>
+
+          <div class="deliverables">
+            <h4>BRD Reference</h4>
+            <p><em>See BRD.html Section 2 (Workout Management)</em></p>
+
+            <h4>Implementation Scope</h4>
+            <ul>
+              <li>Create <code>workouts</code> table in Supabase:
+                <ul>
+                  <li>id (uuid, primary key)</li>
+                  <li>date (date, not null)</li>
+                  <li>created_at, updated_at (timestamps)</li>
+                </ul>
+              </li>
+              <li>Create <code>workout_exercises</code> table (basic structure):
+                <ul>
+                  <li>id (uuid, primary key)</li>
+                  <li>workout_id (uuid, foreign key to workouts)</li>
+                  <li>exercise_id (uuid, foreign key to exercises)</li>
+                  <li>order_index (integer, for card ordering)</li>
+                  <li>created_at, updated_at (timestamps)</li>
+                </ul>
+              </li>
+              <li><strong>Workout CRUD (Section 2.1):</strong>
+                <ul>
+                  <li>Create new workout for any date (past or future)</li>
+                  <li>View workout details</li>
+                  <li>Delete workout with confirmation (show summary per Section 2.1)</li>
+                  <li>Allow multiple workouts per day (Section 2.3)</li>
+                </ul>
+              </li>
+              <li><strong>Calendar View (Section 2.4):</strong>
+                <ul>
+                  <li>Implement calendar component showing days/weeks/months</li>
+                  <li>Display workouts on calendar days</li>
+                  <li>Show multiple workouts per day as stacked entries</li>
+                  <li>Allow selection of individual workouts from calendar</li>
+                </ul>
+              </li>
+              <li><strong>Exercise Assignment:</strong>
+                <ul>
+                  <li>Build interface to add exercises to a workout</li>
+                  <li>Show list of assigned exercises (basic list view, cards in Sprint 4)</li>
+                  <li>Allow removing exercises from workout</li>
+                  <li>Allow same exercise to be added multiple times (Section 3.2.4)</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+
+          <div class="testing-box">
+            <h4>Testing & Review</h4>
+            <ul>
+              <li>Create workout for today's date</li>
+              <li>Create workout for past date and future date</li>
+              <li>Create multiple workouts on the same day</li>
+              <li>View workouts in calendar - verify they appear on correct dates</li>
+              <li>Select workout from calendar and view details</li>
+              <li>Add exercises to a workout</li>
+              <li>Add the same exercise multiple times to a workout</li>
+              <li>Remove exercises from workout</li>
+              <li>Delete workout with confirmation dialog</li>
+            </ul>
+          </div>
+
+          <div class="info-box">
+            <h4>Success Criteria</h4>
+            <p style="margin-bottom: 0;">
+              ✅ Can create workouts for any date (past, present, future)<br>
+              ✅ Can create multiple workouts on the same day<br>
+              ✅ Calendar displays workouts on correct dates<br>
+              ✅ Multiple workouts per day show as stacked entries<br>
+              ✅ Can select and view individual workouts<br>
+              ✅ Can add and remove exercises from workouts<br>
+              ✅ Can add same exercise multiple times<br>
+              ✅ Delete confirmation shows workout summary
+            </p>
+          </div>
+        </div>
+
+        <!-- SPRINT 4 -->
+        <div class="sprint-card core">
+          <div class="sprint-header">
+            <div class="sprint-title">Sprint 4: Workout Exercise Management</div>
+            <div class="sprint-badge core">CORE</div>
+          </div>
+          <div class="sprint-description">
+            Build the workout exercise card interface with set management and "in progress" editing mode.
+          </div>
+
+          <div class="dependencies">
+            <h4>Dependencies</h4>
+            <ul style="margin-bottom: 0;">
+              <li>Sprint 3 completed (workouts and workout_exercises can be created)</li>
+            </ul>
+          </div>
+
+          <div class="deliverables">
+            <h4>BRD Reference</h4>
+            <p><em>See BRD.html Section 3 (Workout Exercise Management)</em></p>
+
+            <h4>Implementation Scope</h4>
+            <ul>
+              <li>Extend <code>workout_exercises</code> table with set data:
+                <ul>
+                  <li>sets (jsonb array storing: set_number, weight, reps)</li>
+                  <li>draft_snapshot (jsonb, for Cancel functionality)</li>
+                </ul>
+              </li>
+              <li><strong>Card Interface (Section 3.2):</strong>
+                <ul>
+                  <li>Replace basic list with card-based interface (Section 3.2.1)</li>
+                  <li>Display exercise name, completion summary, max weight</li>
+                  <li>Show video thumbnail placeholder (implementation in Sprint 6)</li>
+                  <li>Implement color coding: gray (no data), yellow (partial), green (complete) (Section 3.2.2)</li>
+                  <li>Enable drag-and-drop re-ordering (order not preserved between workouts) (Section 3.2.1)</li>
+                  <li>Implement delete with confirmation (Section 3.2.3)</li>
+                </ul>
+              </li>
+              <li><strong>Detail View & "In Progress" Mode (Section 3.3):</strong>
+                <ul>
+                  <li>Create workout_exercise detail view (Section 3.3.1-3.3.2)</li>
+                  <li>Implement read-only mode (default) and "in progress" mode</li>
+                  <li>Block navigation when in "in progress" mode</li>
+                  <li>Implement auto-save to database as changes are made</li>
+                  <li>Maintain draft snapshot for Cancel functionality</li>
+                  <li>Implement Save (clear snapshot, exit mode) and Cancel (restore snapshot, exit mode)</li>
+                  <li>Handle browser refresh (keep auto-saved data, clear snapshot, return to read-only)</li>
+                </ul>
+              </li>
+              <li><strong>Sets Management (Section 3.3.3):</strong>
+                <ul>
+                  <li>Display sets as rows with set number, weight, reps</li>
+                  <li>Create default empty sets: 3 if new exercise, or match count from most recent workout</li>
+                  <li>Show placeholders with previous workout data (match by set number)</li>
+                  <li>Allow adding new sets (always at end)</li>
+                  <li>Allow deleting last set only (minimum 1 set must remain)</li>
+                  <li>Allow editing weight (decimal kg) and reps (integer ≥ 0)</li>
+                  <li>Implement empty set removal on save (auto-renumber remaining)</li>
+                </ul>
+              </li>
+              <li><strong>Exercise Info Display (Section 3.3.2):</strong>
+                <ul>
+                  <li>Show exercise name, max weight, notes</li>
+                  <li>Allow editing exercise notes (same field as in Exercise Library)</li>
+                  <li>Show video placeholder (implementation in Sprint 6)</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+
+          <div class="testing-box">
+            <h4>Testing & Review</h4>
+            <ul>
+              <li><strong>Card Interface:</strong>
+                <ul>
+                  <li>Verify cards display with correct color coding (gray/yellow/green)</li>
+                  <li>Test drag-and-drop re-ordering of cards</li>
+                  <li>Test delete with confirmation</li>
+                </ul>
+              </li>
+              <li><strong>"In Progress" Mode:</strong>
+                <ul>
+                  <li>Enter "in progress" mode and verify navigation is blocked</li>
+                  <li>Make changes to sets and verify auto-save occurs</li>
+                  <li>Click Save and verify snapshot is cleared and mode exits</li>
+                  <li>Enter "in progress", make changes, click Cancel and verify data restores</li>
+                  <li>Enter "in progress", make changes, refresh browser and verify auto-saved data persists</li>
+                </ul>
+              </li>
+              <li><strong>Sets Management:</strong>
+                <ul>
+                  <li>Create new workout_exercise and verify 3 default sets (or previous count if exercise was done before)</li>
+                  <li>Verify placeholders show previous workout data</li>
+                  <li>Add new sets and verify they appear at the end</li>
+                  <li>Delete last set and verify it's removed (verify cannot delete below 1 set)</li>
+                  <li>Edit weight/reps and verify changes save</li>
+                  <li>Leave some sets empty, save, and verify empty sets are removed</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+
+          <div class="info-box">
+            <h4>Success Criteria</h4>
+            <p style="margin-bottom: 0;">
+              ✅ Workout exercises display as cards with correct color coding<br>
+              ✅ Cards can be re-ordered via drag-and-drop<br>
+              ✅ "In Progress" mode blocks navigation and auto-saves changes<br>
+              ✅ Save/Cancel functionality works correctly<br>
+              ✅ Browser refresh preserves auto-saved data<br>
+              ✅ Sets create with correct defaults and placeholders<br>
+              ✅ Can add/delete sets with proper constraints<br>
+              ✅ Empty sets are removed on save<br>
+              ✅ Exercise notes are editable
+            </p>
+          </div>
+        </div>
+
+        <!-- SPRINT 5 -->
+        <div class="sprint-card advanced">
+          <div class="sprint-header">
+            <div class="sprint-title">Sprint 5: Historical Data & Progress Tracking</div>
+            <div class="sprint-badge advanced">ADVANCED</div>
+          </div>
+          <div class="sprint-description">
+            Implement historical performance tracking, progress charts, and max weight calculations.
+          </div>
+
+          <div class="dependencies">
+            <h4>Dependencies</h4>
+            <ul style="margin-bottom: 0;">
+              <li>Sprint 4 completed (workout_exercise sets can be recorded)</li>
+            </ul>
+          </div>
+
+          <div class="deliverables">
+            <h4>BRD Reference</h4>
+            <p><em>See BRD.html Section 1.5.3-1.5.5 (Historical Performance, Max Weight, Progress Chart) and Section 3.3.4 (Historical Data View)</em></p>
+
+            <h4>Implementation Scope</h4>
+            <ul>
+              <li><strong>Historical Data in Workout Exercise Detail (Section 3.3.4):</strong>
+                <ul>
+                  <li>Build historical data panel showing last 3 workouts by default</li>
+                  <li>Display date and all sets (weight/reps) for each historical workout</li>
+                  <li>Make panel scrollable for longer history</li>
+                </ul>
+              </li>
+              <li><strong>Max Weight Calculation (Section 1.5.4, 3.3.2):</strong>
+                <ul>
+                  <li>Calculate and display single heaviest weight with ≥6 reps</li>
+                  <li>Show max weight in workout_exercise cards (Section 3.2.1)</li>
+                  <li>Show max weight in workout_exercise detail view (Section 3.3.2)</li>
+                  <li>Show max weight in exercise detail view (Section 1.5.4)</li>
+                </ul>
+              </li>
+              <li><strong>Exercise Detail View - Historical Performance (Section 1.5.3-1.5.5):</strong>
+                <ul>
+                  <li>Display table of all historical data grouped by session/date</li>
+                  <li>Columns: Date, Set Number, Reps, Weight</li>
+                  <li>Build progress chart (last 12 months):
+                    <ul>
+                      <li>X-axis: Actual dates</li>
+                      <li>Dual Y-axes: Weight (left) and Reps (right), color-coded</li>
+                      <li>Line chart with two lines (weight and reps)</li>
+                    </ul>
+                  </li>
+                  <li>Integrate charting library (Recharts or Chart.js)</li>
+                </ul>
+              </li>
+              <li><strong>Last Used Date Update:</strong>
+                <ul>
+                  <li>Update exercise.last_used_date when workout_exercise is saved with data</li>
+                  <li>Enable "Sort by Last Used" functionality from Sprint 2</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+
+          <div class="testing-box">
+            <h4>Testing & Review</h4>
+            <ul>
+              <li>Record sets for an exercise across multiple workouts on different dates</li>
+              <li>Open workout_exercise detail and verify historical data shows last 3 workouts</li>
+              <li>Verify max weight calculation is correct (heaviest with ≥6 reps)</li>
+              <li>Verify max weight displays in cards and detail views</li>
+              <li>Navigate to exercise detail view and verify historical table shows all sessions</li>
+              <li>Verify progress chart displays with correct axes and data points</li>
+              <li>Add more historical data and verify chart updates (last 12 months only)</li>
+              <li>Verify last_used_date updates after recording workout data</li>
+              <li>Test "Sort by Last Used" in exercise library</li>
+            </ul>
+          </div>
+
+          <div class="info-box">
+            <h4>Success Criteria</h4>
+            <p style="margin-bottom: 0;">
+              ✅ Historical data panel shows last 3 workouts in workout_exercise detail<br>
+              ✅ Max weight calculates correctly (≥6 reps criterion)<br>
+              ✅ Max weight displays in all required locations<br>
+              ✅ Exercise detail shows complete historical performance table<br>
+              ✅ Progress chart displays with dual Y-axes and correct data<br>
+              ✅ Chart shows last 12 months of data only<br>
+              ✅ last_used_date updates when workout data is recorded<br>
+              ✅ Sort by Last Used works in exercise library
+            </p>
+          </div>
+        </div>
+
+        <!-- SPRINT 6 -->
+        <div class="sprint-card polish">
+          <div class="sprint-header">
+            <div class="sprint-title">Sprint 6: Video Integration & Final Polish</div>
+            <div class="sprint-badge polish">POLISH</div>
+          </div>
+          <div class="sprint-description">
+            Integrate Google Drive video playback, add final UX improvements, and prepare for deployment.
+          </div>
+
+          <div class="dependencies">
+            <h4>Dependencies</h4>
+            <ul style="margin-bottom: 0;">
+              <li>Sprint 5 completed (all core features working)</li>
+            </ul>
+          </div>
+
+          <div class="deliverables">
+            <h4>BRD Reference</h4>
+            <p><em>See BRD.html Section 1.5.2 (Video Display) and Section 3.3.2 (Video Display in workout_exercise)</em></p>
+
+            <h4>Implementation Scope</h4>
+            <ul>
+              <li><strong>Video Integration (Section 1.5.2, 3.3.2, 3.2.1):</strong>
+                <ul>
+                  <li>Implement Google Drive video thumbnail display in exercise detail view</li>
+                  <li>Implement video thumbnail in workout_exercise detail view</li>
+                  <li>Implement video thumbnail in workout_exercise cards</li>
+                  <li>Build modal window for video playback</li>
+                  <li>Handle "No video available" state when video_url is null</li>
+                  <li>Ensure Google Drive videos are playable (embed format)</li>
+                </ul>
+              </li>
+              <li><strong>UX Improvements & Polish:</strong>
+                <ul>
+                  <li>Add loading states and spinners for async operations</li>
+                  <li>Add toast notifications for success/error feedback</li>
+                  <li>Implement comprehensive form validation with clear error messages</li>
+                  <li>Add responsive design for mobile/tablet (calendar, cards, forms)</li>
+                  <li>Add keyboard shortcuts for common actions (if applicable)</li>
+                  <li>Optimize performance (query optimization, lazy loading, pagination if needed)</li>
+                </ul>
+              </li>
+              <li><strong>Navigation & Layout:</strong>
+                <ul>
+                  <li>Build comprehensive navigation menu</li>
+                  <li>Add breadcrumbs for deep navigation paths</li>
+                  <li>Ensure consistent layout and styling across all pages</li>
+                </ul>
+              </li>
+              <li><strong>Testing & Deployment Preparation:</strong>
+                <ul>
+                  <li>End-to-end testing of all features</li>
+                  <li>Cross-browser testing</li>
+                  <li>Performance optimization</li>
+                  <li>Prepare deployment guide (Vercel recommended for Next.js)</li>
+                  <li>Configure environment variables for production</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+
+          <div class="testing-box">
+            <h4>Testing & Review</h4>
+            <ul>
+              <li><strong>Video Functionality:</strong>
+                <ul>
+                  <li>Test video thumbnail display in all locations (exercise detail, workout_exercise detail, cards)</li>
+                  <li>Click thumbnail and verify modal opens with playable video</li>
+                  <li>Test exercises without video URLs show "No video available"</li>
+                  <li>Verify Google Drive videos play correctly in modal</li>
+                </ul>
+              </li>
+              <li><strong>End-to-End Workflow:</strong>
+                <ul>
+                  <li>Browse exercise library → view exercise detail → check video and historical data</li>
+                  <li>Create workout → add exercises → record sets → verify auto-save and color coding</li>
+                  <li>View historical data → verify charts and max weight</li>
+                  <li>Test on mobile device → verify responsive design</li>
+                </ul>
+              </li>
+              <li><strong>UX & Performance:</strong>
+                <ul>
+                  <li>Verify loading states appear during async operations</li>
+                  <li>Verify error messages are clear and helpful</li>
+                  <li>Test app performance with large dataset</li>
+                  <li>Check all form validations work correctly</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+
+          <div class="info-box">
+            <h4>Success Criteria</h4>
+            <p style="margin-bottom: 0;">
+              ✅ Video thumbnails display in all required locations<br>
+              ✅ Videos play correctly in modal window<br>
+              ✅ "No video available" state handled gracefully<br>
+              ✅ App is fully responsive on mobile and tablet<br>
+              ✅ Navigation is intuitive and complete<br>
+              ✅ All user actions provide appropriate feedback<br>
+              ✅ Form validation is comprehensive and clear<br>
+              ✅ App performs well with realistic dataset<br>
+              ✅ Ready for deployment<br>
+              ✅ All BRD requirements met
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>4. Next Steps</h2>
+        <div class="info-box">
+          <h4>Ready for Sprint 1?</h4>
+          <p>Before starting Sprint 1, ensure you have:</p>
+          <ol style="margin-bottom: 0;">
+            <li><strong>Created Supabase Account</strong> and obtained project credentials</li>
+            <li><strong>Prepared Exercise CSV File</strong> with all exercise data</li>
+            <li><strong>Node.js and npm</strong> installed on your machine</li>
+          </ol>
+          <p style="margin-top: 15px;">
+            <strong>Then say:</strong> "Please implement Sprint 1"
+          </p>
+        </div>
+      </section>
+
+      <hr style="margin: 40px 0; border: none; border-top: 1px solid #e0e0e0;" />
+
+      <footer style="text-align: center; color: #999; font-size: 0.9rem; margin-top: 40px;">
+        <p>Project Implementation Plan v1.0 - Fitness Training App</p>
+        <p>This is a living document that will evolve as the project progresses</p>
+      </footer>
+    </div>
+
+    <script>
+      // Set current date
+      const dateElement = document.getElementById('current-date');
+      const today = new Date();
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      dateElement.textContent = today.toLocaleDateString('en-US', options);
+    </script>
+  </body>
+</html>
