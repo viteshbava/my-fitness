@@ -426,7 +426,10 @@
                   <li>Go to <a href="https://supabase.com" target="_blank">supabase.com</a> and sign up</li>
                   <li>Create a new project (choose a region close to you)</li>
                   <li>Note your database password (you'll need it)</li>
-                  <li>Get your Project URL and anon/public key from Settings → API</li>
+                  <li>Get your <strong>Project ID</strong> from Settings → General (or from your Project URL)</li>
+                  <li>Get your <strong>Publishable API key</strong> from Settings → API</li>
+                  <li><em>Note: The Project ID is the part before ".supabase.co" in your Project URL</em></li>
+                  <li><em>Example: If your URL is https://abcdefghijk.supabase.co, your Project ID is "abcdefghijk"</em></li>
                 </ul>
               </li>
               <li><strong>Prepare Exercise CSV File:</strong>
@@ -441,9 +444,10 @@
                   <li>In the project root, create a file named <code>.env.local</code></li>
                   <li>Add the following variables:
                     <pre style="background: #f4f4f4; padding: 10px; margin-top: 10px; border-radius: 4px;">
-NEXT_PUBLIC_SUPABASE_URL=your-project-url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key</pre>
+NEXT_PUBLIC_SUPABASE_PROJECT_ID=your-project-id
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-publishable-api-key</pre>
                   </li>
+                  <li><em>Note: The application will construct the Supabase URL as https://[PROJECT_ID].supabase.co</em></li>
                 </ul>
               </li>
             </ol>
@@ -465,9 +469,10 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key</pre>
               <li><strong>Configure Environment Variables in Vercel:</strong>
                 <ul>
                   <li>Go to Project Settings → Environment Variables</li>
-                  <li>Add <code>NEXT_PUBLIC_SUPABASE_URL</code></li>
-                  <li>Add <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code></li>
+                  <li>Add <code>NEXT_PUBLIC_SUPABASE_PROJECT_ID</code> (your Supabase Project ID)</li>
+                  <li>Add <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> (your Supabase Publishable API key)</li>
                   <li>Apply to Production, Preview, and Development environments</li>
+                  <li><em>Note: The app will automatically construct the URL from the Project ID</em></li>
                 </ul>
               </li>
               <li><strong>Deploy:</strong>

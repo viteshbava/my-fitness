@@ -461,9 +461,26 @@
             <ul>
                 <li>Deploy to Vercel after Sprint 1 (Project Foundation) is complete</li>
                 <li>Continuous deployment from the main Git branch</li>
-                <li>Environment variables configured in Vercel for Supabase connection</li>
+                <li>Environment variables configured in Vercel for Supabase connection (Project ID and Publishable API key)</li>
+                <li>Supabase URL will be programmatically constructed from Project ID as: https://[PROJECT_ID].supabase.co</li>
                 <li>Ability to test on actual mobile devices throughout development</li>
                 <li>Vercel preview deployments for testing changes before merging</li>
+            </ul>
+
+            <h4>4.5 Security & Data Access</h4>
+            <p>The application is designed for single-user personal use. Initial implementation will use Supabase's Publishable API key for database access.</p>
+            <p><strong>About Supabase Publishable API Key:</strong></p>
+            <ul>
+                <li>Supabase provides a "Publishable API key" (formerly called "anon key") for client-side database access</li>
+                <li>This key is safe to use in a browser when Row Level Security (RLS) policies are configured</li>
+                <li>For this personal use application, we will use the Publishable API key without RLS initially for faster development</li>
+            </ul>
+            <p><strong>Security Considerations:</strong></p>
+            <ul>
+                <li>Phase 1 development will use Supabase Publishable API key without Row Level Security (RLS) policies</li>
+                <li>Database will be accessible to anyone with the API key (acceptable for personal use during development)</li>
+                <li>Future enhancement: Add authentication and RLS policies if multi-user access or enhanced security is needed</li>
+                <li>All sensitive credentials (API keys) stored in environment variables, never committed to Git</li>
             </ul>
         </div>
 
