@@ -199,7 +199,7 @@ const ExercisesPage = () => {
           {searchTerm && (
             <button
               onClick={() => setSearchTerm('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer"
               aria-label="Clear search"
             >
               <svg
@@ -225,7 +225,7 @@ const ExercisesPage = () => {
             <div className="p-4 flex items-center justify-between">
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center space-x-3 flex-1 hover:opacity-80 transition-opacity"
+                className="flex items-center space-x-3 flex-1 hover:opacity-80 transition-opacity cursor-pointer"
               >
                 <svg
                   className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform ${
@@ -254,7 +254,7 @@ const ExercisesPage = () => {
               {hasActiveFilters && (
                 <button
                   onClick={clearFilters}
-                  className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 ml-4"
+                  className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 ml-4 cursor-pointer"
                 >
                   Clear All
                 </button>
@@ -415,7 +415,7 @@ const ExercisesPage = () => {
               <Link
                 key={exercise.id}
                 href={`/exercises/${exercise.id}`}
-                className="block bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow p-6"
+                className="block bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow p-6 cursor-pointer"
               >
                 <div className="flex items-start justify-between mb-2">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">

@@ -85,6 +85,94 @@ export default ComponentName;
 - Follow Next.js App Router conventions
 - Keep components in the `app/` or `components/` directories
 
+## UI/UX Guidelines
+
+### Clickable Items
+
+**ALL clickable elements must have proper visual feedback and cursor indication.**
+
+Every clickable item (buttons, links, cards, etc.) should include:
+
+1. **Cursor pointer**: Add `cursor-pointer` to className
+2. **Hover effect**: Add a subtle hover effect that provides visual feedback
+
+#### Common Hover Effects:
+
+- **Links and text buttons**: `hover:text-blue-700` or color change
+- **Cards/containers**: `hover:shadow-lg` (shadow elevation)
+- **Solid buttons**: `hover:bg-blue-700` (darken background)
+- **Icon buttons**: `hover:opacity-80` or `hover:text-gray-600`
+
+#### Examples:
+
+✅ **Correct - Link with hover effect:**
+
+```tsx
+<Link
+  href="/exercises"
+  className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow cursor-pointer"
+>
+  Browse Exercises
+</Link>
+```
+
+✅ **Correct - Button with hover effect:**
+
+```tsx
+<button
+  onClick={handleClick}
+  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded cursor-pointer"
+>
+  Save
+</button>
+```
+
+✅ **Correct - Text link with hover effect:**
+
+```tsx
+<Link
+  href="/back"
+  className="text-blue-600 hover:text-blue-700 cursor-pointer"
+>
+  Back
+</Link>
+```
+
+✅ **Correct - Icon button with hover effect:**
+
+```tsx
+<button
+  onClick={clearSearch}
+  className="text-gray-400 hover:text-gray-600 cursor-pointer"
+>
+  <XIcon />
+</button>
+```
+
+❌ **Incorrect - No hover effect or cursor:**
+
+```tsx
+<Link href="/exercises" className="bg-white rounded-lg shadow p-6">
+  Browse Exercises
+</Link>
+```
+
+❌ **Incorrect - Hover effect but missing cursor:**
+
+```tsx
+<button onClick={handleClick} className="px-4 py-2 bg-blue-600 hover:bg-blue-700">
+  Save
+</button>
+```
+
+#### Best Practices:
+
+1. **Always pair cursor-pointer with a hover effect** - never have one without the other
+2. **Use transitions** for smooth hover effects: `transition-shadow`, `transition-colors`, `transition-opacity`
+3. **Keep hover effects subtle** - don't make them too dramatic or jarring
+4. **Be consistent** - use the same hover pattern for similar elements across the app
+5. **Test accessibility** - ensure hover states are visible in both light and dark mode
+
 ## Documentation Policy
 
 - **DO NOT update README.md** unless explicitly requested by the user

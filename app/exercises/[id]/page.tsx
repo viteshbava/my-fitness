@@ -141,7 +141,7 @@ const ExerciseDetailPage = () => {
           <p className="text-red-600 dark:text-red-400 mb-4">{error || 'Exercise not found'}</p>
           <Link
             href="/exercises"
-            className="text-blue-600 hover:text-blue-700 dark:text-blue-400"
+            className="text-blue-600 hover:text-blue-700 dark:text-blue-400 cursor-pointer"
           >
             Back to Exercise Library
           </Link>
@@ -156,7 +156,7 @@ const ExerciseDetailPage = () => {
         {/* Back Button */}
         <Link
           href="/exercises"
-          className="inline-flex items-center text-blue-600 hover:text-blue-700 dark:text-blue-400 mb-6"
+          className="inline-flex items-center text-blue-600 hover:text-blue-700 dark:text-blue-400 mb-6 cursor-pointer"
         >
           <svg
             className="w-5 h-5 mr-2"
