@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/viteshbava/my-fitness#readme",
   "dependencies": {
+    "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.89.0",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/node": "^25.0.3",
