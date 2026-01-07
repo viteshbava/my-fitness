@@ -48,9 +48,43 @@ const ExercisesPage = () => {
     setAlertModalOpen(true);
   };
 
+  // Load filters from sessionStorage on mount
   useEffect(() => {
+    const savedFilters = sessionStorage.getItem('exerciseFilters');
+    if (savedFilters) {
+      try {
+        const filters = JSON.parse(savedFilters);
+        setSearchTerm(filters.searchTerm || '');
+        setMovementType(filters.movementType || '');
+        setPattern(filters.pattern || '');
+        setPrimaryBodyPart(filters.primaryBodyPart || '');
+        setSecondaryBodyPart(filters.secondaryBodyPart || '');
+        setEquipment(filters.equipment || '');
+        setIsMastered(filters.isMastered !== undefined ? filters.isMastered : null);
+        setSortBy(filters.sortBy || 'name');
+        setShowFilters(filters.showFilters || false);
+      } catch (e) {
+        // If parsing fails, ignore and use defaults
+      }
+    }
     loadExercises();
   }, []);
+
+  // Save filters to sessionStorage whenever they change
+  useEffect(() => {
+    const filters = {
+      searchTerm,
+      movementType,
+      pattern,
+      primaryBodyPart,
+      secondaryBodyPart,
+      equipment,
+      isMastered,
+      sortBy,
+      showFilters,
+    };
+    sessionStorage.setItem('exerciseFilters', JSON.stringify(filters));
+  }, [searchTerm, movementType, pattern, primaryBodyPart, secondaryBodyPart, equipment, isMastered, sortBy, showFilters]);
 
   const loadExercises = async () => {
     setLoading(true);
