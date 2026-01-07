@@ -29,6 +29,7 @@ const ExercisesPage = () => {
   const [equipment, setEquipment] = useState('');
   const [isMastered, setIsMastered] = useState<boolean | null>(null);
   const [sortBy, setSortBy] = useState<'name' | 'last_used_date'>('name');
+  const [showFilters, setShowFilters] = useState(false);
 
   // Alert modal state
   const [alertModalOpen, setAlertModalOpen] = useState(false);
@@ -106,6 +107,18 @@ const ExercisesPage = () => {
     sortBy,
   ]);
 
+  // Check if any filters are active
+  const hasActiveFilters = useMemo(() => {
+    return !!(
+      movementType ||
+      pattern ||
+      primaryBodyPart ||
+      secondaryBodyPart ||
+      equipment ||
+      isMastered !== null
+    );
+  }, [movementType, pattern, primaryBodyPart, secondaryBodyPart, equipment, isMastered]);
+
   const clearFilters = () => {
     setSearchTerm('');
     setMovementType('');
@@ -151,134 +164,168 @@ const ExercisesPage = () => {
           />
         </div>
 
-        {/* Filters */}
-        <div className="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Filters
-            </h2>
-            <button
-              onClick={clearFilters}
-              className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-            >
-              Clear All
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* Movement Type */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Movement Type
-              </label>
-              <select
-                value={movementType}
-                onChange={(e) => setMovementType(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+        {/* Filters - Collapsible */}
+        <div className="mb-6">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="w-full bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center justify-between hover:shadow-md transition-shadow"
+          >
+            <div className="flex items-center space-x-3">
+              <svg
+                className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform ${
+                  showFilters ? 'rotate-90' : ''
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                <option value="">All</option>
-                {uniqueMovementTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Filters
+              </h2>
+              {hasActiveFilters && (
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                  Active
+                </span>
+              )}
             </div>
-
-            {/* Pattern */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Pattern
-              </label>
-              <select
-                value={pattern}
-                onChange={(e) => setPattern(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            {hasActiveFilters && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  clearFilters();
+                }}
+                className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
               >
-                <option value="">All</option>
-                {uniquePatterns.map((p) => (
-                  <option key={p} value={p}>
-                    {p}
-                  </option>
-                ))}
-              </select>
-            </div>
+                Clear All
+              </button>
+            )}
+          </button>
 
-            {/* Primary Body Part */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Primary Body Part
-              </label>
-              <select
-                value={primaryBodyPart}
-                onChange={(e) => setPrimaryBodyPart(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-              >
-                <option value="">All</option>
-                {uniquePrimaryBodyParts.map((part) => (
-                  <option key={part} value={part}>
-                    {part}
-                  </option>
-                ))}
-              </select>
-            </div>
+          {showFilters && (
+            <div className="mt-3 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Movement Type */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Movement Type
+                  </label>
+                  <select
+                    value={movementType}
+                    onChange={(e) => setMovementType(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  >
+                    <option value="">All</option>
+                    {uniqueMovementTypes.map((type) => (
+                      <option key={type} value={type}>
+                        {type}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-            {/* Secondary Body Part */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Secondary Body Part
-              </label>
-              <select
-                value={secondaryBodyPart}
-                onChange={(e) => setSecondaryBodyPart(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-              >
-                <option value="">All</option>
-                {uniqueSecondaryBodyParts.map((part) => (
-                  <option key={part} value={part}>
-                    {part}
-                  </option>
-                ))}
-              </select>
-            </div>
+                {/* Pattern */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Pattern
+                  </label>
+                  <select
+                    value={pattern}
+                    onChange={(e) => setPattern(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  >
+                    <option value="">All</option>
+                    {uniquePatterns.map((p) => (
+                      <option key={p} value={p}>
+                        {p}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-            {/* Equipment */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Equipment
-              </label>
-              <select
-                value={equipment}
-                onChange={(e) => setEquipment(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-              >
-                <option value="">All</option>
-                {uniqueEquipment.map((eq) => (
-                  <option key={eq} value={eq}>
-                    {eq}
-                  </option>
-                ))}
-              </select>
-            </div>
+                {/* Primary Body Part */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Primary Body Part
+                  </label>
+                  <select
+                    value={primaryBodyPart}
+                    onChange={(e) => setPrimaryBodyPart(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  >
+                    <option value="">All</option>
+                    {uniquePrimaryBodyParts.map((part) => (
+                      <option key={part} value={part}>
+                        {part}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-            {/* Is Mastered */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Mastered Status
-              </label>
-              <select
-                value={isMastered === null ? '' : isMastered.toString()}
-                onChange={(e) =>
-                  setIsMastered(e.target.value === '' ? null : e.target.value === 'true')
-                }
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-              >
-                <option value="">All</option>
-                <option value="true">Mastered</option>
-                <option value="false">Not Mastered</option>
-              </select>
+                {/* Secondary Body Part */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Secondary Body Part
+                  </label>
+                  <select
+                    value={secondaryBodyPart}
+                    onChange={(e) => setSecondaryBodyPart(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  >
+                    <option value="">All</option>
+                    {uniqueSecondaryBodyParts.map((part) => (
+                      <option key={part} value={part}>
+                        {part}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Equipment */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Equipment
+                  </label>
+                  <select
+                    value={equipment}
+                    onChange={(e) => setEquipment(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  >
+                    <option value="">All</option>
+                    {uniqueEquipment.map((eq) => (
+                      <option key={eq} value={eq}>
+                        {eq}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Is Mastered */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Mastered Status
+                  </label>
+                  <select
+                    value={isMastered === null ? '' : isMastered.toString()}
+                    onChange={(e) =>
+                      setIsMastered(e.target.value === '' ? null : e.target.value === 'true')
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  >
+                    <option value="">All</option>
+                    <option value="true">Mastered</option>
+                    <option value="false">Not Mastered</option>
+                  </select>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Sort Options */}
