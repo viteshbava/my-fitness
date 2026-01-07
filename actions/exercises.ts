@@ -84,4 +84,30 @@ export const updateExerciseNotes = async (
   }
 };
 
+export const updateExerciseIsLearnt = async (
+  id: string,
+  is_mastered: boolean
+): Promise<{ data: Exercise | null; error: string | null }> => {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('exercises')
+      .update({ is_mastered })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      return { data: null, error: error.message };
+    }
+
+    return { data, error: null };
+  } catch (err) {
+    return {
+      data: null,
+      error: err instanceof Error ? err.message : 'Failed to update experience level',
+    };
+  }
+};
+
 // Add more exercise-related actions as needed

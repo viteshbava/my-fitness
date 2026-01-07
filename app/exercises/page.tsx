@@ -221,47 +221,46 @@ const ExercisesPage = () => {
 
         {/* Filters - Collapsible */}
         <div className="mb-6">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="w-full bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex items-center justify-between hover:shadow-md transition-shadow"
-          >
-            <div className="flex items-center space-x-3">
-              <svg
-                className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform ${
-                  showFilters ? 'rotate-90' : ''
-                }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+            <div className="p-4 flex items-center justify-between">
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex items-center space-x-3 flex-1 hover:opacity-80 transition-opacity"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Filters
-              </h2>
+                <svg
+                  className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform ${
+                    showFilters ? 'rotate-90' : ''
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Filters
+                </h2>
+                {hasActiveFilters && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                    Active
+                  </span>
+                )}
+              </button>
               {hasActiveFilters && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                  Active
-                </span>
+                <button
+                  onClick={clearFilters}
+                  className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 ml-4"
+                >
+                  Clear All
+                </button>
               )}
             </div>
-            {hasActiveFilters && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  clearFilters();
-                }}
-                className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-              >
-                Clear All
-              </button>
-            )}
-          </button>
+          </div>
 
           {showFilters && (
             <div className="mt-3 bg-white dark:bg-gray-800 rounded-lg shadow p-6">

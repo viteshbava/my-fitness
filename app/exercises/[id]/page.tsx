@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { fetchExerciseById, updateExerciseNotes } from '@/actions/exercises';
+import { fetchExerciseById, updateExerciseNotes, updateExerciseIsLearnt } from '@/actions/exercises';
 import { Exercise } from '@/types/database';
 import AlertModal from '@/components/AlertModal';
 
@@ -20,6 +20,11 @@ const ExerciseDetailPage = () => {
   const [notes, setNotes] = useState('');
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [isSavingNotes, setIsSavingNotes] = useState(false);
+
+  // Experience Level editing state
+  const [isLearnt, setIsLearnt] = useState(false);
+  const [isEditingLearnt, setIsEditingLearnt] = useState(false);
+  const [isSavingLearnt, setIsSavingLearnt] = useState(false);
 
   // Alert modal state
   const [alertModalOpen, setAlertModalOpen] = useState(false);
@@ -62,6 +67,7 @@ const ExerciseDetailPage = () => {
 
     setExercise(data);
     setNotes(data.notes || '');
+    setIsLearnt(data.is_mastered || false);
     setLoading(false);
   };
 
@@ -89,6 +95,32 @@ const ExerciseDetailPage = () => {
   const handleCancelEditNotes = () => {
     setNotes(exercise?.notes || '');
     setIsEditingNotes(false);
+  };
+
+  const handleSaveLearnt = async () => {
+    if (!exercise) return;
+
+    setIsSavingLearnt(true);
+    const { data, error } = await updateExerciseIsLearnt(exercise.id, isLearnt);
+
+    if (error) {
+      showAlert('Error Saving Experience Level', error, 'error');
+      setIsSavingLearnt(false);
+      return;
+    }
+
+    if (data) {
+      setExercise(data);
+      showAlert('Success', 'Experience level updated successfully', 'success');
+    }
+
+    setIsEditingLearnt(false);
+    setIsSavingLearnt(false);
+  };
+
+  const handleCancelEditLearnt = () => {
+    setIsLearnt(exercise?.is_mastered || false);
+    setIsEditingLearnt(false);
   };
 
   if (loading) {
@@ -203,6 +235,62 @@ const ExerciseDetailPage = () => {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Experience Level Section - Editable */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Experience Level</h2>
+            {!isEditingLearnt && (
+              <button
+                onClick={() => setIsEditingLearnt(true)}
+                className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400"
+              >
+                Edit
+              </button>
+            )}
+          </div>
+
+          {isEditingLearnt ? (
+            <div>
+              <select
+                value={isLearnt ? 'learnt' : 'not-learnt'}
+                onChange={(e) => setIsLearnt(e.target.value === 'learnt')}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              >
+                <option value="not-learnt">Not Learnt</option>
+                <option value="learnt">Learnt</option>
+              </select>
+              <div className="flex items-center justify-end space-x-3 mt-4">
+                <button
+                  onClick={handleCancelEditLearnt}
+                  disabled={isSavingLearnt}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveLearnt}
+                  disabled={isSavingLearnt}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium disabled:opacity-50"
+                >
+                  {isSavingLearnt ? 'Saving...' : 'Save'}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center">
+              {isLearnt ? (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                  Learnt
+                </span>
+              ) : (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                  Not Learnt
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Video Section - Placeholder */}
