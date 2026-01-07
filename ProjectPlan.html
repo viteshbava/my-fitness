@@ -317,7 +317,7 @@
               <td><strong>Sprint 1</strong></td>
               <td>Project Foundation & Database Setup</td>
               <td><span style="background: #4caf50; color: white; padding: 3px 8px; border-radius: 3px; font-size: 0.8rem;">FOUNDATION</span></td>
-              <td>Next.js setup, Supabase configuration, exercise data migration</td>
+              <td>Next.js setup, Supabase configuration, exercise data migration, Vercel deployment</td>
             </tr>
             <tr>
               <td><strong>Sprint 2</strong></td>
@@ -363,7 +363,7 @@
             <div class="sprint-badge foundation">FOUNDATION</div>
           </div>
           <div class="sprint-description">
-            Set up Next.js application, configure Supabase database, and migrate initial exercise data from CSV.
+            Set up Next.js application, configure Supabase database, migrate initial exercise data from CSV, and deploy to Vercel for mobile testing.
           </div>
 
           <div class="deliverables">
@@ -374,6 +374,7 @@
             <ul>
               <li>Initialize Next.js project with TypeScript and App Router (latest version)</li>
               <li>Set up Tailwind CSS for styling</li>
+              <li>Initialize Git repository and push to GitHub</li>
               <li>Configure Supabase client and environment variables</li>
               <li>Create <code>exercises</code> table in Supabase with all required fields (per BRD Section 1.1):
                 <ul>
@@ -393,12 +394,33 @@
               <li>Create CSV import script/utility to load exercise data into Supabase</li>
               <li>Create basic home page and navigation structure</li>
               <li>Move BRD and ProjectPlan to /docs folder for organization</li>
+              <li><strong>Deploy to Vercel (per BRD Section 4.4):</strong>
+                <ul>
+                  <li>Connect GitHub repository to Vercel</li>
+                  <li>Configure environment variables in Vercel</li>
+                  <li>Enable automatic deployments from main branch</li>
+                  <li>Verify deployment works on mobile device</li>
+                </ul>
+              </li>
             </ul>
           </div>
 
           <div class="warning-box">
             <h4>⚠️ USER ACTIONS REQUIRED BEFORE SPRINT 1</h4>
             <ol style="margin-bottom: 0;">
+              <li><strong>Create GitHub Account (if needed):</strong>
+                <ul>
+                  <li>Go to <a href="https://github.com" target="_blank">github.com</a> and sign up</li>
+                  <li>This will be used for version control and Vercel deployment</li>
+                </ul>
+              </li>
+              <li><strong>Create Vercel Account:</strong>
+                <ul>
+                  <li>Go to <a href="https://vercel.com" target="_blank">vercel.com</a> and sign up</li>
+                  <li>Sign up using your GitHub account for easy integration</li>
+                  <li>No payment required - free tier is sufficient for this project</li>
+                </ul>
+              </li>
               <li><strong>Create Supabase Account:</strong>
                 <ul>
                   <li>Go to <a href="https://supabase.com" target="_blank">supabase.com</a> and sign up</li>
@@ -427,14 +449,66 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key</pre>
             </ol>
           </div>
 
+          <div class="info-box">
+            <h4>📱 Vercel Deployment Steps (to be done during Sprint 1)</h4>
+            <p>After the local app is working, the following steps will deploy it to Vercel:</p>
+            <ol style="margin-bottom: 0;">
+              <li><strong>Push code to GitHub:</strong> Developer will commit and push all code to GitHub repository</li>
+              <li><strong>Import to Vercel:</strong>
+                <ul>
+                  <li>Log into Vercel dashboard</li>
+                  <li>Click "Add New Project"</li>
+                  <li>Import the GitHub repository</li>
+                  <li>Vercel will auto-detect Next.js settings</li>
+                </ul>
+              </li>
+              <li><strong>Configure Environment Variables in Vercel:</strong>
+                <ul>
+                  <li>Go to Project Settings → Environment Variables</li>
+                  <li>Add <code>NEXT_PUBLIC_SUPABASE_URL</code></li>
+                  <li>Add <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code></li>
+                  <li>Apply to Production, Preview, and Development environments</li>
+                </ul>
+              </li>
+              <li><strong>Deploy:</strong>
+                <ul>
+                  <li>Click "Deploy"</li>
+                  <li>Wait for build to complete (usually 1-2 minutes)</li>
+                  <li>Vercel will provide a live URL (e.g., https://my-fitness.vercel.app)</li>
+                </ul>
+              </li>
+              <li><strong>Test on Mobile:</strong>
+                <ul>
+                  <li>Open the Vercel URL on your mobile device</li>
+                  <li>Verify the app loads and Supabase connection works</li>
+                  <li>Test basic navigation and responsiveness</li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+
           <div class="testing-box">
             <h4>Testing & Review</h4>
             <ul>
-              <li>Run <code>npm run dev</code> and verify app starts at localhost:3000</li>
-              <li>Verify Supabase connection is working (no console errors)</li>
-              <li>Run CSV import script and verify exercises appear in Supabase dashboard</li>
-              <li>Check that all exercise fields are populated correctly from CSV</li>
-              <li>Verify <code>npm run build</code> completes successfully</li>
+              <li><strong>Local Testing:</strong>
+                <ul>
+                  <li>Run <code>npm run dev</code> and verify app starts at localhost:3000</li>
+                  <li>Verify Supabase connection is working (no console errors)</li>
+                  <li>Run CSV import script and verify exercises appear in Supabase dashboard</li>
+                  <li>Check that all exercise fields are populated correctly from CSV</li>
+                  <li>Verify <code>npm run build</code> completes successfully</li>
+                </ul>
+              </li>
+              <li><strong>Deployment Testing:</strong>
+                <ul>
+                  <li>Verify code is pushed to GitHub</li>
+                  <li>Verify Vercel deployment completes without errors</li>
+                  <li>Open Vercel URL on desktop browser and verify app loads</li>
+                  <li>Open Vercel URL on mobile device and verify app loads</li>
+                  <li>Test Supabase connection from deployed app (check for exercises data)</li>
+                  <li>Verify mobile responsiveness and touch interactions</li>
+                </ul>
+              </li>
             </ul>
           </div>
 
@@ -446,7 +520,11 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key</pre>
               ✅ exercises table created with all required fields<br>
               ✅ CSV data successfully imported into Supabase<br>
               ✅ Can view exercises in Supabase dashboard<br>
-              ✅ Project builds successfully
+              ✅ Project builds successfully<br>
+              ✅ Code is committed to GitHub repository<br>
+              ✅ App is deployed to Vercel and accessible via URL<br>
+              ✅ Deployed app works on mobile device<br>
+              ✅ Automatic deployments configured for future sprints
             </p>
           </div>
         </div>
@@ -878,13 +956,13 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key</pre>
                   <li>Ensure consistent layout and styling across all pages</li>
                 </ul>
               </li>
-              <li><strong>Testing & Deployment Preparation:</strong>
+              <li><strong>Final Testing & Polish:</strong>
                 <ul>
-                  <li>End-to-end testing of all features</li>
+                  <li>End-to-end testing of all features on mobile and desktop</li>
                   <li>Cross-browser testing</li>
-                  <li>Performance optimization</li>
-                  <li>Prepare deployment guide (Vercel recommended for Next.js)</li>
-                  <li>Configure environment variables for production</li>
+                  <li>Performance optimization and mobile network testing</li>
+                  <li>Final review on deployed Vercel URL</li>
+                  <li>Verify all features work correctly in production</li>
                 </ul>
               </li>
             </ul>
@@ -944,12 +1022,17 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key</pre>
           <h4>Ready for Sprint 1?</h4>
           <p>Before starting Sprint 1, ensure you have:</p>
           <ol style="margin-bottom: 0;">
+            <li><strong>Created GitHub Account</strong> (if you don't have one already)</li>
+            <li><strong>Created Vercel Account</strong> (sign up with GitHub for easy integration)</li>
             <li><strong>Created Supabase Account</strong> and obtained project credentials</li>
             <li><strong>Prepared Exercise CSV File</strong> with all exercise data</li>
             <li><strong>Node.js and npm</strong> installed on your machine</li>
           </ol>
           <p style="margin-top: 15px;">
             <strong>Then say:</strong> "Please implement Sprint 1"
+          </p>
+          <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
+            <em>Note: After Sprint 1, the app will be live on Vercel and you'll be able to test every new feature on your mobile device as we build each sprint.</em>
           </p>
         </div>
       </section>
