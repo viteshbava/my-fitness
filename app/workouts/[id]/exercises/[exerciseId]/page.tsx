@@ -10,6 +10,7 @@ import {
   saveDraftSnapshot,
   clearDraftSnapshot,
   restoreFromDraftSnapshot,
+  fetchMostRecentWorkoutWithData,
 } from '@/actions/workout-exercises';
 import { WorkoutExerciseWithExercise, Set } from '@/types/database';
 import AlertModal from '@/components/AlertModal';
@@ -31,6 +32,7 @@ const WorkoutExerciseDetailPage = () => {
 
   const [workoutExercise, setWorkoutExercise] = useState<WorkoutExerciseWithExercise | null>(null);
   const [sets, setSets] = useState<Set[]>([]);
+  const [previousSets, setPreviousSets] = useState<Set[]>([]);
   const [loading, setLoading] = useState(true);
   const [isInProgress, setIsInProgress] = useState(false);
   const [autoSaving, setAutoSaving] = useState(false);
@@ -96,6 +98,15 @@ const WorkoutExerciseDetailPage = () => {
     if (data) {
       setWorkoutExercise(data);
       setSets(data.sets || []);
+
+      // Load previous workout data for placeholders
+      const { data: previousData } = await fetchMostRecentWorkoutWithData(
+        data.exercise_id,
+        workoutId
+      );
+      if (previousData) {
+        setPreviousSets(previousData);
+      }
     }
     setLoading(false);
   };
@@ -212,6 +223,17 @@ const WorkoutExerciseDetailPage = () => {
   const handleDeleteLastSet = () => {
     const updatedSets = deleteLastSet(sets);
     setSets(updatedSets);
+  };
+
+  // Get placeholder text for a set based on previous workout data
+  const getPlaceholder = (setNumber: number, field: 'weight' | 'reps'): string => {
+    if (!previousSets || previousSets.length === 0) return '0';
+
+    const previousSet = previousSets.find((s: Set) => s.set_number === setNumber);
+    if (!previousSet) return '0';
+
+    const value = field === 'weight' ? previousSet.weight : previousSet.reps;
+    return value !== null && value !== undefined ? value.toString() : '0';
   };
 
   const handleDeleteClick = () => {
@@ -407,7 +429,7 @@ const WorkoutExerciseDetailPage = () => {
                             value={set.weight ?? ''}
                             onChange={(e) => handleUpdateSet(index, 'weight', e.target.value)}
                             className='w-full px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
-                            placeholder='0'
+                            placeholder={getPlaceholder(set.set_number, 'weight')}
                           />
                         ) : (
                           <span className='text-gray-900 dark:text-white'>
@@ -424,7 +446,7 @@ const WorkoutExerciseDetailPage = () => {
                             value={set.reps ?? ''}
                             onChange={(e) => handleUpdateSet(index, 'reps', e.target.value)}
                             className='w-full px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
-                            placeholder='0'
+                            placeholder={getPlaceholder(set.set_number, 'reps')}
                           />
                         ) : (
                           <span className='text-gray-900 dark:text-white'>{set.reps ?? '-'}</span>

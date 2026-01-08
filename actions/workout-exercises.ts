@@ -1,7 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
-import { WorkoutExercise, WorkoutExerciseWithExercise, ApiResponse, ApiSuccessResponse } from '@/types/database';
+import { WorkoutExercise, WorkoutExerciseWithExercise, ApiResponse, ApiSuccessResponse, Set } from '@/types/database';
 
 /**
  * Fetch workout exercises for a specific workout
@@ -305,3 +305,68 @@ export const restoreFromDraftSnapshot = async (
     };
   }
 };
+
+/**
+ * Find the most recent workout exercise with actual data (non-zero reps)
+ * for use as placeholders when editing sets
+ */
+export const fetchMostRecentWorkoutWithData = async (
+  exerciseId: string,
+  currentWorkoutId: string
+): Promise<ApiResponse<Set[]>> => {
+  try {
+    const supabase = await createClient();
+
+    // Get the current workout's date
+    const { data: currentWorkout, error: currentWorkoutError } = await supabase
+      .from('workouts')
+      .select('date')
+      .eq('id', currentWorkoutId)
+      .single();
+
+    if (currentWorkoutError) return { data: null, error: currentWorkoutError.message };
+
+    // Get all workout exercises for this exercise from workouts before (or on) the current date
+    const { data: allWorkoutExercises, error: fetchError } = await supabase
+      .from('workout_exercises')
+      .select(`
+        id,
+        sets,
+        workout:workouts!inner (id, date)
+      `)
+      .eq('exercise_id', exerciseId)
+      .lte('workout.date', currentWorkout.date)
+      .neq('workout_id', currentWorkoutId); // Exclude the current workout
+
+    if (fetchError) return { data: null, error: fetchError.message };
+    if (!allWorkoutExercises || allWorkoutExercises.length === 0) {
+      return { data: null, error: null };
+    }
+
+    // Filter to only workouts with data (at least one set with non-zero reps)
+    const workoutsWithData = allWorkoutExercises.filter(we => {
+      const sets = we.sets || [];
+      return sets.some((set: Set) => set.reps !== null && set.reps > 0);
+    });
+
+    if (workoutsWithData.length === 0) {
+      return { data: null, error: null };
+    }
+
+    // Sort by workout date descending to get the most recent
+    workoutsWithData.sort((a, b) => {
+      const dateA = new Date(a.workout.date).getTime();
+      const dateB = new Date(b.workout.date).getTime();
+      return dateB - dateA;
+    });
+
+    // Return the sets from the most recent workout with data
+    return { data: workoutsWithData[0].sets || [], error: null };
+  } catch (err) {
+    return {
+      data: null,
+      error: err instanceof Error ? err.message : 'Failed to fetch workout data',
+    };
+  }
+};
+

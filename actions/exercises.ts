@@ -8,7 +8,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
-import { Exercise } from '@/types/database';
+import { Exercise, Set, ApiSuccessResponse } from '@/types/database';
 
 export const fetchExercises = async (): Promise<{
   data: Exercise[] | null;
@@ -106,6 +106,34 @@ export const updateExerciseIsLearnt = async (
     return {
       data: null,
       error: err instanceof Error ? err.message : 'Failed to update experience level',
+    };
+  }
+};
+
+/**
+ * Update the last_performed_sets for an exercise
+ * Called when a workout exercise is saved with the most recent workout date
+ */
+export const updateExerciseLastPerformedSets = async (
+  exerciseId: string,
+  sets: Set[]
+): Promise<ApiSuccessResponse> => {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from('exercises')
+      .update({ last_performed_sets: sets })
+      .eq('id', exerciseId);
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    return { success: true, error: null };
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Failed to update last performed sets',
     };
   }
 };
