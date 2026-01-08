@@ -42,17 +42,17 @@ const Home = () => {
               </div>
             </Link>
 
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 opacity-60">
+            <Link href="/workouts" className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer">
               <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-3">
                 Workouts
               </h3>
               <p className="text-gray-600 dark:text-gray-300 mb-4">
                 Plan and manage your workout sessions on a calendar view.
               </p>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                Coming in Sprint 3
+              <div className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium">
+                View Calendar
               </div>
-            </div>
+            </Link>
           </div>
 
           <div className="mt-8 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-6">
@@ -60,7 +60,7 @@ const Home = () => {
               Setup Status
             </h3>
             <p className="text-green-800 dark:text-green-200">
-              Sprint 2 Complete: Exercise Library with search, filters, and detail views ready!
+              Sprint 3 Complete: Workout management with calendar view and exercise assignment ready!
             </p>
           </div>
         </div>
