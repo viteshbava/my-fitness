@@ -279,12 +279,6 @@ const WorkoutExerciseDetailPage = () => {
               ← Back to Workout
             </Link>
           )}
-          {isInProgress && (
-            <div className='mb-4 bg-yellow-100 dark:bg-yellow-900 border border-yellow-400 text-yellow-800 dark:text-yellow-200 px-4 py-2 rounded'>
-              <p className='font-medium'>Edit Mode Active - Navigation is blocked</p>
-              <p className='text-sm'>Save or cancel your changes to navigate away</p>
-            </div>
-          )}
           <div className='flex items-start justify-between'>
             <div>
               <h1 className='text-3xl font-bold text-gray-900 dark:text-white mb-2'>
