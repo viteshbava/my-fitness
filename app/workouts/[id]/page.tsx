@@ -37,13 +37,11 @@ import { CSS } from '@dnd-kit/utilities';
 interface SortableExerciseCardProps {
   workoutExercise: WorkoutExerciseWithExercise;
   workoutId: string;
-  isReorderMode: boolean;
 }
 
 const SortableExerciseCard: React.FC<SortableExerciseCardProps> = ({
   workoutExercise,
   workoutId,
-  isReorderMode,
 }) => {
   const router = useRouter();
   const {
@@ -62,9 +60,7 @@ const SortableExerciseCard: React.FC<SortableExerciseCardProps> = ({
   };
 
   const handleClick = () => {
-    if (!isReorderMode) {
-      router.push(`/workouts/${workoutId}/exercises/${workoutExercise.id}`);
-    }
+    router.push(`/workouts/${workoutId}/exercises/${workoutExercise.id}`);
   };
 
   // Get completion status and formatting
@@ -77,14 +73,29 @@ const SortableExerciseCard: React.FC<SortableExerciseCardProps> = ({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      {...(isReorderMode ? listeners : {})}
       onClick={handleClick}
-      className={`bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-all border ${
-        isReorderMode
-          ? 'border-blue-500 dark:border-blue-400 cursor-grab active:cursor-grabbing'
-          : 'border-transparent hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 cursor-pointer'
-      }`}>
-      <div>
+      className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 transition-all cursor-pointer border border-transparent flex items-start gap-3'>
+      {/* Drag Handle */}
+      <div
+        {...listeners}
+        className='shrink-0 cursor-grab active:cursor-grabbing touch-none pt-1'
+        onClick={(e) => e.stopPropagation()}>
+        <svg
+          className='w-6 h-6 text-gray-400 dark:text-gray-500'
+          fill='none'
+          stroke='currentColor'
+          viewBox='0 0 24 24'>
+          <path
+            strokeLinecap='round'
+            strokeLinejoin='round'
+            strokeWidth={2}
+            d='M4 8h16M4 16h16'
+          />
+        </svg>
+      </div>
+
+      {/* Card Content */}
+      <div className='grow select-none'>
         <h3 className='text-xl font-semibold text-gray-900 dark:text-white mb-2'>
           {workoutExercise.exercise.name}
         </h3>
@@ -119,8 +130,6 @@ const WorkoutDetailPage = () => {
   const [workout, setWorkout] = useState<WorkoutWithExercises | null>(null);
   const [workoutExercises, setWorkoutExercises] = useState<WorkoutExerciseWithExercise[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isReorderMode, setIsReorderMode] = useState(false);
-  const [longPressTimer, setLongPressTimer] = useState<NodeJS.Timeout | null>(null);
 
   // Alert modal state
   const [alertModalOpen, setAlertModalOpen] = useState(false);
@@ -164,15 +173,6 @@ const WorkoutDetailPage = () => {
     loadWorkout();
   }, [workoutId]);
 
-  // Cleanup timer on unmount
-  useEffect(() => {
-    return () => {
-      if (longPressTimer) {
-        clearTimeout(longPressTimer);
-      }
-    };
-  }, [longPressTimer]);
-
   const loadWorkout = async () => {
     setLoading(true);
     const { data, error } = await fetchWorkoutById(workoutId);
@@ -188,53 +188,6 @@ const WorkoutDetailPage = () => {
       setWorkoutExercises(data.workout_exercises || []);
     }
     setLoading(false);
-  };
-
-  const startLongPress = () => {
-    // Start long-press timer (600ms)
-    const timer = setTimeout(() => {
-      setIsReorderMode(true);
-      // Vibrate on mobile if supported
-      if (navigator.vibrate) {
-        navigator.vibrate(50);
-      }
-      showToast('Reorder mode activated', 'info');
-    }, 600);
-    setLongPressTimer(timer);
-  };
-
-  const cancelLongPress = () => {
-    // Cancel long-press if interaction ends or moves
-    if (longPressTimer) {
-      clearTimeout(longPressTimer);
-      setLongPressTimer(null);
-    }
-  };
-
-  // Touch event handlers (mobile)
-  const handleTouchStart = () => {
-    startLongPress();
-  };
-
-  const handleTouchEnd = () => {
-    cancelLongPress();
-  };
-
-  const handleTouchMove = () => {
-    cancelLongPress();
-  };
-
-  // Mouse event handlers (desktop)
-  const handleMouseDown = () => {
-    startLongPress();
-  };
-
-  const handleMouseUp = () => {
-    cancelLongPress();
-  };
-
-  const handleMouseLeave = () => {
-    cancelLongPress();
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
@@ -377,34 +330,6 @@ const WorkoutDetailPage = () => {
           </Link>
         ) : (
           <>
-            {/* Reorder Mode Banner */}
-            {isReorderMode && (
-              <div className='mb-4 bg-blue-100 dark:bg-blue-900 border border-blue-500 dark:border-blue-400 rounded-lg p-4 flex items-center justify-between'>
-                <div className='flex items-center'>
-                  <svg
-                    className='w-5 h-5 text-blue-600 dark:text-blue-400 mr-2'
-                    fill='none'
-                    stroke='currentColor'
-                    viewBox='0 0 24 24'>
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      strokeWidth={2}
-                      d='M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4'
-                    />
-                  </svg>
-                  <span className='text-blue-900 dark:text-blue-100 font-medium'>
-                    Reorder Mode Active - Drag exercises to reorder
-                  </span>
-                </div>
-                <button
-                  onClick={() => setIsReorderMode(false)}
-                  className='px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors cursor-pointer'>
-                  Done
-                </button>
-              </div>
-            )}
-
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
@@ -412,20 +337,12 @@ const WorkoutDetailPage = () => {
               <SortableContext
                 items={workoutExercises.map((we) => we.id)}
                 strategy={verticalListSortingStrategy}>
-                <div
-                  className='space-y-4'
-                  onTouchStart={handleTouchStart}
-                  onTouchEnd={handleTouchEnd}
-                  onTouchMove={handleTouchMove}
-                  onMouseDown={handleMouseDown}
-                  onMouseUp={handleMouseUp}
-                  onMouseLeave={handleMouseLeave}>
+                <div className='space-y-4'>
                   {workoutExercises.map((we) => (
                     <SortableExerciseCard
                       key={we.id}
                       workoutExercise={we}
                       workoutId={workoutId}
-                      isReorderMode={isReorderMode}
                     />
                   ))}
                 </div>
@@ -433,23 +350,21 @@ const WorkoutDetailPage = () => {
             </DndContext>
 
             {/* Add Exercise Button - shown at the bottom when exercises exist */}
-            {!isReorderMode && (
-              <div className='mt-6'>
-                <Link
-                  href={`/workouts/${workoutId}/add-exercise`}
-                  className='inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors cursor-pointer'>
-                  <svg className='w-5 h-5 mr-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      strokeWidth={2}
-                      d='M12 4v16m8-8H4'
-                    />
-                  </svg>
-                  Add Exercise
-                </Link>
-              </div>
-            )}
+            <div className='mt-6'>
+              <Link
+                href={`/workouts/${workoutId}/add-exercise`}
+                className='inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors cursor-pointer'>
+                <svg className='w-5 h-5 mr-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M12 4v16m8-8H4'
+                  />
+                </svg>
+                Add Exercise
+              </Link>
+            </div>
           </>
         )}
       </div>
