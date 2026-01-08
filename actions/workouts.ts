@@ -58,19 +58,35 @@ export const fetchWorkoutById = async (
 ): Promise<ApiResponse<WorkoutWithExercises>> => {
   try {
     const supabase = await createClient();
-    const { data, error } = await supabase
+
+    // First fetch the workout
+    const { data: workout, error: workoutError } = await supabase
       .from('workouts')
-      .select(`
-        *,
-        workout_exercises (
-          *,
-          exercise:exercises (*)
-        )
-      `)
+      .select('*')
       .eq('id', workoutId)
       .single();
 
-    if (error) return { data: null, error: error.message };
+    if (workoutError) return { data: null, error: workoutError.message };
+    if (!workout) return { data: null, error: 'Workout not found' };
+
+    // Then fetch the workout exercises with proper ordering
+    const { data: workoutExercises, error: exercisesError } = await supabase
+      .from('workout_exercises')
+      .select(`
+        *,
+        exercise:exercises (*)
+      `)
+      .eq('workout_id', workoutId)
+      .order('order_index', { ascending: true });
+
+    if (exercisesError) return { data: null, error: exercisesError.message };
+
+    // Combine the data
+    const data: WorkoutWithExercises = {
+      ...workout,
+      workout_exercises: workoutExercises || [],
+    };
+
     return { data, error: null };
   } catch (err) {
     return {

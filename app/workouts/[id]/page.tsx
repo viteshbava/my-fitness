@@ -165,6 +165,9 @@ const WorkoutDetailPage = () => {
     const oldIndex = workoutExercises.findIndex((we) => we.id === active.id);
     const newIndex = workoutExercises.findIndex((we) => we.id === over.id);
 
+    // Store original order for reverting if needed
+    const originalExercises = [...workoutExercises];
+
     // Reorder the array optimistically
     const reorderedExercises = arrayMove(workoutExercises, oldIndex, newIndex);
     setWorkoutExercises(reorderedExercises);
@@ -176,12 +179,12 @@ const WorkoutDetailPage = () => {
     }));
 
     // Save to database
-    const { error } = await updateWorkoutExercisesOrder(updates);
+    const { success, error } = await updateWorkoutExercisesOrder(updates);
 
-    if (error) {
+    if (error || !success) {
       // Revert on error
-      setWorkoutExercises(workoutExercises);
-      showAlert('Error Reordering', error, 'error');
+      setWorkoutExercises(originalExercises);
+      showAlert('Error Reordering', error || 'Failed to save order', 'error');
     }
   };
 

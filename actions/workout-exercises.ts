@@ -120,7 +120,7 @@ export const updateWorkoutExercisesOrder = async (
     const errors = results.filter(result => result.error);
 
     if (errors.length > 0) {
-      return { success: false, error: 'Failed to update some exercise orders' };
+      return { success: false, error: `Failed to update exercise orders: ${errors[0].error?.message}` };
     }
 
     return { success: true, error: null };
