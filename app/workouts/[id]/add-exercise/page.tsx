@@ -7,6 +7,7 @@ import { fetchExercises } from '@/actions/exercises';
 import { addExerciseToWorkout } from '@/actions/workout-exercises';
 import { Exercise } from '@/types/database';
 import AlertModal from '@/components/AlertModal';
+import { useToast } from '@/components/ToastProvider';
 import {
   applyFilters,
   applySorting,
@@ -21,6 +22,7 @@ const AddExercisePage = () => {
   const params = useParams();
   const router = useRouter();
   const workoutId = params.id as string;
+  const { showToast } = useToast();
 
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [loading, setLoading] = useState(true);
@@ -139,10 +141,8 @@ const AddExercisePage = () => {
     }
 
     if (data) {
-      showAlert('Exercise Added', `${exercise.name} added to workout!`, 'success');
-      setTimeout(() => {
-        router.push(`/workouts/${workoutId}`);
-      }, 1000);
+      showToast(`${exercise.name} added to workout`, 'success');
+      router.push(`/workouts/${workoutId}`);
     }
   };
 

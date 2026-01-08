@@ -7,12 +7,14 @@ import { fetchWorkoutExercises, removeExerciseFromWorkout } from '@/actions/work
 import { WorkoutExerciseWithExercise } from '@/types/database';
 import AlertModal from '@/components/AlertModal';
 import ConfirmationModal from '@/components/ConfirmationModal';
+import { useToast } from '@/components/ToastProvider';
 
 const WorkoutExerciseDetailPage = () => {
   const params = useParams();
   const router = useRouter();
   const workoutId = params.id as string;
   const exerciseId = params.exerciseId as string;
+  const { showToast } = useToast();
 
   const [workoutExercise, setWorkoutExercise] = useState<WorkoutExerciseWithExercise | null>(null);
   const [loading, setLoading] = useState(true);
@@ -77,6 +79,7 @@ const WorkoutExerciseDetailPage = () => {
 
     if (success) {
       setDeleteModalOpen(false);
+      showToast('Exercise removed from workout', 'success');
       router.push(`/workouts/${workoutId}`);
     }
   };

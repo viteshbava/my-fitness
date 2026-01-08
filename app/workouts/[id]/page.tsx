@@ -8,6 +8,7 @@ import { updateWorkoutExercisesOrder } from '@/actions/workout-exercises';
 import { WorkoutWithExercises, WorkoutExerciseWithExercise } from '@/types/database';
 import AlertModal from '@/components/AlertModal';
 import ConfirmationModal from '@/components/ConfirmationModal';
+import { useToast } from '@/components/ToastProvider';
 import { format } from 'date-fns';
 import {
   DndContext,
@@ -91,6 +92,7 @@ const WorkoutDetailPage = () => {
   const params = useParams();
   const router = useRouter();
   const workoutId = params.id as string;
+  const { showToast } = useToast();
 
   const [workout, setWorkout] = useState<WorkoutWithExercises | null>(null);
   const [workoutExercises, setWorkoutExercises] = useState<WorkoutExerciseWithExercise[]>([]);
@@ -205,6 +207,7 @@ const WorkoutDetailPage = () => {
 
     if (success) {
       setDeleteWorkoutModalOpen(false);
+      showToast('Workout deleted successfully', 'success');
       router.push('/workouts');
     }
   };

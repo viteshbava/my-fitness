@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
+import { ToastProvider } from "@/components/ToastProvider";
 
 export const metadata: Metadata = {
   title: "My Fitness Tracker",
@@ -15,10 +16,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <div className="pb-16">
-          {children}
-        </div>
-        <BottomNav />
+        <ToastProvider>
+          <div className="pb-16">
+            {children}
+          </div>
+          <BottomNav />
+        </ToastProvider>
       </body>
     </html>
   );

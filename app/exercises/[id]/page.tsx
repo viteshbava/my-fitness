@@ -6,11 +6,13 @@ import Link from 'next/link';
 import { fetchExerciseById, updateExerciseNotes, updateExerciseIsLearnt } from '@/actions/exercises';
 import { Exercise } from '@/types/database';
 import AlertModal from '@/components/AlertModal';
+import { useToast } from '@/components/ToastProvider';
 
 const ExerciseDetailPage = () => {
   const params = useParams();
   const router = useRouter();
   const exerciseId = params.id as string;
+  const { showToast } = useToast();
 
   const [exercise, setExercise] = useState<Exercise | null>(null);
   const [loading, setLoading] = useState(true);
@@ -85,7 +87,7 @@ const ExerciseDetailPage = () => {
 
     if (data) {
       setExercise(data);
-      showAlert('Success', 'Notes saved successfully', 'success');
+      showToast('Notes saved successfully', 'success');
     }
 
     setIsEditingNotes(false);
@@ -111,7 +113,7 @@ const ExerciseDetailPage = () => {
 
     if (data) {
       setExercise(data);
-      showAlert('Success', 'Experience level updated successfully', 'success');
+      showToast('Experience level updated successfully', 'success');
     }
 
     setIsEditingLearnt(false);
