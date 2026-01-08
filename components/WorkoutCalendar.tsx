@@ -46,7 +46,7 @@ const WorkoutCalendar: React.FC<WorkoutCalendarProps> = ({
 
       return {
         id: workout.id,
-        title: `Workout ${format(time, 'HH:mm')}`,
+        title: `Workout`,
         start: date,
         end: date,
         resource: workout,
@@ -76,19 +76,19 @@ const WorkoutCalendar: React.FC<WorkoutCalendarProps> = ({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4" style={{ height: '600px' }}>
+    <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-4' style={{ height: '600px' }}>
       <Calendar
         localizer={localizer}
         events={events}
-        startAccessor="start"
-        endAccessor="end"
+        startAccessor='start'
+        endAccessor='end'
         onSelectEvent={handleSelectEvent}
         onSelectSlot={handleSelectSlot}
         selectable
         eventPropGetter={eventStyleGetter}
         views={['month', 'week', 'day']}
-        defaultView="month"
-        className="dark:text-white"
+        defaultView='month'
+        className='dark:text-white'
       />
     </div>
   );

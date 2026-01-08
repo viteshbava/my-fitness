@@ -3,10 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { fetchWorkoutById } from '@/actions/workouts';
+import { fetchWorkoutById, deleteWorkout } from '@/actions/workouts';
 import { updateWorkoutExercisesOrder } from '@/actions/workout-exercises';
 import { WorkoutWithExercises, WorkoutExerciseWithExercise } from '@/types/database';
 import AlertModal from '@/components/AlertModal';
+import ConfirmationModal from '@/components/ConfirmationModal';
 import { format } from 'date-fns';
 import {
   DndContext,
@@ -103,6 +104,9 @@ const WorkoutDetailPage = () => {
     type: 'error' as 'error' | 'warning' | 'info' | 'success',
   });
 
+  // Delete workout confirmation modal state
+  const [deleteWorkoutModalOpen, setDeleteWorkoutModalOpen] = useState(false);
+
   // Drag-and-drop sensors (supports mouse, touch, and keyboard)
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -181,6 +185,35 @@ const WorkoutDetailPage = () => {
     }
   };
 
+  const handleDeleteWorkoutClick = () => {
+    setDeleteWorkoutModalOpen(true);
+  };
+
+  const confirmDeleteWorkout = async () => {
+    if (!workout) return;
+
+    const { success, error } = await deleteWorkout(workout.id);
+
+    if (error) {
+      showAlert('Error Deleting Workout', error, 'error');
+      setDeleteWorkoutModalOpen(false);
+      return;
+    }
+
+    if (success) {
+      setDeleteWorkoutModalOpen(false);
+      showAlert('Workout Deleted', 'Workout deleted successfully!', 'success');
+      // Navigate back to calendar after a short delay
+      setTimeout(() => {
+        router.push('/workouts');
+      }, 1500);
+    }
+  };
+
+  const cancelDeleteWorkout = () => {
+    setDeleteWorkoutModalOpen(false);
+  };
+
   if (loading) {
     return (
       <div className='min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center'>
@@ -217,9 +250,24 @@ const WorkoutDetailPage = () => {
             className='text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 mb-4 inline-block cursor-pointer'>
             ← Back to Calendar
           </Link>
-          <h1 className='text-3xl font-bold text-gray-900 dark:text-white mb-2'>
-            Workout - {format(new Date(workout.date), 'MMMM d, yyyy')}
-          </h1>
+          <div className='flex items-start justify-between'>
+            <h1 className='text-3xl font-bold text-gray-900 dark:text-white mb-2'>
+              Workout - {format(new Date(workout.date), 'MMMM d, yyyy')}
+            </h1>
+            <button
+              onClick={handleDeleteWorkoutClick}
+              className='flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-md transition-colors cursor-pointer'>
+              <svg className='w-5 h-5 mr-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth={2}
+                  d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16'
+                />
+              </svg>
+              Delete Workout
+            </button>
+          </div>
         </div>
 
         {/* Exercise List */}
@@ -294,6 +342,20 @@ const WorkoutDetailPage = () => {
         message={alertModalContent.message}
         type={alertModalContent.type}
         onClose={() => setAlertModalOpen(false)}
+      />
+
+      {/* Delete Workout Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={deleteWorkoutModalOpen}
+        title='Delete Workout'
+        message={`Are you sure you want to delete this workout from ${
+          workout ? format(new Date(workout.date), 'MMMM d, yyyy') : ''
+        }? This will also remove all exercises in this workout. This action cannot be undone.`}
+        confirmText='Delete Workout'
+        cancelText='Cancel'
+        onConfirm={confirmDeleteWorkout}
+        onCancel={cancelDeleteWorkout}
+        isDangerous={true}
       />
     </div>
   );

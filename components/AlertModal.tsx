@@ -44,17 +44,16 @@ const AlertModal: React.FC<AlertModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'>
+      <div className='bg-white rounded-lg shadow-xl max-w-md w-full mx-4'>
         <div className={`border-l-4 ${getTypeStyles()} p-6 rounded-t-lg`}>
-          <h3 className="text-lg font-semibold mb-2">{title}</h3>
-          <p className="text-sm">{message}</p>
+          <h3 className='text-lg font-semibold mb-2'>{title}</h3>
+          <p className='text-sm'>{message}</p>
         </div>
-        <div className="p-4 flex justify-end">
+        <div className='p-4 flex justify-end'>
           <button
             onClick={onClose}
-            className={`px-4 py-2 text-white rounded-md ${getButtonStyles()} transition-colors`}
-          >
+            className={`px-4 py-2 text-white rounded-md ${getButtonStyles()} transition-colors cursor-pointer`}>
             OK
           </button>
         </div>
