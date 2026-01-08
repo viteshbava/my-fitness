@@ -397,7 +397,8 @@ const AddExercisePage = () => {
             {filteredAndSortedExercises.map((exercise) => (
               <div
                 key={exercise.id}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow p-6"
+                onClick={() => !adding && handleAddExercise(exercise)}
+                className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 transition-all p-6 cursor-pointer border border-transparent"
               >
                 <div className="flex items-start justify-between mb-2">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -409,7 +410,7 @@ const AddExercisePage = () => {
                     </span>
                   )}
                 </div>
-                <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400 mb-4">
+                <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
                   <p>
                     <span className="font-medium">Primary:</span> {exercise.primary_body_part}
                   </p>
@@ -420,13 +421,6 @@ const AddExercisePage = () => {
                     <span className="font-medium">Pattern:</span> {exercise.pattern}
                   </p>
                 </div>
-                <button
-                  onClick={() => handleAddExercise(exercise)}
-                  disabled={adding}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {adding ? 'Adding...' : 'Add to Workout'}
-                </button>
               </div>
             ))}
           </div>
