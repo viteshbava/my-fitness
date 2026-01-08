@@ -724,6 +724,15 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-publishable-api-key</pre>
 
             <h4>Implementation Scope</h4>
             <ul>
+              <li><strong>Bottom Navigation (early implementation for usability):</strong>
+                <ul>
+                  <li>Create bottom navigation component with Dashboard, Exercises, and Workouts links</li>
+                  <li>Design for both mobile (thumb-reach friendly) and desktop use</li>
+                  <li>Add active state highlighting based on current route</li>
+                  <li>Use icons with labels for clarity</li>
+                  <li><em>Note: This addresses immediate navigation needs; will be enhanced in Sprint 6 with breadcrumbs and additional features</em></li>
+                </ul>
+              </li>
               <li>Extend <code>workout_exercises</code> table with set data:
                 <ul>
                   <li>sets (jsonb array storing: set_number, weight, reps)</li>
@@ -807,6 +816,9 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-publishable-api-key</pre>
           <div class="info-box">
             <h4>Success Criteria</h4>
             <p style="margin-bottom: 0;">
+              ✅ Bottom navigation bar visible on all pages<br>
+              ✅ Navigation works on both mobile and desktop<br>
+              ✅ Active page highlighted in navigation<br>
               ✅ Workout exercises display as cards with correct color coding<br>
               ✅ Cards can be re-ordered via drag-and-drop<br>
               ✅ "In Progress" mode blocks navigation and auto-saves changes<br>
@@ -956,8 +968,10 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-publishable-api-key</pre>
               </li>
               <li><strong>Navigation & Layout:</strong>
                 <ul>
-                  <li>Build comprehensive navigation menu</li>
+                  <li><em>NOTE: Basic bottom navigation (Dashboard, Exercises, Workouts) implemented early in Sprint 4 for improved usability</em></li>
+                  <li>Enhance navigation menu with additional features (if needed)</li>
                   <li>Add breadcrumbs for deep navigation paths</li>
+                  <li>Add top header with user profile/settings (if applicable)</li>
                   <li>Ensure consistent layout and styling across all pages</li>
                 </ul>
               </li>
