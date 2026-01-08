@@ -14,50 +14,26 @@ import {
   formatSetsSummary,
   calculateMaxWeight,
 } from '@/lib/controllers/workout-exercise-controller';
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 
-// Sortable Exercise Card Component
-interface SortableExerciseCardProps {
+// Exercise Card Component
+interface ExerciseCardProps {
   workoutExercise: WorkoutExerciseWithExercise;
   workoutId: string;
+  isFirst: boolean;
+  isLast: boolean;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
 }
 
-const SortableExerciseCard: React.FC<SortableExerciseCardProps> = ({
+const ExerciseCard: React.FC<ExerciseCardProps> = ({
   workoutExercise,
   workoutId,
+  isFirst,
+  isLast,
+  onMoveUp,
+  onMoveDown,
 }) => {
   const router = useRouter();
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: workoutExercise.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
 
   const handleClick = () => {
     router.push(`/workouts/${workoutId}/exercises/${workoutExercise.id}`);
@@ -69,18 +45,39 @@ const SortableExerciseCard: React.FC<SortableExerciseCardProps> = ({
   const maxWeight = calculateMaxWeight(sets);
 
   return (
-    <div
-      ref={setNodeRef}
-      style={{
-        ...style,
-        WebkitUserSelect: 'none',
-        userSelect: 'none',
-      }}
-      {...attributes}
-      {...listeners}
-      onClick={handleClick}
-      className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 transition-all cursor-pointer border border-transparent'>
-      <div>
+    <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 transition-all border border-transparent flex items-start gap-3'>
+      {/* Reorder Controls */}
+      <div className='shrink-0 flex flex-col gap-1 pt-1'>
+        {!isFirst && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onMoveUp();
+            }}
+            className='text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer'
+            aria-label='Move up'>
+            <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 15l7-7 7 7' />
+            </svg>
+          </button>
+        )}
+        {!isLast && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onMoveDown();
+            }}
+            className='text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer'
+            aria-label='Move down'>
+            <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
+            </svg>
+          </button>
+        )}
+      </div>
+
+      {/* Card Content */}
+      <div onClick={handleClick} className='grow cursor-pointer'>
         <h3 className='text-xl font-semibold text-gray-900 dark:text-white mb-2'>
           {workoutExercise.exercise.name}
         </h3>
@@ -127,24 +124,6 @@ const WorkoutDetailPage = () => {
   // Delete workout confirmation modal state
   const [deleteWorkoutModalOpen, setDeleteWorkoutModalOpen] = useState(false);
 
-  // Drag-and-drop sensors (supports mouse, touch, and keyboard)
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 5,
-      },
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 250,
-        tolerance: 5,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
   const showAlert = (
     title: string,
     message: string,
@@ -175,24 +154,19 @@ const WorkoutDetailPage = () => {
     setLoading(false);
   };
 
-  const handleDragEnd = async (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (!over || active.id === over.id) {
-      return;
-    }
-
-    const oldIndex = workoutExercises.findIndex((we) => we.id === active.id);
-    const newIndex = workoutExercises.findIndex((we) => we.id === over.id);
-
+  const moveExercise = async (fromIndex: number, toIndex: number) => {
     // Store original order for reverting if needed
     const originalExercises = [...workoutExercises];
 
-    // Reorder the array optimistically
-    const reorderedExercises = arrayMove(workoutExercises, oldIndex, newIndex);
+    // Create new array with swapped items
+    const reorderedExercises = [...workoutExercises];
+    const [movedItem] = reorderedExercises.splice(fromIndex, 1);
+    reorderedExercises.splice(toIndex, 0, movedItem);
+
+    // Update state optimistically
     setWorkoutExercises(reorderedExercises);
 
-    // Update order_index for all affected exercises
+    // Update order_index for all exercises
     const updates = reorderedExercises.map((we, index) => ({
       id: we.id,
       order_index: index,
@@ -205,6 +179,18 @@ const WorkoutDetailPage = () => {
       // Revert on error
       setWorkoutExercises(originalExercises);
       showAlert('Error Reordering', error || 'Failed to save order', 'error');
+    }
+  };
+
+  const handleMoveUp = (index: number) => {
+    if (index > 0) {
+      moveExercise(index, index - 1);
+    }
+  };
+
+  const handleMoveDown = (index: number) => {
+    if (index < workoutExercises.length - 1) {
+      moveExercise(index, index + 1);
     }
   };
 
@@ -315,24 +301,19 @@ const WorkoutDetailPage = () => {
           </Link>
         ) : (
           <>
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}>
-              <SortableContext
-                items={workoutExercises.map((we) => we.id)}
-                strategy={verticalListSortingStrategy}>
-                <div className='space-y-4'>
-                  {workoutExercises.map((we) => (
-                    <SortableExerciseCard
-                      key={we.id}
-                      workoutExercise={we}
-                      workoutId={workoutId}
-                    />
-                  ))}
-                </div>
-              </SortableContext>
-            </DndContext>
+            <div className='space-y-4'>
+              {workoutExercises.map((we, index) => (
+                <ExerciseCard
+                  key={we.id}
+                  workoutExercise={we}
+                  workoutId={workoutId}
+                  isFirst={index === 0}
+                  isLast={index === workoutExercises.length - 1}
+                  onMoveUp={() => handleMoveUp(index)}
+                  onMoveDown={() => handleMoveDown(index)}
+                />
+              ))}
+            </div>
 
             {/* Add Exercise Button - shown at the bottom when exercises exist */}
             <div className='mt-6'>
