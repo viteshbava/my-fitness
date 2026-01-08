@@ -73,7 +73,6 @@ const SortableExerciseCard: React.FC<SortableExerciseCardProps> = ({
       ref={setNodeRef}
       style={{
         ...style,
-        touchAction: 'manipulation',
         WebkitUserSelect: 'none',
         userSelect: 'none',
       }}
