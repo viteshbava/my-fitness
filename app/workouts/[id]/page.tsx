@@ -202,11 +202,7 @@ const WorkoutDetailPage = () => {
 
     if (success) {
       setDeleteWorkoutModalOpen(false);
-      showAlert('Workout Deleted', 'Workout deleted successfully!', 'success');
-      // Navigate back to calendar after a short delay
-      setTimeout(() => {
-        router.push('/workouts');
-      }, 1500);
+      router.push('/workouts');
     }
   };
 
