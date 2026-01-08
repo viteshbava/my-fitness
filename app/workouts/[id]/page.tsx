@@ -73,10 +73,29 @@ const SortableExerciseCard: React.FC<SortableExerciseCardProps> = ({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      {...listeners}
       onClick={handleClick}
-      className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 transition-all cursor-pointer border border-transparent'>
-      <div>
+      className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 transition-all cursor-pointer border border-transparent flex items-start gap-3 select-none touch-none'>
+      {/* Drag Handle */}
+      <div
+        {...listeners}
+        className='shrink-0 cursor-grab active:cursor-grabbing touch-none pt-1'
+        onClick={(e) => e.stopPropagation()}>
+        <svg
+          className='w-6 h-6 text-gray-400 dark:text-gray-500'
+          fill='none'
+          stroke='currentColor'
+          viewBox='0 0 24 24'>
+          <path
+            strokeLinecap='round'
+            strokeLinejoin='round'
+            strokeWidth={2}
+            d='M4 8h16M4 16h16'
+          />
+        </svg>
+      </div>
+
+      {/* Card Content */}
+      <div className='grow'>
         <h3 className='text-xl font-semibold text-gray-900 dark:text-white mb-2'>
           {workoutExercise.exercise.name}
         </h3>
