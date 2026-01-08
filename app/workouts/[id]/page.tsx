@@ -131,13 +131,13 @@ const WorkoutDetailPage = () => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8, // Require 8px of movement before drag starts (prevents accidental drags)
+        distance: 5,
       },
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 100, // Shorter delay for better responsiveness
-        tolerance: 8, // Higher tolerance to distinguish from tap
+        delay: 250,
+        tolerance: 5,
       },
     }),
     useSensor(KeyboardSensor, {
