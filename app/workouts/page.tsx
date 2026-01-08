@@ -7,10 +7,12 @@ import { Workout } from '@/types/database';
 import WorkoutCalendar from '@/components/WorkoutCalendar';
 import AlertModal from '@/components/AlertModal';
 import ConfirmationModal from '@/components/ConfirmationModal';
+import { useToast } from '@/components/ToastProvider';
 import { format } from 'date-fns';
 
 const WorkoutsPage = () => {
   const router = useRouter();
+  const { showToast } = useToast();
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -88,8 +90,7 @@ const WorkoutsPage = () => {
 
     if (data) {
       setWorkouts([...workouts, data]);
-      setShowCreateModal(false);
-      showAlert('Workout Created', 'Workout created successfully!', 'success');
+      showToast('Workout created successfully', 'success');
       router.push(`/workouts/${data.id}`);
     }
   };
@@ -105,8 +106,8 @@ const WorkoutsPage = () => {
     const { success, error } = await deleteWorkout(workoutToDelete.id);
 
     if (error) {
-      showAlert('Error Deleting Workout', error, 'error');
       setConfirmationModalOpen(false);
+      showAlert('Error Deleting Workout', error, 'error');
       return;
     }
 
@@ -114,7 +115,7 @@ const WorkoutsPage = () => {
       setWorkouts(workouts.filter((w) => w.id !== workoutToDelete.id));
       setConfirmationModalOpen(false);
       setWorkoutToDelete(null);
-      showAlert('Workout Deleted', 'Workout deleted successfully!', 'success');
+      showToast('Workout deleted successfully', 'success');
     }
   };
 

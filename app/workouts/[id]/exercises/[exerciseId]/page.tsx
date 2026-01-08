@@ -72,13 +72,12 @@ const WorkoutExerciseDetailPage = () => {
     const { success, error } = await removeExerciseFromWorkout(workoutExercise.id);
 
     if (error) {
-      showAlert('Error Removing Exercise', error, 'error');
       setDeleteModalOpen(false);
+      showAlert('Error Removing Exercise', error, 'error');
       return;
     }
 
     if (success) {
-      setDeleteModalOpen(false);
       showToast('Exercise removed from workout', 'success');
       router.push(`/workouts/${workoutId}`);
     }

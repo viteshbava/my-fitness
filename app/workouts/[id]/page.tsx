@@ -200,13 +200,12 @@ const WorkoutDetailPage = () => {
     const { success, error } = await deleteWorkout(workout.id);
 
     if (error) {
-      showAlert('Error Deleting Workout', error, 'error');
       setDeleteWorkoutModalOpen(false);
+      showAlert('Error Deleting Workout', error, 'error');
       return;
     }
 
     if (success) {
-      setDeleteWorkoutModalOpen(false);
       showToast('Workout deleted successfully', 'success');
       router.push('/workouts');
     }
