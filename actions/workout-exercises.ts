@@ -344,7 +344,7 @@ export const fetchMostRecentWorkoutWithData = async (
     }
 
     // Filter to only workouts with data (at least one set with non-zero reps)
-    const workoutsWithData = allWorkoutExercises.filter(we => {
+    const workoutsWithData = allWorkoutExercises.filter((we: any) => {
       const sets = we.sets || [];
       return sets.some((set: Set) => set.reps !== null && set.reps > 0);
     });
@@ -354,7 +354,7 @@ export const fetchMostRecentWorkoutWithData = async (
     }
 
     // Sort by workout date descending to get the most recent
-    workoutsWithData.sort((a, b) => {
+    workoutsWithData.sort((a: any, b: any) => {
       const dateA = new Date(a.workout.date).getTime();
       const dateB = new Date(b.workout.date).getTime();
       return dateB - dateA;
