@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { Calendar, dateFnsLocalizer, View } from 'react-big-calendar';
+import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { enUS } from 'date-fns/locale';
 import { Workout } from '@/types/database';
@@ -38,6 +38,7 @@ const WorkoutCalendar: React.FC<WorkoutCalendarProps> = ({
   onSelectWorkout,
   onSelectDate,
 }) => {
+
   // Convert workouts to calendar events
   const events = useMemo<WorkoutCalendarEvent[]>(() => {
     return workouts.map((workout) => {
@@ -62,6 +63,11 @@ const WorkoutCalendar: React.FC<WorkoutCalendarProps> = ({
     onSelectDate(slotInfo.start);
   };
 
+  const handleShowMore = (events: WorkoutCalendarEvent[], date: Date) => {
+    // When "+X more" is clicked, show the same modal as clicking on a date
+    onSelectDate(date);
+  };
+
   const eventStyleGetter = () => {
     return {
       style: {
@@ -84,6 +90,7 @@ const WorkoutCalendar: React.FC<WorkoutCalendarProps> = ({
         endAccessor='end'
         onSelectEvent={handleSelectEvent}
         onSelectSlot={handleSelectSlot}
+        onShowMore={handleShowMore}
         selectable
         eventPropGetter={eventStyleGetter}
         views={['month', 'week', 'day']}
