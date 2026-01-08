@@ -111,13 +111,24 @@ const WorkoutExerciseDetailPage = () => {
     setLoading(false);
   };
 
+  // Helper function to check if a set is complete
+  const isSetComplete = (set: Set): boolean => {
+    const hasWeight = set.weight !== null && set.weight !== undefined;
+    const hasReps = set.reps !== null && set.reps !== undefined;
+    // A set is complete if both fields are filled OR both fields are empty
+    return (hasWeight && hasReps) || (!hasWeight && !hasReps);
+  };
+
   // Auto-save function with debouncing
   const autoSave = useCallback(
     async (updatedSets: Set[]) => {
       if (!isInProgress || !exerciseId) return;
 
+      // Only save complete sets (both fields filled or both empty)
+      const completeSets = updatedSets.filter(isSetComplete);
+
       setAutoSaving(true);
-      const { error } = await updateWorkoutExerciseSets(exerciseId, updatedSets);
+      const { error } = await updateWorkoutExerciseSets(exerciseId, completeSets);
       setAutoSaving(false);
 
       if (error) {
@@ -153,6 +164,17 @@ const WorkoutExerciseDetailPage = () => {
 
   const handleSave = async () => {
     if (!exerciseId) return;
+
+    // Check for incomplete sets (only weight OR only reps filled)
+    const incompleteSets = sets.filter(set => !isSetComplete(set));
+    if (incompleteSets.length > 0) {
+      showAlert(
+        'Incomplete Sets',
+        'Some sets have only weight or reps filled in. Please complete both fields or leave both empty.',
+        'error'
+      );
+      return;
+    }
 
     // Remove empty sets before final save
     const cleanedSets = removeEmptySets(sets);
