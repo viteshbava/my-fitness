@@ -4,11 +4,87 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { fetchWorkoutById } from '@/actions/workouts';
-import { fetchWorkoutExercises, removeExerciseFromWorkout } from '@/actions/workout-exercises';
+import { updateWorkoutExercisesOrder } from '@/actions/workout-exercises';
 import { WorkoutWithExercises, WorkoutExerciseWithExercise } from '@/types/database';
 import AlertModal from '@/components/AlertModal';
-import ConfirmationModal from '@/components/ConfirmationModal';
 import { format } from 'date-fns';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
+// Sortable Exercise Card Component
+interface SortableExerciseCardProps {
+  workoutExercise: WorkoutExerciseWithExercise;
+  workoutId: string;
+}
+
+const SortableExerciseCard: React.FC<SortableExerciseCardProps> = ({
+  workoutExercise,
+  workoutId,
+}) => {
+  const router = useRouter();
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: workoutExercise.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  const handleClick = () => {
+    router.push(`/workouts/${workoutId}/exercises/${workoutExercise.id}`);
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      onClick={handleClick}
+      className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 transition-all cursor-pointer border border-transparent'>
+      <div>
+        <h3 className='text-xl font-semibold text-gray-900 dark:text-white mb-2'>
+          {workoutExercise.exercise.name}
+        </h3>
+        <div className='space-y-1 text-sm text-gray-600 dark:text-gray-400'>
+          <p>
+            <span className='font-medium'>Primary:</span>{' '}
+            {workoutExercise.exercise.primary_body_part}
+          </p>
+          <p>
+            <span className='font-medium'>Equipment:</span> {workoutExercise.exercise.equipment}
+          </p>
+        </div>
+        <p className='mt-3 text-sm text-gray-500 dark:text-gray-500'>
+          No sets recorded yet (Sprint 4 feature)
+        </p>
+      </div>
+    </div>
+  );
+};
 
 const WorkoutDetailPage = () => {
   const params = useParams();
@@ -27,10 +103,22 @@ const WorkoutDetailPage = () => {
     type: 'error' as 'error' | 'warning' | 'info' | 'success',
   });
 
-  // Confirmation modal state
-  const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
-  const [exerciseToRemove, setExerciseToRemove] = useState<WorkoutExerciseWithExercise | null>(
-    null
+  // Drag-and-drop sensors (supports mouse, touch, and keyboard)
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // Require 8px of movement before drag starts (prevents accidental drags)
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 200, // 200ms delay for touch to distinguish from scrolling
+        tolerance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
   );
 
   const showAlert = (
@@ -63,33 +151,34 @@ const WorkoutDetailPage = () => {
     setLoading(false);
   };
 
-  const handleRemoveExerciseClick = (workoutExercise: WorkoutExerciseWithExercise) => {
-    setExerciseToRemove(workoutExercise);
-    setConfirmationModalOpen(true);
-  };
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
 
-  const confirmRemoveExercise = async () => {
-    if (!exerciseToRemove) return;
-
-    const { success, error } = await removeExerciseFromWorkout(exerciseToRemove.id);
-
-    if (error) {
-      showAlert('Error Removing Exercise', error, 'error');
-      setConfirmationModalOpen(false);
+    if (!over || active.id === over.id) {
       return;
     }
 
-    if (success) {
-      setWorkoutExercises(workoutExercises.filter((we) => we.id !== exerciseToRemove.id));
-      setConfirmationModalOpen(false);
-      setExerciseToRemove(null);
-      showAlert('Exercise Removed', 'Exercise removed from workout successfully!', 'success');
-    }
-  };
+    const oldIndex = workoutExercises.findIndex((we) => we.id === active.id);
+    const newIndex = workoutExercises.findIndex((we) => we.id === over.id);
 
-  const cancelRemoveExercise = () => {
-    setConfirmationModalOpen(false);
-    setExerciseToRemove(null);
+    // Reorder the array optimistically
+    const reorderedExercises = arrayMove(workoutExercises, oldIndex, newIndex);
+    setWorkoutExercises(reorderedExercises);
+
+    // Update order_index for all affected exercises
+    const updates = reorderedExercises.map((we, index) => ({
+      id: we.id,
+      order_index: index,
+    }));
+
+    // Save to database
+    const { error } = await updateWorkoutExercisesOrder(updates);
+
+    if (error) {
+      // Revert on error
+      setWorkoutExercises(workoutExercises);
+      showAlert('Error Reordering', error, 'error');
+    }
   };
 
   if (loading) {
@@ -159,49 +248,24 @@ const WorkoutDetailPage = () => {
           </Link>
         ) : (
           <>
-            <div className='space-y-4'>
-              {workoutExercises.map((we) => (
-                <div
-                  key={we.id}
-                  className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg transition-shadow'>
-                  <div className='flex items-start justify-between'>
-                    <div className='flex-1'>
-                      <h3 className='text-xl font-semibold text-gray-900 dark:text-white mb-2'>
-                        {we.exercise.name}
-                      </h3>
-                      <div className='space-y-1 text-sm text-gray-600 dark:text-gray-400'>
-                        <p>
-                          <span className='font-medium'>Primary:</span>{' '}
-                          {we.exercise.primary_body_part}
-                        </p>
-                        <p>
-                          <span className='font-medium'>Equipment:</span> {we.exercise.equipment}
-                        </p>
-                      </div>
-                      <p className='mt-3 text-sm text-gray-500 dark:text-gray-500'>
-                        No sets recorded yet (Sprint 4 feature)
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleRemoveExerciseClick(we)}
-                      className='ml-4 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 cursor-pointer'>
-                      <svg
-                        className='w-6 h-6'
-                        fill='none'
-                        stroke='currentColor'
-                        viewBox='0 0 24 24'>
-                        <path
-                          strokeLinecap='round'
-                          strokeLinejoin='round'
-                          strokeWidth={2}
-                          d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16'
-                        />
-                      </svg>
-                    </button>
-                  </div>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}>
+              <SortableContext
+                items={workoutExercises.map((we) => we.id)}
+                strategy={verticalListSortingStrategy}>
+                <div className='space-y-4'>
+                  {workoutExercises.map((we) => (
+                    <SortableExerciseCard
+                      key={we.id}
+                      workoutExercise={we}
+                      workoutId={workoutId}
+                    />
+                  ))}
                 </div>
-              ))}
-            </div>
+              </SortableContext>
+            </DndContext>
 
             {/* Add Exercise Button - shown at the bottom when exercises exist */}
             <div className='mt-6'>
@@ -230,20 +294,6 @@ const WorkoutDetailPage = () => {
         message={alertModalContent.message}
         type={alertModalContent.type}
         onClose={() => setAlertModalOpen(false)}
-      />
-
-      {/* Confirmation Modal */}
-      <ConfirmationModal
-        isOpen={confirmationModalOpen}
-        title='Remove Exercise'
-        message={`Are you sure you want to remove "${
-          exerciseToRemove?.exercise.name || ''
-        }" from this workout?`}
-        confirmText='Remove'
-        cancelText='Cancel'
-        onConfirm={confirmRemoveExercise}
-        onCancel={cancelRemoveExercise}
-        isDangerous={true}
       />
     </div>
   );
