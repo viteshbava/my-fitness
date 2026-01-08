@@ -77,11 +77,7 @@ const WorkoutExerciseDetailPage = () => {
 
     if (success) {
       setDeleteModalOpen(false);
-      showAlert('Exercise Removed', 'Exercise removed from workout successfully!', 'success');
-      // Navigate back after a short delay
-      setTimeout(() => {
-        router.push(`/workouts/${workoutId}`);
-      }, 1500);
+      router.push(`/workouts/${workoutId}`);
     }
   };
 
