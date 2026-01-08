@@ -11,6 +11,12 @@ import ConfirmationModal from '@/components/ConfirmationModal';
 import { useToast } from '@/components/ToastProvider';
 import { format } from 'date-fns';
 import {
+  getCompletionStatus,
+  getCompletionColor,
+  formatSetsSummary,
+  calculateMaxWeight,
+} from '@/lib/controllers/workout-exercise-controller';
+import {
   DndContext,
   closestCenter,
   KeyboardSensor,
@@ -59,6 +65,13 @@ const SortableExerciseCard: React.FC<SortableExerciseCardProps> = ({
     router.push(`/workouts/${workoutId}/exercises/${workoutExercise.id}`);
   };
 
+  // Get color coding based on completion status
+  const sets = workoutExercise.sets || [];
+  const completionStatus = getCompletionStatus(sets);
+  const completionColor = getCompletionColor(completionStatus);
+  const setsSummary = formatSetsSummary(sets);
+  const maxWeight = calculateMaxWeight(sets);
+
   return (
     <div
       ref={setNodeRef}
@@ -66,7 +79,7 @@ const SortableExerciseCard: React.FC<SortableExerciseCardProps> = ({
       {...attributes}
       {...listeners}
       onClick={handleClick}
-      className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 transition-all cursor-pointer border border-transparent'>
+      className={`${completionColor} dark:bg-opacity-20 rounded-lg shadow p-6 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 transition-all cursor-pointer border border-transparent`}>
       <div>
         <h3 className='text-xl font-semibold text-gray-900 dark:text-white mb-2'>
           {workoutExercise.exercise.name}
@@ -79,9 +92,14 @@ const SortableExerciseCard: React.FC<SortableExerciseCardProps> = ({
           <p>
             <span className='font-medium'>Equipment:</span> {workoutExercise.exercise.equipment}
           </p>
+          {maxWeight > 0 && (
+            <p>
+              <span className='font-medium'>Max Weight:</span> {maxWeight} kg
+            </p>
+          )}
         </div>
-        <p className='mt-3 text-sm text-gray-500 dark:text-gray-500'>
-          No sets recorded yet (Sprint 4 feature)
+        <p className='mt-3 text-sm font-medium text-gray-700 dark:text-gray-300'>
+          {setsSummary}
         </p>
       </div>
     </div>

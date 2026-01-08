@@ -50,4 +50,81 @@ export const formatSetsSummary = (sets: Set[]): string => {
   return `${completedSets.length} ${completedSets.length === 1 ? 'set' : 'sets'} completed`;
 };
 
-// Add more workout-exercise-related business logic functions as needed
+/**
+ * Create default empty sets for a new workout exercise
+ * If previous workout data exists, match the number of completed sets
+ * Otherwise, default to 3 empty sets
+ */
+export const createDefaultSets = (previousSets?: Set[]): Set[] => {
+  let setCount = 3; // Default
+
+  if (previousSets && previousSets.length > 0) {
+    // Count completed sets from previous workout
+    const completedCount = previousSets.filter(set =>
+      (set.weight !== null && set.weight !== undefined) ||
+      (set.reps !== null && set.reps !== undefined)
+    ).length;
+
+    if (completedCount > 0) {
+      setCount = completedCount;
+    }
+  }
+
+  return Array.from({ length: setCount }, (_, index) => ({
+    set_number: index + 1,
+    weight: null,
+    reps: null,
+  }));
+};
+
+/**
+ * Remove empty sets and renumber remaining sets sequentially
+ * A set is considered empty if both weight AND reps are null/undefined
+ */
+export const removeEmptySets = (sets: Set[]): Set[] => {
+  const nonEmptySets = sets.filter(set =>
+    (set.weight !== null && set.weight !== undefined) ||
+    (set.reps !== null && set.reps !== undefined)
+  );
+
+  // Renumber sets sequentially
+  return nonEmptySets.map((set, index) => ({
+    ...set,
+    set_number: index + 1,
+  }));
+};
+
+/**
+ * Check if a set is empty (both weight and reps are null/undefined)
+ */
+export const isSetEmpty = (set: Set): boolean => {
+  return (
+    (set.weight === null || set.weight === undefined) &&
+    (set.reps === null || set.reps === undefined)
+  );
+};
+
+/**
+ * Add a new empty set at the end
+ */
+export const addNewSet = (sets: Set[]): Set[] => {
+  const newSetNumber = sets.length + 1;
+  return [
+    ...sets,
+    {
+      set_number: newSetNumber,
+      weight: null,
+      reps: null,
+    },
+  ];
+};
+
+/**
+ * Delete the last set (minimum 1 set must remain)
+ */
+export const deleteLastSet = (sets: Set[]): Set[] => {
+  if (sets.length <= 1) {
+    return sets; // Cannot delete the last set
+  }
+  return sets.slice(0, -1);
+};

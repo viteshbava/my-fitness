@@ -31,7 +31,7 @@ export const fetchWorkoutExercises = async (
 };
 
 /**
- * Add an exercise to a workout
+ * Add an exercise to a workout with default sets
  */
 export const addExerciseToWorkout = async (
   workoutId: string,
@@ -56,12 +56,47 @@ export const addExerciseToWorkout = async (
         : 0;
     }
 
+    // Get the most recent workout exercise for this exercise to determine default set count
+    const { data: previousWorkoutExercises } = await supabase
+      .from('workout_exercises')
+      .select('sets')
+      .eq('exercise_id', exerciseId)
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    // Create default sets (3 sets by default, or match previous completed set count)
+    let defaultSets = [
+      { set_number: 1, weight: null, reps: null },
+      { set_number: 2, weight: null, reps: null },
+      { set_number: 3, weight: null, reps: null },
+    ];
+
+    if (previousWorkoutExercises && previousWorkoutExercises.length > 0) {
+      const previousSets = previousWorkoutExercises[0].sets || [];
+      // Count completed sets (sets with weight or reps)
+      const completedSets = previousSets.filter(
+        (set: any) =>
+          (set.weight !== null && set.weight !== undefined) ||
+          (set.reps !== null && set.reps !== undefined)
+      );
+
+      if (completedSets.length > 0) {
+        // Create empty sets matching the previous completed count
+        defaultSets = Array.from({ length: completedSets.length }, (_, index) => ({
+          set_number: index + 1,
+          weight: null,
+          reps: null,
+        }));
+      }
+    }
+
     const { data, error } = await supabase
       .from('workout_exercises')
       .insert({
         workout_id: workoutId,
         exercise_id: exerciseId,
         order_index: finalOrderIndex,
+        sets: defaultSets,
       })
       .select()
       .single();
@@ -128,6 +163,145 @@ export const updateWorkoutExercisesOrder = async (
     return {
       success: false,
       error: err instanceof Error ? err.message : 'Failed to update exercise order',
+    };
+  }
+};
+
+/**
+ * Fetch a single workout exercise by ID with exercise details
+ */
+export const fetchWorkoutExerciseById = async (
+  workoutExerciseId: string
+): Promise<ApiResponse<WorkoutExerciseWithExercise>> => {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('workout_exercises')
+      .select(`
+        *,
+        exercise:exercises (*)
+      `)
+      .eq('id', workoutExerciseId)
+      .single();
+
+    if (error) return { data: null, error: error.message };
+    return { data, error: null };
+  } catch (err) {
+    return {
+      data: null,
+      error: err instanceof Error ? err.message : 'Failed to fetch workout exercise',
+    };
+  }
+};
+
+/**
+ * Update workout exercise sets
+ * Auto-saves sets data as changes are made
+ */
+export const updateWorkoutExerciseSets = async (
+  workoutExerciseId: string,
+  sets: { set_number: number; weight: number | null; reps: number | null }[]
+): Promise<ApiSuccessResponse> => {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from('workout_exercises')
+      .update({ sets })
+      .eq('id', workoutExerciseId);
+
+    if (error) return { success: false, error: error.message };
+    return { success: true, error: null };
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Failed to update sets',
+    };
+  }
+};
+
+/**
+ * Save draft snapshot when entering "in progress" mode
+ */
+export const saveDraftSnapshot = async (
+  workoutExerciseId: string,
+  sets: { set_number: number; weight: number | null; reps: number | null }[]
+): Promise<ApiSuccessResponse> => {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from('workout_exercises')
+      .update({ draft_snapshot: sets })
+      .eq('id', workoutExerciseId);
+
+    if (error) return { success: false, error: error.message };
+    return { success: true, error: null };
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Failed to save draft snapshot',
+    };
+  }
+};
+
+/**
+ * Clear draft snapshot (used when Save is clicked or browser is refreshed)
+ */
+export const clearDraftSnapshot = async (
+  workoutExerciseId: string
+): Promise<ApiSuccessResponse> => {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from('workout_exercises')
+      .update({ draft_snapshot: null })
+      .eq('id', workoutExerciseId);
+
+    if (error) return { success: false, error: error.message };
+    return { success: true, error: null };
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Failed to clear draft snapshot',
+    };
+  }
+};
+
+/**
+ * Restore from draft snapshot (used when Cancel is clicked)
+ */
+export const restoreFromDraftSnapshot = async (
+  workoutExerciseId: string
+): Promise<ApiSuccessResponse> => {
+  try {
+    const supabase = await createClient();
+
+    // Get the current draft snapshot
+    const { data: workoutExercise, error: fetchError } = await supabase
+      .from('workout_exercises')
+      .select('draft_snapshot')
+      .eq('id', workoutExerciseId)
+      .single();
+
+    if (fetchError) return { success: false, error: fetchError.message };
+    if (!workoutExercise?.draft_snapshot) {
+      return { success: false, error: 'No draft snapshot found' };
+    }
+
+    // Restore sets from snapshot and clear the snapshot
+    const { error: updateError } = await supabase
+      .from('workout_exercises')
+      .update({
+        sets: workoutExercise.draft_snapshot,
+        draft_snapshot: null
+      })
+      .eq('id', workoutExerciseId);
+
+    if (updateError) return { success: false, error: updateError.message };
+    return { success: true, error: null };
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Failed to restore from draft snapshot',
     };
   }
 };
