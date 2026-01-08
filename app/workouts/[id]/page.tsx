@@ -11,8 +11,6 @@ import ConfirmationModal from '@/components/ConfirmationModal';
 import { useToast } from '@/components/ToastProvider';
 import { format } from 'date-fns';
 import {
-  getCompletionStatus,
-  getCompletionColor,
   formatSetsSummary,
   calculateMaxWeight,
 } from '@/lib/controllers/workout-exercise-controller';
@@ -65,10 +63,8 @@ const SortableExerciseCard: React.FC<SortableExerciseCardProps> = ({
     router.push(`/workouts/${workoutId}/exercises/${workoutExercise.id}`);
   };
 
-  // Get color coding based on completion status
+  // Get completion status and formatting
   const sets = workoutExercise.sets || [];
-  const completionStatus = getCompletionStatus(sets);
-  const completionColor = getCompletionColor(completionStatus);
   const setsSummary = formatSetsSummary(sets);
   const maxWeight = calculateMaxWeight(sets);
 
@@ -79,7 +75,7 @@ const SortableExerciseCard: React.FC<SortableExerciseCardProps> = ({
       {...attributes}
       {...listeners}
       onClick={handleClick}
-      className={`${completionColor} dark:bg-opacity-20 rounded-lg shadow p-6 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 transition-all cursor-pointer border border-transparent`}>
+      className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 transition-all cursor-pointer border border-transparent'>
       <div>
         <h3 className='text-xl font-semibold text-gray-900 dark:text-white mb-2'>
           {workoutExercise.exercise.name}
