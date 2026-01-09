@@ -464,8 +464,7 @@ export const fetchHistoricalWorkoutExercises = async (
         workout:workouts!inner (id, date)
       `)
       .eq('exercise_id', exerciseId)
-      .lt('workout.date', currentWorkout.date)
-      .order('workout.date', { ascending: false });
+      .lt('workout.date', currentWorkout.date);
 
     if (fetchError) return { data: null, error: fetchError.message };
     if (!allWorkoutExercises || allWorkoutExercises.length === 0) {
@@ -476,6 +475,13 @@ export const fetchHistoricalWorkoutExercises = async (
     const workoutsWithData = allWorkoutExercises.filter((we: any) => {
       const sets = we.sets || [];
       return sets.some((set: Set) => set.reps !== null && set.reps > 0);
+    });
+
+    // Sort by date descending (most recent first)
+    workoutsWithData.sort((a: any, b: any) => {
+      const dateA = new Date(a.workout.date).getTime();
+      const dateB = new Date(b.workout.date).getTime();
+      return dateB - dateA;
     });
 
     // Limit to the most recent N workouts and format the response

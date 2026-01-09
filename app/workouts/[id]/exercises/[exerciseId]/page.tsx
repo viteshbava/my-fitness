@@ -41,6 +41,7 @@ const WorkoutExerciseDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [isInProgress, setIsInProgress] = useState(false);
   const [autoSaving, setAutoSaving] = useState(false);
+  const [showHistorical, setShowHistorical] = useState(false);
 
   // Alert modal state
   const [alertModalOpen, setAlertModalOpen] = useState(false);
@@ -114,13 +115,19 @@ const WorkoutExerciseDetailPage = () => {
       }
 
       // Load historical workout data (last 3 workouts)
-      const { data: historicalWorkouts } = await fetchHistoricalWorkoutExercises(
+      const { data: historicalWorkouts, error: historicalError } = await fetchHistoricalWorkoutExercises(
         data.exercise_id,
         workoutId,
         3
       );
+      if (historicalError) {
+        console.error('Error loading historical data:', historicalError);
+      }
       if (historicalWorkouts) {
+        console.log('Historical workouts loaded:', historicalWorkouts);
         setHistoricalData(historicalWorkouts);
+      } else {
+        console.log('No historical workouts found');
       }
 
       // Load best set
@@ -523,58 +530,113 @@ const WorkoutExerciseDetailPage = () => {
         </div>
 
         {/* Historical Data Section */}
-        {historicalData.length > 0 && (
-          <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 mt-6'>
-            <h2 className='text-xl font-semibold text-gray-900 dark:text-white mb-4'>
+        <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 mt-6'>
+          <button
+            onClick={() => setShowHistorical(!showHistorical)}
+            className='w-full flex items-center justify-between text-left cursor-pointer hover:opacity-80 transition-opacity'>
+            <h2 className='text-xl font-semibold text-gray-900 dark:text-white'>
               Previous Workouts
+              <span className='text-sm text-gray-500 ml-2'>({historicalData.length})</span>
             </h2>
-            <div className='space-y-6'>
-              {historicalData.map((workout, workoutIndex) => (
-                <div
-                  key={workoutIndex}
-                  className='border-b border-gray-200 dark:border-gray-700 pb-4 last:border-b-0 last:pb-0'>
-                  <h3 className='text-lg font-medium text-gray-900 dark:text-white mb-3'>
-                    {format(new Date(workout.date), 'MMMM d, yyyy')}
-                  </h3>
-                  <div className='overflow-x-auto'>
-                    <table className='w-full'>
-                      <thead>
-                        <tr className='border-b border-gray-200 dark:border-gray-700'>
-                          <th className='text-left py-2 px-4 text-sm font-medium text-gray-700 dark:text-gray-300'>
-                            Set
-                          </th>
-                          <th className='text-left py-2 px-4 text-sm font-medium text-gray-700 dark:text-gray-300'>
-                            Weight (kg)
-                          </th>
-                          <th className='text-left py-2 px-4 text-sm font-medium text-gray-700 dark:text-gray-300'>
-                            Reps
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {workout.sets.map((set, setIndex) => (
-                          <tr
-                            key={setIndex}
-                            className='border-b border-gray-100 dark:border-gray-700'>
-                            <td className='py-2 px-4 text-gray-900 dark:text-white'>
-                              {set.set_number}
-                            </td>
-                            <td className='py-2 px-4 text-gray-900 dark:text-white'>
-                              {set.weight ?? '-'}
-                            </td>
-                            <td className='py-2 px-4 text-gray-900 dark:text-white'>
-                              {set.reps ?? '-'}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+            <svg
+              className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform ${
+                showHistorical ? 'rotate-180' : ''
+              }`}
+              fill='none'
+              stroke='currentColor'
+              viewBox='0 0 24 24'>
+              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
+            </svg>
+          </button>
+
+          {showHistorical && (
+            <div className='mt-4'>
+              {historicalData.length === 0 ? (
+                <div>
+                  <p className='text-gray-500 dark:text-gray-400'>No previous workout data for this exercise</p>
+                  <p className='text-xs text-gray-400 dark:text-gray-500 mt-2'>
+                    This could mean: (1) This is the first time doing this exercise, or (2) Previous workouts don't have completed sets
+                  </p>
                 </div>
-              ))}
+              ) : (
+                <div className='space-y-6'>
+                  {historicalData.map((workout, workoutIndex) => {
+                    // Calculate time gap since previous workout
+                    let timeGapText: string | null = null;
+                    if (workoutIndex > 0) {
+                      const currentDate = new Date(workout.date);
+                      const previousDate = new Date(historicalData[workoutIndex - 1].date);
+                      const totalDays = Math.round(Math.abs((currentDate.getTime() - previousDate.getTime()) / (1000 * 60 * 60 * 24)));
+
+                      if (totalDays < 7) {
+                        timeGapText = `${totalDays} day${totalDays !== 1 ? 's' : ''} gap`;
+                      } else {
+                        const weeks = Math.floor(totalDays / 7);
+                        const days = totalDays % 7;
+                        if (days === 0) {
+                          timeGapText = `${weeks} week${weeks !== 1 ? 's' : ''} gap`;
+                        } else {
+                          timeGapText = `${weeks} week${weeks !== 1 ? 's' : ''}, ${days} day${days !== 1 ? 's' : ''} gap`;
+                        }
+                      }
+                    }
+
+                    return (
+                      <div key={workoutIndex}>
+                        {timeGapText && (
+                          <div className='text-center py-2 mb-4'>
+                            <span className='text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full'>
+                              {timeGapText}
+                            </span>
+                          </div>
+                        )}
+                        <div className='border-b border-gray-200 dark:border-gray-700 pb-4 last:border-b-0 last:pb-0'>
+                          <h3 className='text-lg font-medium text-gray-900 dark:text-white mb-3'>
+                            {format(new Date(workout.date), 'MMMM d, yyyy')}
+                          </h3>
+                          <div className='overflow-x-auto'>
+                            <table className='w-full'>
+                              <thead>
+                                <tr className='border-b border-gray-200 dark:border-gray-700'>
+                                  <th className='text-left py-2 px-4 text-sm font-medium text-gray-700 dark:text-gray-300'>
+                                    Set
+                                  </th>
+                                  <th className='text-left py-2 px-4 text-sm font-medium text-gray-700 dark:text-gray-300'>
+                                    Weight (kg)
+                                  </th>
+                                  <th className='text-left py-2 px-4 text-sm font-medium text-gray-700 dark:text-gray-300'>
+                                    Reps
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {workout.sets.map((set, setIndex) => (
+                                  <tr
+                                    key={setIndex}
+                                    className='border-b border-gray-100 dark:border-gray-700'>
+                                    <td className='py-2 px-4 text-gray-900 dark:text-white'>
+                                      {set.set_number}
+                                    </td>
+                                    <td className='py-2 px-4 text-gray-900 dark:text-white'>
+                                      {set.weight ?? '-'}
+                                    </td>
+                                    <td className='py-2 px-4 text-gray-900 dark:text-white'>
+                                      {set.reps ?? '-'}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Alert Modal */}
