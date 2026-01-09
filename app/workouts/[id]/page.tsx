@@ -45,39 +45,24 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
   const maxWeight = calculateMaxWeight(sets);
 
   return (
-    <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 transition-all border border-transparent flex items-start gap-3'>
-      {/* Reorder Controls */}
-      <div className='shrink-0 flex flex-col gap-1 pt-1'>
-        {!isFirst && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onMoveUp();
-            }}
-            className='text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer'
-            aria-label='Move up'>
-            <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 15l7-7 7 7' />
-            </svg>
-          </button>
-        )}
-        {!isLast && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onMoveDown();
-            }}
-            className='text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer'
-            aria-label='Move down'>
-            <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
-            </svg>
-          </button>
-        )}
-      </div>
+    <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 transition-all border border-transparent flex items-stretch gap-3 relative'>
+      {/* Up Arrow - Top Left */}
+      {!isFirst && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onMoveUp();
+          }}
+          className='absolute top-2 left-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer'
+          aria-label='Move up'>
+          <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 15l7-7 7 7' />
+          </svg>
+        </button>
+      )}
 
       {/* Card Content */}
-      <div onClick={handleClick} className='grow cursor-pointer'>
+      <div onClick={handleClick} className='grow cursor-pointer pl-4'>
         <h3 className='text-xl font-semibold text-gray-900 dark:text-white mb-2'>
           {workoutExercise.exercise.name}
         </h3>
@@ -95,10 +80,23 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
             </p>
           )}
         </div>
-        <p className='mt-3 text-sm font-medium text-gray-700 dark:text-gray-300'>
-          {setsSummary}
-        </p>
+        <p className='mt-3 text-sm font-medium text-gray-700 dark:text-gray-300'>{setsSummary}</p>
       </div>
+
+      {/* Down Arrow - Bottom Left */}
+      {!isLast && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onMoveDown();
+          }}
+          className='absolute bottom-2 left-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer'
+          aria-label='Move down'>
+          <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
+          </svg>
+        </button>
+      )}
     </div>
   );
 };
