@@ -4,21 +4,22 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { fetchWorkoutById, deleteWorkout } from '@/actions/workouts';
-import { updateWorkoutExercisesOrder } from '@/actions/workout-exercises';
-import { WorkoutWithExercises, WorkoutExerciseWithExercise } from '@/types/database';
+import {
+  updateWorkoutExercisesOrder,
+  fetchBestSetsForExercises,
+} from '@/actions/workout-exercises';
+import { WorkoutWithExercises, WorkoutExerciseWithExercise, Set } from '@/types/database';
 import AlertModal from '@/components/AlertModal';
 import ConfirmationModal from '@/components/ConfirmationModal';
 import { useToast } from '@/components/ToastProvider';
 import { format } from 'date-fns';
-import {
-  formatSetsSummary,
-  calculateMaxWeight,
-} from '@/lib/controllers/workout-exercise-controller';
+import { formatSetsSummary } from '@/lib/controllers/workout-exercise-controller';
 
 // Exercise Card Component
 interface ExerciseCardProps {
   workoutExercise: WorkoutExerciseWithExercise;
   workoutId: string;
+  bestSet: Set | null;
   isFirst: boolean;
   isLast: boolean;
   onMoveUp: () => void;
@@ -28,6 +29,7 @@ interface ExerciseCardProps {
 const ExerciseCard: React.FC<ExerciseCardProps> = ({
   workoutExercise,
   workoutId,
+  bestSet,
   isFirst,
   isLast,
   onMoveUp,
@@ -42,7 +44,6 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
   // Get completion status and formatting
   const sets = workoutExercise.sets || [];
   const setsSummary = formatSetsSummary(sets);
-  const maxWeight = calculateMaxWeight(sets);
 
   return (
     <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 transition-all border border-transparent flex items-stretch gap-3 relative'>
@@ -74,9 +75,9 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
           <p>
             <span className='font-medium'>Equipment:</span> {workoutExercise.exercise.equipment}
           </p>
-          {maxWeight > 0 && (
+          {bestSet && (
             <p>
-              <span className='font-medium'>Max Weight:</span> {maxWeight} kg
+              <span className='font-medium'>Best Set:</span> {bestSet.weight}kg × {bestSet.reps}reps
             </p>
           )}
         </div>
@@ -109,6 +110,7 @@ const WorkoutDetailPage = () => {
 
   const [workout, setWorkout] = useState<WorkoutWithExercises | null>(null);
   const [workoutExercises, setWorkoutExercises] = useState<WorkoutExerciseWithExercise[]>([]);
+  const [bestSets, setBestSets] = useState<Record<string, Set | null>>({});
   const [loading, setLoading] = useState(true);
 
   // Alert modal state
@@ -148,6 +150,15 @@ const WorkoutDetailPage = () => {
     if (data) {
       setWorkout(data);
       setWorkoutExercises(data.workout_exercises || []);
+
+      // Fetch best sets for all exercises in this workout
+      const exerciseIds = (data.workout_exercises || []).map((we) => we.exercise_id);
+      if (exerciseIds.length > 0) {
+        const { data: bestSetsData } = await fetchBestSetsForExercises(exerciseIds);
+        if (bestSetsData) {
+          setBestSets(bestSetsData);
+        }
+      }
     }
     setLoading(false);
   };
@@ -305,6 +316,7 @@ const WorkoutDetailPage = () => {
                   key={we.id}
                   workoutExercise={we}
                   workoutId={workoutId}
+                  bestSet={bestSets[we.exercise_id] || null}
                   isFirst={index === 0}
                   isLast={index === workoutExercises.length - 1}
                   onMoveUp={() => handleMoveUp(index)}

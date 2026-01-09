@@ -7,17 +7,20 @@ import {
   fetchWorkoutExerciseById,
   removeExerciseFromWorkout,
   updateWorkoutExerciseSets,
+  saveWorkoutExerciseSets,
   saveDraftSnapshot,
   clearDraftSnapshot,
   restoreFromDraftSnapshot,
   fetchMostRecentWorkoutWithData,
+  fetchHistoricalWorkoutExercises,
+  fetchBestSetForExercise,
 } from '@/actions/workout-exercises';
 import { WorkoutExerciseWithExercise, Set } from '@/types/database';
 import AlertModal from '@/components/AlertModal';
 import ConfirmationModal from '@/components/ConfirmationModal';
 import { useToast } from '@/components/ToastProvider';
+import { format } from 'date-fns';
 import {
-  calculateMaxWeight,
   addNewSet,
   deleteLastSet,
   removeEmptySets,
@@ -33,6 +36,8 @@ const WorkoutExerciseDetailPage = () => {
   const [workoutExercise, setWorkoutExercise] = useState<WorkoutExerciseWithExercise | null>(null);
   const [sets, setSets] = useState<Set[]>([]);
   const [previousSets, setPreviousSets] = useState<Set[]>([]);
+  const [historicalData, setHistoricalData] = useState<Array<{ date: string; sets: Set[] }>>([]);
+  const [bestSet, setBestSet] = useState<Set | null>(null);
   const [loading, setLoading] = useState(true);
   const [isInProgress, setIsInProgress] = useState(false);
   const [autoSaving, setAutoSaving] = useState(false);
@@ -107,6 +112,22 @@ const WorkoutExerciseDetailPage = () => {
       if (previousData) {
         setPreviousSets(previousData);
       }
+
+      // Load historical workout data (last 3 workouts)
+      const { data: historicalWorkouts } = await fetchHistoricalWorkoutExercises(
+        data.exercise_id,
+        workoutId,
+        3
+      );
+      if (historicalWorkouts) {
+        setHistoricalData(historicalWorkouts);
+      }
+
+      // Load best set
+      const { data: bestSetData } = await fetchBestSetForExercise(data.exercise_id);
+      if (bestSetData) {
+        setBestSet(bestSetData);
+      }
     }
     setLoading(false);
   };
@@ -163,10 +184,10 @@ const WorkoutExerciseDetailPage = () => {
   };
 
   const handleSave = async () => {
-    if (!exerciseId) return;
+    if (!exerciseId || !workoutExercise) return;
 
     // Check for incomplete sets (only weight OR only reps filled)
-    const incompleteSets = sets.filter(set => !isSetComplete(set));
+    const incompleteSets = sets.filter((set) => !isSetComplete(set));
     if (incompleteSets.length > 0) {
       showAlert(
         'Incomplete Sets',
@@ -179,7 +200,8 @@ const WorkoutExerciseDetailPage = () => {
     // Remove empty sets before final save
     const cleanedSets = removeEmptySets(sets);
 
-    const { error: updateError } = await updateWorkoutExerciseSets(exerciseId, cleanedSets);
+    // Save sets and update exercise best set and last_used_date
+    const { error: updateError } = await saveWorkoutExerciseSets(exerciseId, cleanedSets);
     if (updateError) {
       showAlert('Error Saving', updateError, 'error');
       return;
@@ -309,8 +331,6 @@ const WorkoutExerciseDetailPage = () => {
     );
   }
 
-  const maxWeight = calculateMaxWeight(sets);
-
   return (
     <div className='min-h-screen bg-gray-50 dark:bg-gray-900'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
@@ -328,9 +348,12 @@ const WorkoutExerciseDetailPage = () => {
               <h1 className='text-3xl font-bold text-gray-900 dark:text-white mb-2'>
                 {workoutExercise.exercise.name}
               </h1>
-              {maxWeight > 0 && (
+              {bestSet && (
                 <p className='text-lg text-gray-600 dark:text-gray-400'>
-                  Max Weight: <span className='font-semibold'>{maxWeight} kg</span>
+                  Best Set:{' '}
+                  <span className='font-semibold'>
+                    {bestSet.weight}kg × {bestSet.reps}reps
+                  </span>
                 </p>
               )}
             </div>
@@ -359,7 +382,9 @@ const WorkoutExerciseDetailPage = () => {
           </h2>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             <div>
-              <p className='text-sm font-medium text-gray-500 dark:text-gray-400'>Primary Body Part</p>
+              <p className='text-sm font-medium text-gray-500 dark:text-gray-400'>
+                Primary Body Part
+              </p>
               <p className='text-lg text-gray-900 dark:text-white'>
                 {workoutExercise.exercise.primary_body_part}
               </p>
@@ -454,9 +479,7 @@ const WorkoutExerciseDetailPage = () => {
                             placeholder={getPlaceholder(set.set_number, 'weight')}
                           />
                         ) : (
-                          <span className='text-gray-900 dark:text-white'>
-                            {set.weight ?? '-'}
-                          </span>
+                          <span className='text-gray-900 dark:text-white'>{set.weight ?? '-'}</span>
                         )}
                       </td>
                       <td className='py-2 px-4'>
@@ -498,6 +521,60 @@ const WorkoutExerciseDetailPage = () => {
             </div>
           )}
         </div>
+
+        {/* Historical Data Section */}
+        {historicalData.length > 0 && (
+          <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 mt-6'>
+            <h2 className='text-xl font-semibold text-gray-900 dark:text-white mb-4'>
+              Previous Workouts
+            </h2>
+            <div className='space-y-6'>
+              {historicalData.map((workout, workoutIndex) => (
+                <div
+                  key={workoutIndex}
+                  className='border-b border-gray-200 dark:border-gray-700 pb-4 last:border-b-0 last:pb-0'>
+                  <h3 className='text-lg font-medium text-gray-900 dark:text-white mb-3'>
+                    {format(new Date(workout.date), 'MMMM d, yyyy')}
+                  </h3>
+                  <div className='overflow-x-auto'>
+                    <table className='w-full'>
+                      <thead>
+                        <tr className='border-b border-gray-200 dark:border-gray-700'>
+                          <th className='text-left py-2 px-4 text-sm font-medium text-gray-700 dark:text-gray-300'>
+                            Set
+                          </th>
+                          <th className='text-left py-2 px-4 text-sm font-medium text-gray-700 dark:text-gray-300'>
+                            Weight (kg)
+                          </th>
+                          <th className='text-left py-2 px-4 text-sm font-medium text-gray-700 dark:text-gray-300'>
+                            Reps
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {workout.sets.map((set, setIndex) => (
+                          <tr
+                            key={setIndex}
+                            className='border-b border-gray-100 dark:border-gray-700'>
+                            <td className='py-2 px-4 text-gray-900 dark:text-white'>
+                              {set.set_number}
+                            </td>
+                            <td className='py-2 px-4 text-gray-900 dark:text-white'>
+                              {set.weight ?? '-'}
+                            </td>
+                            <td className='py-2 px-4 text-gray-900 dark:text-white'>
+                              {set.reps ?? '-'}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Alert Modal */}

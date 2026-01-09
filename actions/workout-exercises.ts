@@ -220,6 +220,70 @@ export const updateWorkoutExerciseSets = async (
 };
 
 /**
+ * Update workout exercise sets and also update the parent exercise's last_used_date
+ * This should be called when finalizing/saving a workout exercise
+ */
+export const saveWorkoutExerciseSets = async (
+  workoutExerciseId: string,
+  sets: { set_number: number; weight: number | null; reps: number | null }[]
+): Promise<ApiSuccessResponse> => {
+  try {
+    const supabase = await createClient();
+
+    // First, update the workout_exercise sets
+    const { error: updateError } = await supabase
+      .from('workout_exercises')
+      .update({ sets })
+      .eq('id', workoutExerciseId);
+
+    if (updateError) return { success: false, error: updateError.message };
+
+    // Get the workout exercise with its exercise_id and workout date
+    const { data: workoutExercise, error: fetchError } = await supabase
+      .from('workout_exercises')
+      .select(`
+        exercise_id,
+        workout:workouts!inner (date)
+      `)
+      .eq('id', workoutExerciseId)
+      .single();
+
+    if (fetchError) return { success: false, error: fetchError.message };
+
+    const exerciseId = workoutExercise.exercise_id;
+    const workoutDate = (workoutExercise.workout as any).date;
+
+    // Get current exercise last_used_date
+    const { data: exercise, error: exerciseFetchError } = await supabase
+      .from('exercises')
+      .select('last_used_date')
+      .eq('id', exerciseId)
+      .single();
+
+    if (exerciseFetchError) return { success: false, error: exerciseFetchError.message };
+
+    // Update last_used_date if this workout is more recent
+    if (!exercise.last_used_date || workoutDate > exercise.last_used_date) {
+      const { error: exerciseUpdateError } = await supabase
+        .from('exercises')
+        .update({ last_used_date: workoutDate })
+        .eq('id', exerciseId);
+
+      if (exerciseUpdateError) {
+        return { success: false, error: exerciseUpdateError.message };
+      }
+    }
+
+    return { success: true, error: null };
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Failed to save workout exercise',
+    };
+  }
+};
+
+/**
  * Save draft snapshot when entering "in progress" mode
  */
 export const saveDraftSnapshot = async (
@@ -366,6 +430,162 @@ export const fetchMostRecentWorkoutWithData = async (
     return {
       data: null,
       error: err instanceof Error ? err.message : 'Failed to fetch workout data',
+    };
+  }
+};
+
+/**
+ * Fetch historical workout exercises for a given exercise
+ * Returns the last N workouts with this exercise, ordered by workout date descending
+ */
+export const fetchHistoricalWorkoutExercises = async (
+  exerciseId: string,
+  currentWorkoutId: string,
+  limit: number = 3
+): Promise<ApiResponse<Array<{ date: string; sets: Set[] }>>> => {
+  try {
+    const supabase = await createClient();
+
+    // Get the current workout's date
+    const { data: currentWorkout, error: currentWorkoutError } = await supabase
+      .from('workouts')
+      .select('date')
+      .eq('id', currentWorkoutId)
+      .single();
+
+    if (currentWorkoutError) return { data: null, error: currentWorkoutError.message };
+
+    // Get all workout exercises for this exercise from workouts before the current date
+    const { data: allWorkoutExercises, error: fetchError } = await supabase
+      .from('workout_exercises')
+      .select(`
+        id,
+        sets,
+        workout:workouts!inner (id, date)
+      `)
+      .eq('exercise_id', exerciseId)
+      .lt('workout.date', currentWorkout.date)
+      .order('workout.date', { ascending: false });
+
+    if (fetchError) return { data: null, error: fetchError.message };
+    if (!allWorkoutExercises || allWorkoutExercises.length === 0) {
+      return { data: [], error: null };
+    }
+
+    // Filter to only workouts with data (at least one set with non-zero reps)
+    const workoutsWithData = allWorkoutExercises.filter((we: any) => {
+      const sets = we.sets || [];
+      return sets.some((set: Set) => set.reps !== null && set.reps > 0);
+    });
+
+    // Limit to the most recent N workouts and format the response
+    const historicalData = workoutsWithData
+      .slice(0, limit)
+      .map((we: any) => ({
+        date: we.workout.date,
+        sets: we.sets || [],
+      }));
+
+    return { data: historicalData, error: null };
+  } catch (err) {
+    return {
+      data: null,
+      error: err instanceof Error ? err.message : 'Failed to fetch historical workout data',
+    };
+  }
+};
+
+/**
+ * Fetch best set for an exercise across all historical workouts
+ * Returns the set with the heaviest weight where at least 6 reps were completed
+ */
+export const fetchBestSetForExercise = async (
+  exerciseId: string
+): Promise<ApiResponse<Set | null>> => {
+  try {
+    const supabase = await createClient();
+
+    // Get all workout exercises for this exercise
+    const { data: allWorkoutExercises, error: fetchError } = await supabase
+      .from('workout_exercises')
+      .select('sets')
+      .eq('exercise_id', exerciseId);
+
+    if (fetchError) return { data: null, error: fetchError.message };
+    if (!allWorkoutExercises || allWorkoutExercises.length === 0) {
+      return { data: null, error: null };
+    }
+
+    // Flatten all sets from all workouts
+    const allSets: Set[] = allWorkoutExercises.flatMap((we: any) => we.sets || []);
+
+    // Find the best set (heaviest weight with ≥6 reps)
+    const bestSet = allSets
+      .filter((set: Set) => (set.reps || 0) >= 6)
+      .reduce((best, set) => {
+        if (!best || (set.weight || 0) > (best.weight || 0)) {
+          return set;
+        }
+        return best;
+      }, null as Set | null);
+
+    return { data: bestSet, error: null };
+  } catch (err) {
+    return {
+      data: null,
+      error: err instanceof Error ? err.message : 'Failed to fetch best set',
+    };
+  }
+};
+
+/**
+ * Fetch best sets for multiple exercises at once
+ * Returns a map of exercise_id -> best set
+ */
+export const fetchBestSetsForExercises = async (
+  exerciseIds: string[]
+): Promise<ApiResponse<Record<string, Set | null>>> => {
+  try {
+    const supabase = await createClient();
+
+    // Get all workout exercises for these exercises
+    const { data: allWorkoutExercises, error: fetchError } = await supabase
+      .from('workout_exercises')
+      .select('exercise_id, sets')
+      .in('exercise_id', exerciseIds);
+
+    if (fetchError) return { data: null, error: fetchError.message };
+    if (!allWorkoutExercises || allWorkoutExercises.length === 0) {
+      // Return null for all exercises
+      const result: Record<string, Set | null> = {};
+      exerciseIds.forEach(id => result[id] = null);
+      return { data: result, error: null };
+    }
+
+    // Group by exercise_id and find best set for each
+    const bestSets: Record<string, Set | null> = {};
+    exerciseIds.forEach(exerciseId => {
+      const exerciseSets = allWorkoutExercises
+        .filter((we: any) => we.exercise_id === exerciseId)
+        .flatMap((we: any) => we.sets || []);
+
+      const bestSet = exerciseSets
+        .filter((set: Set) => (set.reps || 0) >= 6)
+        .reduce((best, set) => {
+          if (!best || (set.weight || 0) > (best.weight || 0)) {
+            return set;
+          }
+          return best;
+        }, null as Set | null);
+
+      bestSets[exerciseId] = bestSet;
+    });
+
+    return { data: bestSets, error: null };
+  } catch (err) {
+    return {
+      data: null,
+      error: err instanceof Error ? err.message : 'Failed to fetch best sets',
     };
   }
 };

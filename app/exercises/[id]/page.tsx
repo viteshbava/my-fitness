@@ -3,10 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { fetchExerciseById, updateExerciseNotes, updateExerciseIsLearnt } from '@/actions/exercises';
-import { Exercise } from '@/types/database';
+import { fetchExerciseById, updateExerciseNotes, updateExerciseIsLearnt, fetchExerciseHistoricalData } from '@/actions/exercises';
+import { fetchBestSetForExercise } from '@/actions/workout-exercises';
+import { Exercise, Set } from '@/types/database';
 import AlertModal from '@/components/AlertModal';
 import { useToast } from '@/components/ToastProvider';
+import { format } from 'date-fns';
 
 const ExerciseDetailPage = () => {
   const params = useParams();
@@ -15,6 +17,8 @@ const ExerciseDetailPage = () => {
   const { showToast } = useToast();
 
   const [exercise, setExercise] = useState<Exercise | null>(null);
+  const [historicalData, setHistoricalData] = useState<Array<{ date: string; sets: Set[] }>>([]);
+  const [bestSet, setBestSet] = useState<Set | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -70,6 +74,19 @@ const ExerciseDetailPage = () => {
     setExercise(data);
     setNotes(data.notes || '');
     setIsLearnt(data.is_mastered || false);
+
+    // Load historical workout data for this exercise
+    const { data: historical } = await fetchExerciseHistoricalData(data.id);
+    if (historical) {
+      setHistoricalData(historical);
+    }
+
+    // Load best set
+    const { data: bestSetData } = await fetchBestSetForExercise(data.id);
+    if (bestSetData) {
+      setBestSet(bestSetData);
+    }
+
     setLoading(false);
   };
 
@@ -384,60 +401,97 @@ const ExerciseDetailPage = () => {
           )}
         </div>
 
-        {/* Historical Performance - Placeholder */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-            Historical Performance
-          </h2>
-          <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-12 text-center">
-            <svg
-              className="w-16 h-16 mx-auto text-gray-400 mb-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-              />
-            </svg>
-            <p className="text-gray-600 dark:text-gray-400">
-              Historical data and progress charts will be available in Sprint 5
-            </p>
-            <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
-              Track your max weight, performance over time, and view detailed workout history
-            </p>
-          </div>
-        </div>
+        {/* Historical Performance */}
+        {historicalData.length > 0 && (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              Historical Performance
+            </h2>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200 dark:border-gray-700">
+                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Date
+                    </th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Sets
+                    </th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Best Set
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {historicalData.map((workout, index) => {
+                    const bestSet = workout.sets
+                      .filter(set => (set.reps || 0) >= 6)
+                      .reduce((best, set) => {
+                        if (!best || (set.weight || 0) > (best.weight || 0)) {
+                          return set;
+                        }
+                        return best;
+                      }, null as Set | null);
 
-        {/* Max Weight Score - Placeholder */}
+                    return (
+                      <tr key={index} className="border-b border-gray-100 dark:border-gray-700">
+                        <td className="py-3 px-4 text-gray-900 dark:text-white">
+                          {format(new Date(workout.date), 'MMM d, yyyy')}
+                        </td>
+                        <td className="py-3 px-4 text-gray-900 dark:text-white">
+                          {workout.sets.length} sets
+                        </td>
+                        <td className="py-3 px-4 text-gray-900 dark:text-white">
+                          {bestSet ? `${bestSet.weight} kg × ${bestSet.reps} reps` : 'N/A'}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Best Set */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-            Maximum Weight Score
+            Best Set
           </h2>
-          <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-12 text-center">
-            <svg
-              className="w-16 h-16 mx-auto text-gray-400 mb-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-              />
-            </svg>
-            <p className="text-gray-600 dark:text-gray-400">
-              Max weight tracking will be available in Sprint 5
-            </p>
-            <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
-              See your heaviest weight with at least 6 reps
-            </p>
-          </div>
+          {bestSet ? (
+            <div className="text-center py-8">
+              <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-green-100 dark:bg-green-900 mb-4">
+                <svg
+                  className="w-12 h-12 text-green-600 dark:text-green-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+                  />
+                </svg>
+              </div>
+              <p className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+                {bestSet.weight} kg × {bestSet.reps} reps
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Heaviest weight with at least 6 reps
+              </p>
+            </div>
+          ) : (
+            <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-12 text-center">
+              <p className="text-gray-600 dark:text-gray-400">
+                No best set recorded yet
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
+                Complete a set with at least 6 reps to see your best set
+              </p>
+            </div>
+          )}
         </div>
       </div>
 

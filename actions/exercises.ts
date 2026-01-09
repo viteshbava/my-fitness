@@ -138,4 +138,79 @@ export const updateExerciseLastPerformedSets = async (
   }
 };
 
+/**
+ * Update the last_used_date for an exercise
+ * Called when a workout exercise is saved with data
+ */
+export const updateExerciseLastUsedDate = async (
+  exerciseId: string,
+  date: string
+): Promise<ApiSuccessResponse> => {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from('exercises')
+      .update({ last_used_date: date })
+      .eq('id', exerciseId);
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    return { success: true, error: null };
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Failed to update last used date',
+    };
+  }
+};
+
+
+/**
+ * Fetch all workout exercises for a given exercise (for max weight and historical data)
+ * Returns all sets from all workouts for this exercise
+ */
+export const fetchExerciseHistoricalData = async (
+  exerciseId: string
+): Promise<{
+  data: Array<{ date: string; sets: Set[] }> | null;
+  error: string | null;
+}> => {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('workout_exercises')
+      .select(`
+        id,
+        sets,
+        workout:workouts!inner (id, date)
+      `)
+      .eq('exercise_id', exerciseId)
+      .order('workout.date', { ascending: false });
+
+    if (error) {
+      return { data: null, error: error.message };
+    }
+
+    // Filter to only workouts with data and format the response
+    const historicalData = (data || [])
+      .filter((we: any) => {
+        const sets = we.sets || [];
+        return sets.some((set: Set) => set.reps !== null && set.reps > 0);
+      })
+      .map((we: any) => ({
+        date: we.workout.date,
+        sets: we.sets || [],
+      }));
+
+    return { data: historicalData, error: null };
+  } catch (err) {
+    return {
+      data: null,
+      error: err instanceof Error ? err.message : 'Failed to fetch exercise historical data',
+    };
+  }
+};
+
 // Add more exercise-related actions as needed

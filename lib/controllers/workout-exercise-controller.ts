@@ -16,6 +16,17 @@ export const calculateMaxWeight = (sets: Set[]): number => {
     .reduce((max, set) => Math.max(max, set.weight || 0), 0);
 };
 
+/**
+ * Calculate max weight across all historical workouts for an exercise
+ * Takes an array of workout data (each with date and sets) and finds the max weight with ≥6 reps
+ */
+export const calculateMaxWeightAcrossHistory = (
+  historicalData: Array<{ date: string; sets: Set[] }>
+): number => {
+  const allSets = historicalData.flatMap(workout => workout.sets);
+  return calculateMaxWeight(allSets);
+};
+
 export const getCompletionStatus = (sets: Set[]): 'none' | 'partial' | 'complete' => {
   if (!sets || sets.length === 0) return 'none';
 
