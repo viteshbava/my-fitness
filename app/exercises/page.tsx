@@ -28,7 +28,7 @@ const ExercisesPage = () => {
   const [secondaryBodyPart, setSecondaryBodyPart] = useState('');
   const [equipment, setEquipment] = useState('');
   const [isMastered, setIsMastered] = useState<boolean | null>(null);
-  const [sortBy, setSortBy] = useState<'name' | 'last_used_date'>('name');
+  const [sortBy, setSortBy] = useState<'name'>('name');
   const [showFilters, setShowFilters] = useState(false);
 
   // Alert modal state
@@ -387,19 +387,6 @@ const ExercisesPage = () => {
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Showing {filteredAndSortedExercises.length} of {exercises.length} exercises
           </p>
-          <div className="flex items-center space-x-2">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Sort by:
-            </label>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as 'name' | 'last_used_date')}
-              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-            >
-              <option value="name">Alphabetical</option>
-              <option value="last_used_date">Last Used</option>
-            </select>
-          </div>
         </div>
 
         {/* Exercise Grid */}
@@ -438,11 +425,6 @@ const ExercisesPage = () => {
                     <span className="font-medium">Pattern:</span> {exercise.pattern}
                   </p>
                 </div>
-                {exercise.last_used_date && (
-                  <p className="mt-3 text-xs text-gray-500 dark:text-gray-500">
-                    Last used: {new Date(exercise.last_used_date).toLocaleDateString()}
-                  </p>
-                )}
               </Link>
             ))}
           </div>

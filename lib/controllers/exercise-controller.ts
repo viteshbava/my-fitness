@@ -4,7 +4,7 @@
  * Business logic for exercises including:
  * - Grouping exercises by body part or equipment
  * - Filtering by mastered status
- * - Sorting by name, last used date
+ * - Sorting by name
  * - Search and filter logic
  */
 
@@ -31,16 +31,6 @@ export const sortExercisesByName = (
   exercises: Exercise[]
 ): Exercise[] => {
   return [...exercises].sort((a, b) => a.name.localeCompare(b.name));
-};
-
-export const sortExercisesByLastUsed = (
-  exercises: Exercise[]
-): Exercise[] => {
-  return [...exercises].sort((a, b) => {
-    if (!a.last_used_date) return 1;
-    if (!b.last_used_date) return -1;
-    return new Date(b.last_used_date).getTime() - new Date(a.last_used_date).getTime();
-  });
 };
 
 /**
@@ -185,11 +175,8 @@ export const applyFilters = (
  */
 export const applySorting = (
   exercises: Exercise[],
-  sortBy: 'name' | 'last_used_date'
+  sortBy: 'name'
 ): Exercise[] => {
-  if (sortBy === 'last_used_date') {
-    return sortExercisesByLastUsed(exercises);
-  }
   return sortExercisesByName(exercises);
 };
 

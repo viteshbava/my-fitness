@@ -240,17 +240,6 @@ const ExerciseDetailPage = () => {
               </label>
               <p className='text-gray-900 dark:text-white'>{exercise.equipment}</p>
             </div>
-
-            {exercise.last_used_date && (
-              <div>
-                <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
-                  Last Used
-                </label>
-                <p className='text-gray-900 dark:text-white'>
-                  {new Date(exercise.last_used_date).toLocaleDateString()}
-                </p>
-              </div>
-            )}
           </div>
         </div>
 
