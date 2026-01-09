@@ -15,6 +15,8 @@ import AlertModal from '@/components/AlertModal';
 import { useToast } from '@/components/ToastProvider';
 import { format } from 'date-fns';
 import ProgressChart from '@/components/ProgressChart';
+import VideoThumbnail from '@/components/VideoThumbnail';
+import Breadcrumb, { BreadcrumbItem } from '@/components/Breadcrumb';
 
 const ExerciseDetailPage = () => {
   const params = useParams();
@@ -175,23 +177,17 @@ const ExerciseDetailPage = () => {
     );
   }
 
+  // Breadcrumb items
+  const breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Exercises', href: '/exercises' },
+    { label: exercise.name },
+  ];
+
   return (
     <div className='min-h-screen bg-gray-50 dark:bg-gray-900'>
       <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
-        {/* Back Button */}
-        <Link
-          href='/exercises'
-          className='inline-flex items-center text-blue-600 hover:text-blue-700 dark:text-blue-400 mb-6 cursor-pointer'>
-          <svg className='w-5 h-5 mr-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-            <path
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              strokeWidth={2}
-              d='M15 19l-7-7 7-7'
-            />
-          </svg>
-          Back to Exercise Library
-        </Link>
+        {/* Breadcrumb */}
+        <Breadcrumb items={breadcrumbItems} />
 
         {/* Header */}
         <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6'>
@@ -243,43 +239,16 @@ const ExerciseDetailPage = () => {
           </div>
         </div>
 
-        {/* Video Section - Placeholder */}
+        {/* Video Section */}
         <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6'>
           <h2 className='text-xl font-semibold text-gray-900 dark:text-white mb-4'>
             Exercise Video
           </h2>
-          <div className='bg-gray-100 dark:bg-gray-700 rounded-lg p-12 text-center'>
-            {exercise.video_url ? (
-              <div>
-                <svg
-                  className='w-16 h-16 mx-auto text-gray-400 mb-4'
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'>
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z'
-                  />
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
-                  />
-                </svg>
-                <p className='text-gray-600 dark:text-gray-400'>
-                  Video playback will be available in Sprint 6
-                </p>
-                <p className='text-sm text-gray-500 dark:text-gray-500 mt-2'>
-                  Video URL: {exercise.video_url}
-                </p>
-              </div>
-            ) : (
-              <p className='text-gray-500 dark:text-gray-400'>No video available</p>
-            )}
-          </div>
+          <VideoThumbnail
+            videoUrl={exercise.video_url}
+            exerciseName={exercise.name}
+            size='large'
+          />
         </div>
 
         {/* Experience Level Section - Editable */}

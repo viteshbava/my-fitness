@@ -14,6 +14,7 @@ import ConfirmationModal from '@/components/ConfirmationModal';
 import { useToast } from '@/components/ToastProvider';
 import { format } from 'date-fns';
 import { formatSetsSummary } from '@/lib/controllers/workout-exercise-controller';
+import VideoThumbnail from '@/components/VideoThumbnail';
 
 // Exercise Card Component
 interface ExerciseCardProps {
@@ -48,7 +49,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
   return (
     <div
       onClick={handleClick}
-      className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 transition-all border border-transparent flex items-stretch gap-3 relative cursor-pointer'>
+      className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 transition-all border border-transparent flex items-stretch gap-4 relative cursor-pointer'>
       {/* Up Arrow - Top Left */}
       {!isFirst && (
         <button
@@ -56,12 +57,25 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
             e.stopPropagation();
             onMoveUp();
           }}
-          className='absolute top-2 left-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer'
+          className='absolute top-2 left-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer z-10'
           aria-label='Move up'>
           <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
             <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 15l7-7 7 7' />
           </svg>
         </button>
+      )}
+
+      {/* Video Thumbnail - Left Side */}
+      {workoutExercise.exercise.video_url && (
+        <div
+          className='shrink-0 mt-8'
+          onClick={(e) => e.stopPropagation()}>
+          <VideoThumbnail
+            videoUrl={workoutExercise.exercise.video_url}
+            exerciseName={workoutExercise.exercise.name}
+            size='small'
+          />
+        </div>
       )}
 
       {/* Card Content */}
@@ -93,7 +107,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
             e.stopPropagation();
             onMoveDown();
           }}
-          className='absolute bottom-2 left-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer'
+          className='absolute bottom-2 left-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer z-10'
           aria-label='Move down'>
           <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
             <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
