@@ -21,6 +21,7 @@ const ExerciseDetailPage = () => {
   const [bestSet, setBestSet] = useState<Set | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showHistorical, setShowHistorical] = useState(false);
 
   // Notes editing state
   const [notes, setNotes] = useState('');
@@ -401,57 +402,131 @@ const ExerciseDetailPage = () => {
           )}
         </div>
 
-        {/* Historical Performance */}
-        {historicalData.length > 0 && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              Historical Performance
+        {/* Latest Workouts Section */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+          <button
+            onClick={() => setShowHistorical(!showHistorical)}
+            className='w-full flex items-center justify-between text-left cursor-pointer hover:opacity-80 transition-opacity'>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              Latest Workouts
+              <span className='text-sm text-gray-500 ml-2'>({Math.min(historicalData.length, 3)})</span>
             </h2>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-200 dark:border-gray-700">
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Date
-                    </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Sets
-                    </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Best Set
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {historicalData.map((workout, index) => {
-                    const bestSet = workout.sets
-                      .filter(set => (set.reps || 0) >= 6)
-                      .reduce((best, set) => {
-                        if (!best || (set.weight || 0) > (best.weight || 0)) {
-                          return set;
+            <svg
+              className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform ${
+                showHistorical ? 'rotate-180' : ''
+              }`}
+              fill='none'
+              stroke='currentColor'
+              viewBox='0 0 24 24'>
+              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
+            </svg>
+          </button>
+
+          {showHistorical && (
+            <div className='mt-4'>
+              {historicalData.length === 0 ? (
+                <div className='text-center py-8'>
+                  <svg
+                    className='w-16 h-16 mx-auto text-gray-400 mb-4'
+                    fill='none'
+                    stroke='currentColor'
+                    viewBox='0 0 24 24'>
+                    <path
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      strokeWidth={2}
+                      d='M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'
+                    />
+                  </svg>
+                  <p className='text-gray-500 dark:text-gray-400 text-lg mb-2'>No workout history yet</p>
+                  <p className='text-sm text-gray-400 dark:text-gray-500'>
+                    Add this exercise to a workout and complete some sets to see your history here
+                  </p>
+                </div>
+              ) : (
+                <div className='space-y-6'>
+                  {historicalData.slice(0, 3).map((workout, workoutIndex) => {
+                    // Calculate time gap since previous workout
+                    let timeGapText: string | null = null;
+                    if (workoutIndex > 0) {
+                      const currentDate = new Date(workout.date);
+                      const previousDate = new Date(historicalData[workoutIndex - 1].date);
+                      const totalDays = Math.round(Math.abs((currentDate.getTime() - previousDate.getTime()) / (1000 * 60 * 60 * 24)));
+
+                      if (totalDays < 7) {
+                        timeGapText = `${totalDays} day${totalDays !== 1 ? 's' : ''} gap`;
+                      } else {
+                        const weeks = Math.floor(totalDays / 7);
+                        const days = totalDays % 7;
+                        if (days === 0) {
+                          timeGapText = `${weeks} week${weeks !== 1 ? 's' : ''} gap`;
+                        } else {
+                          timeGapText = `${weeks} week${weeks !== 1 ? 's' : ''}, ${days} day${days !== 1 ? 's' : ''} gap`;
                         }
-                        return best;
-                      }, null as Set | null);
+                      }
+                    }
 
                     return (
-                      <tr key={index} className="border-b border-gray-100 dark:border-gray-700">
-                        <td className="py-3 px-4 text-gray-900 dark:text-white">
-                          {format(new Date(workout.date), 'MMM d, yyyy')}
-                        </td>
-                        <td className="py-3 px-4 text-gray-900 dark:text-white">
-                          {workout.sets.length} sets
-                        </td>
-                        <td className="py-3 px-4 text-gray-900 dark:text-white">
-                          {bestSet ? `${bestSet.weight} kg × ${bestSet.reps} reps` : 'N/A'}
-                        </td>
-                      </tr>
+                      <div key={workoutIndex}>
+                        {timeGapText && (
+                          <div className='text-center py-2 mb-4'>
+                            <span className='text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full'>
+                              {timeGapText}
+                            </span>
+                          </div>
+                        )}
+                        <div className='border-b border-gray-200 dark:border-gray-700 pb-4 last:border-b-0 last:pb-0'>
+                          <div className='flex justify-between items-center mb-3'>
+                            <h3 className='text-lg font-medium text-gray-900 dark:text-white'>
+                              {format(new Date(workout.date), 'MMMM d, yyyy')}
+                            </h3>
+                            <span className='text-sm text-gray-600 dark:text-gray-400'>
+                              {workout.sets.length} sets
+                            </span>
+                          </div>
+                          <div className='overflow-x-auto'>
+                            <table className='w-full'>
+                              <thead>
+                                <tr className='border-b border-gray-200 dark:border-gray-700'>
+                                  <th className='text-left py-2 px-4 text-sm font-medium text-gray-700 dark:text-gray-300'>
+                                    Set
+                                  </th>
+                                  <th className='text-left py-2 px-4 text-sm font-medium text-gray-700 dark:text-gray-300'>
+                                    Weight (kg)
+                                  </th>
+                                  <th className='text-left py-2 px-4 text-sm font-medium text-gray-700 dark:text-gray-300'>
+                                    Reps
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {workout.sets.map((set, setIndex) => (
+                                  <tr
+                                    key={setIndex}
+                                    className='border-b border-gray-100 dark:border-gray-700'>
+                                    <td className='py-2 px-4 text-gray-900 dark:text-white'>
+                                      {set.set_number}
+                                    </td>
+                                    <td className='py-2 px-4 text-gray-900 dark:text-white'>
+                                      {set.weight ?? '-'}
+                                    </td>
+                                    <td className='py-2 px-4 text-gray-900 dark:text-white'>
+                                      {set.reps ?? '-'}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
                     );
                   })}
-                </tbody>
-              </table>
+                </div>
+              )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Best Set */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">

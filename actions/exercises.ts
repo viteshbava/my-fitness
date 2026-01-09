@@ -186,23 +186,30 @@ export const fetchExerciseHistoricalData = async (
         sets,
         workout:workouts!inner (id, date)
       `)
-      .eq('exercise_id', exerciseId)
-      .order('workout.date', { ascending: false });
+      .eq('exercise_id', exerciseId);
 
     if (error) {
       return { data: null, error: error.message };
     }
 
-    // Filter to only workouts with data and format the response
-    const historicalData = (data || [])
-      .filter((we: any) => {
-        const sets = we.sets || [];
-        return sets.some((set: Set) => set.reps !== null && set.reps > 0);
-      })
-      .map((we: any) => ({
-        date: we.workout.date,
-        sets: we.sets || [],
-      }));
+    // Filter to only workouts with data
+    const workoutsWithData = (data || []).filter((we: any) => {
+      const sets = we.sets || [];
+      return sets.some((set: Set) => set.reps !== null && set.reps > 0);
+    });
+
+    // Sort by date descending (most recent first)
+    workoutsWithData.sort((a: any, b: any) => {
+      const dateA = new Date(a.workout.date).getTime();
+      const dateB = new Date(b.workout.date).getTime();
+      return dateB - dateA;
+    });
+
+    // Format the response
+    const historicalData = workoutsWithData.map((we: any) => ({
+      date: we.workout.date,
+      sets: we.sets || [],
+    }));
 
     return { data: historicalData, error: null };
   } catch (err) {
