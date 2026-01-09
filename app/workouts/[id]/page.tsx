@@ -46,7 +46,9 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
   const setsSummary = formatSetsSummary(sets);
 
   return (
-    <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 transition-all border border-transparent flex items-stretch gap-3 relative'>
+    <div
+      onClick={handleClick}
+      className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 transition-all border border-transparent flex items-stretch gap-3 relative cursor-pointer'>
       {/* Up Arrow - Top Left */}
       {!isFirst && (
         <button
@@ -63,7 +65,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
       )}
 
       {/* Card Content */}
-      <div onClick={handleClick} className='grow cursor-pointer pl-4'>
+      <div className='grow pl-4'>
         <h3 className='text-xl font-semibold text-gray-900 dark:text-white mb-2'>
           {workoutExercise.exercise.name}
         </h3>
