@@ -200,20 +200,20 @@ const ExerciseDetailPage = () => {
             )}
           </div>
 
+          {/* Pattern - Prominent */}
+          <div className='mb-6'>
+            <span className='inline-block px-4 py-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-md text-lg font-bold'>
+              {exercise.pattern}
+            </span>
+          </div>
+
           {/* Exercise Attributes */}
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-6'>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             <div>
               <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                 Movement Type
               </label>
               <p className='text-gray-900 dark:text-white'>{exercise.movement_type}</p>
-            </div>
-
-            <div>
-              <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
-                Pattern
-              </label>
-              <p className='text-gray-900 dark:text-white'>{exercise.pattern}</p>
             </div>
 
             <div>

@@ -69,21 +69,20 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
         <h3 className='text-xl font-semibold text-gray-900 dark:text-white mb-2'>
           {workoutExercise.exercise.name}
         </h3>
+        {/* Pattern - Prominent */}
+        <div className='mb-3'>
+          <span className='inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-md text-base font-semibold'>
+            {workoutExercise.exercise.pattern}
+          </span>
+        </div>
         <div className='space-y-1 text-sm text-gray-600 dark:text-gray-400'>
-          <p>
-            <span className='font-medium'>Primary:</span>{' '}
-            {workoutExercise.exercise.primary_body_part}
-          </p>
-          <p>
-            <span className='font-medium'>Equipment:</span> {workoutExercise.exercise.equipment}
-          </p>
           {bestSet && (
             <p>
               <span className='font-medium'>Best Set:</span> {bestSet.weight}kg × {bestSet.reps}reps
             </p>
           )}
+          <p className='font-medium text-gray-700 dark:text-gray-300'>{setsSummary}</p>
         </div>
-        <p className='mt-3 text-sm font-medium text-gray-700 dark:text-gray-300'>{setsSummary}</p>
       </div>
 
       {/* Down Arrow - Bottom Left */}

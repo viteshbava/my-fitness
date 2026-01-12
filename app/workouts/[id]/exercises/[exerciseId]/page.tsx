@@ -358,9 +358,15 @@ const WorkoutExerciseDetailPage = () => {
         <div className='mb-8'>
           <div className='flex items-start justify-between'>
             <div>
-              <h1 className='text-3xl font-bold text-gray-900 dark:text-white mb-2'>
+              <h1 className='text-3xl font-bold text-gray-900 dark:text-white mb-3'>
                 {workoutExercise.exercise.name}
               </h1>
+              {/* Pattern - Always visible and prominent */}
+              <div className='mb-3'>
+                <span className='inline-block px-4 py-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-md text-lg font-bold'>
+                  {workoutExercise.exercise.pattern}
+                </span>
+              </div>
               {bestSet && (
                 <p className='text-lg text-gray-600 dark:text-gray-400'>
                   Best Set:{' '}
@@ -409,6 +415,12 @@ const WorkoutExerciseDetailPage = () => {
 
           {showExerciseDetails && (
             <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-4'>
+              <div>
+                <p className='text-sm font-medium text-gray-500 dark:text-gray-400'>Pattern</p>
+                <p className='text-lg font-semibold text-gray-900 dark:text-white'>
+                  {workoutExercise.exercise.pattern}
+                </p>
+              </div>
               <div>
                 <p className='text-sm font-medium text-gray-500 dark:text-gray-400'>
                   Primary Body Part

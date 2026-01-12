@@ -404,7 +404,7 @@ const ExercisesPage = () => {
                 href={`/exercises/${exercise.id}`}
                 className="block bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow p-6 cursor-pointer"
               >
-                <div className="flex items-start justify-between mb-2">
+                <div className="flex items-start justify-between mb-3">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                     {exercise.name}
                   </h3>
@@ -414,15 +414,18 @@ const ExercisesPage = () => {
                     </span>
                   )}
                 </div>
+                {/* Pattern - Prominent */}
+                <div className="mb-3">
+                  <span className="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-md text-base font-semibold">
+                    {exercise.pattern}
+                  </span>
+                </div>
                 <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
                   <p>
                     <span className="font-medium">Primary:</span> {exercise.primary_body_part}
                   </p>
                   <p>
                     <span className="font-medium">Equipment:</span> {exercise.equipment}
-                  </p>
-                  <p>
-                    <span className="font-medium">Pattern:</span> {exercise.pattern}
                   </p>
                 </div>
               </Link>
