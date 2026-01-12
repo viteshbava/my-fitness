@@ -48,7 +48,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
   return (
     <div
       onClick={handleClick}
-      className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 transition-all border border-transparent flex items-stretch gap-4 relative cursor-pointer'>
+      className='bg-white dark:bg-gray-800 rounded-lg shadow p-10 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 transition-all border border-transparent flex items-stretch gap-4 relative cursor-pointer'>
       {/* Up Arrow - Top Left */}
       {!isFirst && (
         <button
