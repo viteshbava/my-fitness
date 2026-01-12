@@ -247,6 +247,7 @@ const ExerciseDetailPage = () => {
           <VideoThumbnail
             videoUrl={exercise.video_url}
             exerciseName={exercise.name}
+            primaryBodyPart={exercise.primary_body_part}
             size='large'
           />
         </div>

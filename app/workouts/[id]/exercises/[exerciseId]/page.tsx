@@ -44,6 +44,7 @@ const WorkoutExerciseDetailPage = () => {
   const [isInProgress, setIsInProgress] = useState(false);
   const [autoSaving, setAutoSaving] = useState(false);
   const [showHistorical, setShowHistorical] = useState(false);
+  const [showExerciseDetails, setShowExerciseDetails] = useState(false);
 
   // Alert modal state
   const [alertModalOpen, setAlertModalOpen] = useState(false);
@@ -387,55 +388,57 @@ const WorkoutExerciseDetailPage = () => {
           </div>
         </div>
 
-        {/* Video Section */}
-        {workoutExercise.exercise.video_url && (
-          <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6'>
-            <h2 className='text-xl font-semibold text-gray-900 dark:text-white mb-4'>
-              Exercise Video
-            </h2>
-            <VideoThumbnail
-              videoUrl={workoutExercise.exercise.video_url}
-              exerciseName={workoutExercise.exercise.name}
-              size='large'
-            />
-          </div>
-        )}
-
-        {/* Exercise Details */}
+        {/* Exercise Details - Collapsible */}
         <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6'>
-          <h2 className='text-xl font-semibold text-gray-900 dark:text-white mb-4'>
-            Exercise Details
-          </h2>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-            <div>
-              <p className='text-sm font-medium text-gray-500 dark:text-gray-400'>
-                Primary Body Part
-              </p>
-              <p className='text-lg text-gray-900 dark:text-white'>
-                {workoutExercise.exercise.primary_body_part}
-              </p>
+          <button
+            onClick={() => setShowExerciseDetails(!showExerciseDetails)}
+            className='w-full flex items-center justify-between text-left cursor-pointer hover:opacity-80 transition-opacity'>
+            <h2 className='text-xl font-semibold text-gray-900 dark:text-white'>
+              Exercise Details
+            </h2>
+            <svg
+              className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform ${
+                showExerciseDetails ? 'rotate-180' : ''
+              }`}
+              fill='none'
+              stroke='currentColor'
+              viewBox='0 0 24 24'>
+              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
+            </svg>
+          </button>
+
+          {showExerciseDetails && (
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-4'>
+              <div>
+                <p className='text-sm font-medium text-gray-500 dark:text-gray-400'>
+                  Primary Body Part
+                </p>
+                <p className='text-lg text-gray-900 dark:text-white'>
+                  {workoutExercise.exercise.primary_body_part}
+                </p>
+              </div>
+              <div>
+                <p className='text-sm font-medium text-gray-500 dark:text-gray-400'>
+                  Secondary Body Part
+                </p>
+                <p className='text-lg text-gray-900 dark:text-white'>
+                  {workoutExercise.exercise.secondary_body_part}
+                </p>
+              </div>
+              <div>
+                <p className='text-sm font-medium text-gray-500 dark:text-gray-400'>Equipment</p>
+                <p className='text-lg text-gray-900 dark:text-white'>
+                  {workoutExercise.exercise.equipment}
+                </p>
+              </div>
+              <div>
+                <p className='text-sm font-medium text-gray-500 dark:text-gray-400'>Movement Type</p>
+                <p className='text-lg text-gray-900 dark:text-white'>
+                  {workoutExercise.exercise.movement_type}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className='text-sm font-medium text-gray-500 dark:text-gray-400'>
-                Secondary Body Part
-              </p>
-              <p className='text-lg text-gray-900 dark:text-white'>
-                {workoutExercise.exercise.secondary_body_part}
-              </p>
-            </div>
-            <div>
-              <p className='text-sm font-medium text-gray-500 dark:text-gray-400'>Equipment</p>
-              <p className='text-lg text-gray-900 dark:text-white'>
-                {workoutExercise.exercise.equipment}
-              </p>
-            </div>
-            <div>
-              <p className='text-sm font-medium text-gray-500 dark:text-gray-400'>Movement Type</p>
-              <p className='text-lg text-gray-900 dark:text-white'>
-                {workoutExercise.exercise.movement_type}
-              </p>
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Sets Section */}
@@ -547,6 +550,21 @@ const WorkoutExerciseDetailPage = () => {
             </div>
           )}
         </div>
+
+        {/* Video Section */}
+        {workoutExercise.exercise.video_url && (
+          <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 mt-6'>
+            <h2 className='text-xl font-semibold text-gray-900 dark:text-white mb-4'>
+              Exercise Video
+            </h2>
+            <VideoThumbnail
+              videoUrl={workoutExercise.exercise.video_url}
+              exerciseName={workoutExercise.exercise.name}
+              primaryBodyPart={workoutExercise.exercise.primary_body_part}
+              size='large'
+            />
+          </div>
+        )}
 
         {/* Historical Data Section */}
         <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 mt-6'>

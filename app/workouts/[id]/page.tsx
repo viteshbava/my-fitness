@@ -14,7 +14,6 @@ import ConfirmationModal from '@/components/ConfirmationModal';
 import { useToast } from '@/components/ToastProvider';
 import { format } from 'date-fns';
 import { formatSetsSummary } from '@/lib/controllers/workout-exercise-controller';
-import VideoThumbnail from '@/components/VideoThumbnail';
 
 // Exercise Card Component
 interface ExerciseCardProps {
@@ -65,21 +64,8 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
         </button>
       )}
 
-      {/* Video Thumbnail - Left Side */}
-      {workoutExercise.exercise.video_url && (
-        <div
-          className='shrink-0 mt-8'
-          onClick={(e) => e.stopPropagation()}>
-          <VideoThumbnail
-            videoUrl={workoutExercise.exercise.video_url}
-            exerciseName={workoutExercise.exercise.name}
-            size='small'
-          />
-        </div>
-      )}
-
       {/* Card Content */}
-      <div className='grow pl-4'>
+      <div className='grow'>
         <h3 className='text-xl font-semibold text-gray-900 dark:text-white mb-2'>
           {workoutExercise.exercise.name}
         </h3>
