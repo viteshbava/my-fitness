@@ -552,7 +552,7 @@ const WorkoutExerciseDetailPage = () => {
           )}
 
           {isInProgress && (
-            <div className='mt-4 flex gap-2'>
+            <div className='mt-4 flex flex-col gap-2'>
               <Button onClick={handleAddSet} variant='primary'>
                 Add Set
               </Button>
