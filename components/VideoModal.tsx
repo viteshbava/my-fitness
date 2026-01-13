@@ -33,7 +33,7 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, videoUrl, exerciseName,
 
   return (
     <ModalOverlay isOpen={isOpen} onClose={onClose}>
-      <div className='bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-6xl w-full mx-4 max-h-[90vh] overflow-hidden'>
+      <div className='bg-white dark:bg-gray-800 rounded-lg shadow-xl w-[calc(100vw-2rem)] h-[calc(100vh-2rem)] overflow-hidden flex flex-col'>
         {/* Header */}
         <div className='flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700'>
           <h2 className='text-xl font-semibold text-gray-900 dark:text-white'>{exerciseName}</h2>
@@ -53,7 +53,7 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, videoUrl, exerciseName,
         </div>
 
         {/* Video Content */}
-        <div className='relative w-full' style={{ paddingBottom: '56.25%' }}>
+        <div className='relative flex-1 w-full'>
           <iframe
             src={embedUrl}
             className='absolute top-0 left-0 w-full h-full'
