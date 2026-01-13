@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { fetchWorkouts, createWorkout } from '@/actions/workouts';
 import { Workout } from '@/types/database';
-import WorkoutCalendar from '@/components/WorkoutCalendar';
+import CustomWorkoutCalendar from '@/components/CustomWorkoutCalendar';
 import AlertModal from '@/components/AlertModal';
 import { useToast } from '@/components/ToastProvider';
 import { format } from 'date-fns';
@@ -102,20 +102,10 @@ const WorkoutsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Workout Calendar
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            View and manage your workouts. Click a date to create a new workout.
-          </p>
-        </div>
-
         {/* Calendar */}
-        <WorkoutCalendar
+        <CustomWorkoutCalendar
           workouts={workouts}
           onSelectWorkout={handleSelectWorkout}
           onSelectDate={handleSelectDate}
