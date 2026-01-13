@@ -84,10 +84,10 @@ const BottomNav = () => {
               <Link
                 key={item.path}
                 href={item.path}
-                className={`flex flex-col items-center justify-center flex-1 h-full cursor-pointer transition-colors ${
+                className={`flex flex-col items-center justify-center flex-1 h-full cursor-pointer transition-all ${
                   active
                     ? 'text-blue-600 dark:text-blue-400'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 active:text-blue-700 dark:active:text-blue-500 active:scale-95'
                 }`}
               >
                 {item.icon}
