@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import VideoModal from './VideoModal';
+import Button from './Button';
 
 interface VideoThumbnailProps {
   videoUrl: string | null;
@@ -32,14 +33,12 @@ const VideoThumbnail: React.FC<VideoThumbnailProps> = ({
   if (size === 'small') {
     return (
       <>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className='flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 active:scale-95 text-white rounded-md transition-all cursor-pointer text-sm'>
-          <svg className='w-4 h-4' fill='currentColor' viewBox='0 0 24 24'>
+        <Button onClick={() => setIsModalOpen(true)} variant='primary' size='sm'>
+          <svg className='w-4 h-4 mr-1 inline' fill='currentColor' viewBox='0 0 24 24'>
             <path d='M8 5v14l11-7z' />
           </svg>
           Video
-        </button>
+        </Button>
 
         <VideoModal
           isOpen={isModalOpen}
@@ -54,14 +53,12 @@ const VideoThumbnail: React.FC<VideoThumbnailProps> = ({
   // For medium and large sizes, show a prominent button
   return (
     <>
-      <button
-        onClick={() => setIsModalOpen(true)}
-        className={`w-full flex items-center justify-center gap-3 px-6 py-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 active:scale-[0.98] text-white rounded-lg transition-all cursor-pointer ${className}`}>
-        <svg className='w-6 h-6' fill='currentColor' viewBox='0 0 24 24'>
+      <Button onClick={() => setIsModalOpen(true)} variant='primary' size='lg' fullWidth className={className}>
+        <svg className='w-6 h-6 mr-2 inline' fill='currentColor' viewBox='0 0 24 24'>
           <path d='M8 5v14l11-7z' />
         </svg>
-        <span className='text-lg font-medium'>Play Exercise Video</span>
-      </button>
+        Play Exercise Video
+      </Button>
 
       <VideoModal
         isOpen={isModalOpen}

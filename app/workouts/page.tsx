@@ -6,6 +6,7 @@ import { fetchWorkouts, createWorkout } from '@/actions/workouts';
 import { Workout } from '@/types/database';
 import CustomWorkoutCalendar from '@/components/CustomWorkoutCalendar';
 import AlertModal from '@/components/AlertModal';
+import Button from '@/components/Button';
 import { useToast } from '@/components/ToastProvider';
 import { format } from 'date-fns';
 
@@ -184,22 +185,20 @@ const WorkoutsPage = () => {
               </div>
 
               <div className="flex flex-col space-y-2">
-                <button
-                  onClick={handleCreateWorkout}
-                  className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 active:scale-95 text-white font-medium py-2 px-4 rounded-md transition-all cursor-pointer"
-                >
+                <Button onClick={handleCreateWorkout} variant="primary" fullWidth>
                   Create New Workout
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => {
                     setShowCreateModal(false);
                     setSelectedDate(null);
                     setNewWorkoutName('');
                   }}
-                  className="w-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 active:bg-gray-400 dark:active:bg-gray-500 active:scale-95 text-gray-800 dark:text-gray-200 font-medium py-2 px-4 rounded-md transition-all cursor-pointer"
+                  variant="secondary"
+                  fullWidth
                 >
                   Close
-                </button>
+                </Button>
               </div>
             </div>
           </div>

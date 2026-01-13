@@ -18,6 +18,7 @@ import {
 import { WorkoutExerciseWithExercise, Set } from '@/types/database';
 import AlertModal from '@/components/AlertModal';
 import ConfirmationModal from '@/components/ConfirmationModal';
+import Button from '@/components/Button';
 import { useToast } from '@/components/ToastProvider';
 import { format } from 'date-fns';
 import {
@@ -476,23 +477,17 @@ const WorkoutExerciseDetailPage = () => {
               )}
             </div>
             {!isInProgress ? (
-              <button
-                onClick={handleEnterInProgress}
-                className='px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 active:scale-95 text-white font-medium rounded-md transition-all cursor-pointer'>
+              <Button onClick={handleEnterInProgress} variant='primary'>
                 Start Editing
-              </button>
+              </Button>
             ) : (
               <div className='flex gap-2'>
-                <button
-                  onClick={handleCancelClick}
-                  className='px-4 py-2 bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 active:bg-gray-500 dark:active:bg-gray-400 active:scale-95 text-gray-800 dark:text-white font-medium rounded-md transition-all cursor-pointer'>
+                <Button onClick={handleCancelClick} variant='secondary'>
                   Cancel
-                </button>
-                <button
-                  onClick={handleSave}
-                  className='px-4 py-2 bg-green-600 hover:bg-green-700 active:bg-green-800 active:scale-95 text-white font-medium rounded-md transition-all cursor-pointer'>
+                </Button>
+                <Button onClick={handleSave} variant='success'>
                   Save
-                </button>
+                </Button>
               </div>
             )}
           </div>
@@ -558,17 +553,13 @@ const WorkoutExerciseDetailPage = () => {
 
           {isInProgress && (
             <div className='mt-4 flex gap-2'>
-              <button
-                onClick={handleAddSet}
-                className='px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 active:scale-95 text-white font-medium rounded-md transition-all cursor-pointer'>
+              <Button onClick={handleAddSet} variant='primary'>
                 Add Set
-              </button>
+              </Button>
               {sets.length > 1 && (
-                <button
-                  onClick={handleDeleteLastSet}
-                  className='px-4 py-2 bg-red-600 hover:bg-red-700 active:bg-red-800 active:scale-95 text-white font-medium rounded-md transition-all cursor-pointer'>
+                <Button onClick={handleDeleteLastSet} variant='danger'>
                   Delete Last Set
-                </button>
+                </Button>
               )}
             </div>
           )}

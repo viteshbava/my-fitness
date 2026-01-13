@@ -12,6 +12,7 @@ import {
 import { fetchBestSetForExercise } from '@/actions/workout-exercises';
 import { Exercise, Set } from '@/types/database';
 import AlertModal from '@/components/AlertModal';
+import Button from '@/components/Button';
 import { useToast } from '@/components/ToastProvider';
 import { format } from 'date-fns';
 import ProgressChart from '@/components/ProgressChart';
@@ -259,11 +260,9 @@ const ExerciseDetailPage = () => {
               Experience Level
             </h2>
             {!isEditingLearnt && (
-              <button
-                onClick={() => setIsEditingLearnt(true)}
-                className='px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 active:text-blue-800 dark:active:text-blue-500 active:scale-95 transition-all cursor-pointer'>
+              <Button onClick={() => setIsEditingLearnt(true)} variant='text' size='sm'>
                 Edit
-              </button>
+              </Button>
             )}
           </div>
 
@@ -277,18 +276,12 @@ const ExerciseDetailPage = () => {
                 <option value='learnt'>Learnt</option>
               </select>
               <div className='flex items-center justify-end space-x-3 mt-4'>
-                <button
-                  onClick={handleCancelEditLearnt}
-                  disabled={isSavingLearnt}
-                  className='px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 active:text-gray-950 dark:active:text-gray-100 active:scale-95 transition-all cursor-pointer disabled:opacity-50'>
+                <Button onClick={handleCancelEditLearnt} disabled={isSavingLearnt} variant='ghost' size='sm'>
                   Cancel
-                </button>
-                <button
-                  onClick={handleSaveLearnt}
-                  disabled={isSavingLearnt}
-                  className='px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium active:bg-blue-800 active:scale-95 transition-all cursor-pointer disabled:opacity-50'>
+                </Button>
+                <Button onClick={handleSaveLearnt} disabled={isSavingLearnt} variant='primary' size='sm'>
                   {isSavingLearnt ? 'Saving...' : 'Save'}
-                </button>
+                </Button>
               </div>
             </div>
           ) : (
@@ -311,11 +304,9 @@ const ExerciseDetailPage = () => {
           <div className='flex items-center justify-between mb-4'>
             <h2 className='text-xl font-semibold text-gray-900 dark:text-white'>Notes</h2>
             {!isEditingNotes && (
-              <button
-                onClick={() => setIsEditingNotes(true)}
-                className='px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 active:text-blue-800 dark:active:text-blue-500 active:scale-95 transition-all cursor-pointer'>
+              <Button onClick={() => setIsEditingNotes(true)} variant='text' size='sm'>
                 Edit
-              </button>
+              </Button>
             )}
           </div>
 
@@ -329,18 +320,12 @@ const ExerciseDetailPage = () => {
                 placeholder='Add notes about equipment settings, technique tips, etc.'
               />
               <div className='flex items-center justify-end space-x-3 mt-4'>
-                <button
-                  onClick={handleCancelEditNotes}
-                  disabled={isSavingNotes}
-                  className='px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 active:text-gray-950 dark:active:text-gray-100 active:scale-95 transition-all cursor-pointer disabled:opacity-50'>
+                <Button onClick={handleCancelEditNotes} disabled={isSavingNotes} variant='ghost' size='sm'>
                   Cancel
-                </button>
-                <button
-                  onClick={handleSaveNotes}
-                  disabled={isSavingNotes}
-                  className='px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium active:bg-blue-800 active:scale-95 transition-all cursor-pointer disabled:opacity-50'>
+                </Button>
+                <Button onClick={handleSaveNotes} disabled={isSavingNotes} variant='primary' size='sm'>
                   {isSavingNotes ? 'Saving...' : 'Save'}
-                </button>
+                </Button>
               </div>
             </div>
           ) : (

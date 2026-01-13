@@ -2,6 +2,7 @@
 
 import React from 'react';
 import ModalOverlay from './ModalOverlay';
+import Button from './Button';
 
 interface VideoModalProps {
   isOpen: boolean;
@@ -64,11 +65,9 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, videoUrl, exerciseName,
 
         {/* Footer */}
         <div className='p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end'>
-          <button
-            onClick={onClose}
-            className='px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 active:scale-95 text-white rounded-md transition-all cursor-pointer'>
+          <Button onClick={onClose} variant='primary'>
             Close
-          </button>
+          </Button>
         </div>
       </div>
     </ModalOverlay>

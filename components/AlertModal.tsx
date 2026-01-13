@@ -1,5 +1,6 @@
 import React from 'react';
 import ModalOverlay from './ModalOverlay';
+import Button from './Button';
 
 interface AlertModalProps {
   isOpen: boolean;
@@ -29,16 +30,16 @@ const AlertModal: React.FC<AlertModalProps> = ({
     }
   };
 
-  const getButtonStyles = () => {
+  const getButtonVariant = (): 'primary' | 'danger' | 'warning' | 'success' => {
     switch (type) {
       case 'error':
-        return 'bg-red-600 hover:bg-red-700 active:bg-red-800';
+        return 'danger';
       case 'warning':
-        return 'bg-yellow-600 hover:bg-yellow-700 active:bg-yellow-800';
+        return 'warning';
       case 'success':
-        return 'bg-green-600 hover:bg-green-700 active:bg-green-800';
+        return 'success';
       default:
-        return 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800';
+        return 'primary';
     }
   };
 
@@ -50,11 +51,9 @@ const AlertModal: React.FC<AlertModalProps> = ({
           <p className='text-sm'>{message}</p>
         </div>
         <div className='p-4 flex justify-end'>
-          <button
-            onClick={onClose}
-            className={`px-4 py-2 text-white rounded-md ${getButtonStyles()} active:scale-95 transition-all cursor-pointer`}>
+          <Button onClick={onClose} variant={getButtonVariant()}>
             OK
-          </button>
+          </Button>
         </div>
       </div>
     </ModalOverlay>
