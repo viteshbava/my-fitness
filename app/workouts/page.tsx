@@ -17,6 +17,7 @@ const WorkoutsPage = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [workoutsOnSelectedDate, setWorkoutsOnSelectedDate] = useState<Workout[]>([]);
+  const [newWorkoutName, setNewWorkoutName] = useState('');
 
   // Alert modal state
   const [alertModalOpen, setAlertModalOpen] = useState(false);
@@ -70,13 +71,19 @@ const WorkoutsPage = () => {
   const handleSelectDate = (date: Date) => {
     setSelectedDate(date);
     setShowCreateModal(true);
+    setNewWorkoutName('');
   };
 
   const handleCreateWorkout = async () => {
     if (!selectedDate) return;
 
+    if (!newWorkoutName.trim()) {
+      showAlert('Name Required', 'Please enter a workout name', 'warning');
+      return;
+    }
+
     const dateStr = format(selectedDate, 'yyyy-MM-dd');
-    const { data, error } = await createWorkout(dateStr);
+    const { data, error } = await createWorkout(dateStr, newWorkoutName.trim());
 
     if (error) {
       showAlert('Error Creating Workout', error, 'error');
@@ -86,6 +93,9 @@ const WorkoutsPage = () => {
     if (data) {
       setWorkouts([...workouts, data]);
       showToast('Workout created successfully', 'success');
+      setShowCreateModal(false);
+      setSelectedDate(null);
+      setNewWorkoutName('');
       router.push(`/workouts/${data.id}`);
     }
   };
@@ -119,9 +129,9 @@ const WorkoutsPage = () => {
                 {format(selectedDate, 'MMMM d, yyyy')}
               </h2>
 
-              {workoutsOnSelectedDate.length > 0 ? (
+              {workoutsOnSelectedDate.length > 0 && (
                 <div className="mb-4 space-y-2">
-                  {workoutsOnSelectedDate.map((workout, index) => (
+                  {workoutsOnSelectedDate.map((workout) => (
                     <div
                       key={workout.id}
                       onClick={() => handleSelectWorkout(workout)}
@@ -130,7 +140,7 @@ const WorkoutsPage = () => {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="font-medium text-gray-900 dark:text-white">
-                            Workout {index + 1}
+                            {workout.name}
                           </p>
                           <p className="text-sm text-gray-500 dark:text-gray-400">
                             Created at {format(new Date(workout.created_at), 'h:mm a')}
@@ -153,13 +163,25 @@ const WorkoutsPage = () => {
                     </div>
                   ))}
                 </div>
-              ) : (
-                <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <p className="text-center text-gray-500 dark:text-gray-400">
-                    No workouts on this date
-                  </p>
-                </div>
               )}
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Workout Name
+                </label>
+                <input
+                  type="text"
+                  value={newWorkoutName}
+                  onChange={(e) => setNewWorkoutName(e.target.value)}
+                  placeholder="Enter workout name (e.g., Morning Run, Leg Day)"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleCreateWorkout();
+                    }
+                  }}
+                />
+              </div>
 
               <div className="flex flex-col space-y-2">
                 <button
@@ -172,6 +194,7 @@ const WorkoutsPage = () => {
                   onClick={() => {
                     setShowCreateModal(false);
                     setSelectedDate(null);
+                    setNewWorkoutName('');
                   }}
                   className="w-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium py-2 px-4 rounded-md transition-colors cursor-pointer"
                 >

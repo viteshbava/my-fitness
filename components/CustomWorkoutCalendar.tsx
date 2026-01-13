@@ -174,7 +174,7 @@ const CustomWorkoutCalendar: React.FC<CustomWorkoutCalendarProps> = ({
                           onSelectWorkout(workout);
                         }}
                         className='bg-green-500 hover:bg-green-600 text-white text-xs p-1 rounded cursor-pointer transition-colors'>
-                        Full Body
+                        {workout.name}
                       </div>
                     ))}
                   </div>
@@ -202,7 +202,7 @@ const CustomWorkoutCalendar: React.FC<CustomWorkoutCalendarProps> = ({
                   className='bg-gray-800 hover:bg-gray-700 p-4 rounded-lg cursor-pointer transition-colors'>
                   <div className='flex items-center justify-between'>
                     <div>
-                      <div className='font-medium'>Full Body</div>
+                      <div className='font-medium'>{workout.name}</div>
                       <div className='text-sm text-gray-400'>
                         {format(new Date(workout.date), 'EEEE, MMMM d, yyyy')}
                       </div>

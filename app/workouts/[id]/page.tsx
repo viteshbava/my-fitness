@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { fetchWorkoutById, deleteWorkout } from '@/actions/workouts';
+import { fetchWorkoutById, deleteWorkout, updateWorkoutName } from '@/actions/workouts';
 import {
   updateWorkoutExercisesOrder,
   fetchBestSetsForExercises,
@@ -126,6 +126,10 @@ const WorkoutDetailPage = () => {
   // Delete workout confirmation modal state
   const [deleteWorkoutModalOpen, setDeleteWorkoutModalOpen] = useState(false);
 
+  // Rename workout modal state
+  const [renameWorkoutModalOpen, setRenameWorkoutModalOpen] = useState(false);
+  const [newWorkoutName, setNewWorkoutName] = useState('');
+
   const showAlert = (
     title: string,
     message: string,
@@ -205,6 +209,35 @@ const WorkoutDetailPage = () => {
     }
   };
 
+  const handleRenameWorkoutClick = () => {
+    if (workout) {
+      setNewWorkoutName(workout.name);
+      setRenameWorkoutModalOpen(true);
+    }
+  };
+
+  const handleRenameWorkout = async () => {
+    if (!workout) return;
+
+    if (!newWorkoutName.trim()) {
+      showAlert('Name Required', 'Please enter a workout name', 'warning');
+      return;
+    }
+
+    const { data, error } = await updateWorkoutName(workout.id, newWorkoutName.trim());
+
+    if (error) {
+      showAlert('Error Renaming Workout', error, 'error');
+      return;
+    }
+
+    if (data) {
+      setWorkout({ ...workout, name: data.name });
+      setRenameWorkoutModalOpen(false);
+      showToast('Workout renamed successfully', 'success');
+    }
+  };
+
   const handleDeleteWorkoutClick = () => {
     setDeleteWorkoutModalOpen(true);
   };
@@ -267,13 +300,33 @@ const WorkoutDetailPage = () => {
             ← Back to Calendar
           </Link>
           <div className='flex items-start justify-between'>
-            <h1 className='text-3xl font-bold text-gray-900 dark:text-white mb-2'>
-              Workout - {format(new Date(workout.date), 'MMMM d, yyyy')}
-            </h1>
+            <div>
+              <h1 className='text-3xl font-bold text-gray-900 dark:text-white mb-1'>
+                {workout.name}
+              </h1>
+              <p className='text-lg text-gray-600 dark:text-gray-400'>
+                {format(new Date(workout.date), 'EEEE, MMMM d, yyyy')}
+              </p>
+            </div>
 
             {/* Kebab Menu */}
             <KebabMenu
               items={[
+                {
+                  label: 'Rename',
+                  onClick: handleRenameWorkoutClick,
+                  icon: (
+                    <svg fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        strokeWidth={2}
+                        d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z'
+                      />
+                    </svg>
+                  ),
+                  isDangerous: false,
+                },
                 {
                   label: 'Delete Workout',
                   onClick: handleDeleteWorkoutClick,
@@ -377,6 +430,52 @@ const WorkoutDetailPage = () => {
         onCancel={cancelDeleteWorkout}
         isDangerous={true}
       />
+
+      {/* Rename Workout Modal */}
+      {renameWorkoutModalOpen && (
+        <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+          <div className='bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md w-full mx-4'>
+            <h2 className='text-xl font-semibold text-gray-900 dark:text-white mb-4'>
+              Rename Workout
+            </h2>
+
+            <div className='mb-4'>
+              <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
+                Workout Name
+              </label>
+              <input
+                type='text'
+                value={newWorkoutName || ''}
+                onChange={(e) => setNewWorkoutName(e.target.value)}
+                placeholder='Enter workout name'
+                className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleRenameWorkout();
+                  }
+                }}
+                autoFocus
+              />
+            </div>
+
+            <div className='flex flex-col space-y-2'>
+              <button
+                onClick={handleRenameWorkout}
+                className='w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors cursor-pointer'>
+                Save
+              </button>
+              <button
+                onClick={() => {
+                  setRenameWorkoutModalOpen(false);
+                  setNewWorkoutName('');
+                }}
+                className='w-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium py-2 px-4 rounded-md transition-colors cursor-pointer'>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

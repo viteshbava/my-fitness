@@ -100,13 +100,14 @@ export const fetchWorkoutById = async (
  * Create a new workout
  */
 export const createWorkout = async (
-  date: string
+  date: string,
+  name: string
 ): Promise<ApiResponse<Workout>> => {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
       .from('workouts')
-      .insert({ date })
+      .insert({ date, name })
       .select()
       .single();
 
@@ -116,6 +117,32 @@ export const createWorkout = async (
     return {
       data: null,
       error: err instanceof Error ? err.message : 'Failed to create workout',
+    };
+  }
+};
+
+/**
+ * Update workout name
+ */
+export const updateWorkoutName = async (
+  workoutId: string,
+  name: string
+): Promise<ApiResponse<Workout>> => {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('workouts')
+      .update({ name })
+      .eq('id', workoutId)
+      .select()
+      .single();
+
+    if (error) return { data: null, error: error.message };
+    return { data, error: null };
+  } catch (err) {
+    return {
+      data: null,
+      error: err instanceof Error ? err.message : 'Failed to update workout name',
     };
   }
 };
