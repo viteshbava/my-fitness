@@ -15,6 +15,7 @@ import {
   fetchHistoricalWorkoutExercises,
   fetchBestSetForExercise,
 } from '@/actions/workout-exercises';
+import { updateExerciseNotes, updateExerciseIsLearnt } from '@/actions/exercises';
 import { WorkoutExerciseWithExercise, Set } from '@/types/database';
 import AlertModal from '@/components/AlertModal';
 import ConfirmationModal from '@/components/ConfirmationModal';
@@ -47,6 +48,14 @@ const WorkoutExerciseDetailPage = () => {
   const [autoSaving, setAutoSaving] = useState(false);
   const [showHistorical, setShowHistorical] = useState(false);
   const [showExerciseDetails, setShowExerciseDetails] = useState(false);
+
+  // Exercise notes and learnt state
+  const [notes, setNotes] = useState('');
+  const [isLearnt, setIsLearnt] = useState(false);
+  const [isEditingNotes, setIsEditingNotes] = useState(false);
+  const [isEditingLearnt, setIsEditingLearnt] = useState(false);
+  const [isSavingNotes, setIsSavingNotes] = useState(false);
+  const [isSavingLearnt, setIsSavingLearnt] = useState(false);
 
   // Alert modal state
   const [alertModalOpen, setAlertModalOpen] = useState(false);
@@ -109,6 +118,8 @@ const WorkoutExerciseDetailPage = () => {
     if (data) {
       setWorkoutExercise(data);
       setSets(data.sets || []);
+      setNotes(data.exercise.notes || '');
+      setIsLearnt(data.exercise.is_mastered || false);
 
       // Load previous workout data for placeholders
       const { data: previousData } = await fetchMostRecentWorkoutWithData(
@@ -233,6 +244,68 @@ const WorkoutExerciseDetailPage = () => {
 
   const handleCancelClick = () => {
     setCancelModalOpen(true);
+  };
+
+  // Experience Level handlers
+  const handleSaveLearnt = async () => {
+    if (!workoutExercise) return;
+
+    setIsSavingLearnt(true);
+    const { error } = await updateExerciseIsLearnt(workoutExercise.exercise_id, isLearnt);
+
+    if (error) {
+      showAlert('Error Saving', error, 'error');
+      setIsSavingLearnt(false);
+      return;
+    }
+
+    setIsSavingLearnt(false);
+    setIsEditingLearnt(false);
+    showToast('Experience level updated', 'success');
+
+    // Update the workoutExercise object to reflect the change
+    if (workoutExercise.exercise) {
+      setWorkoutExercise({
+        ...workoutExercise,
+        exercise: { ...workoutExercise.exercise, is_mastered: isLearnt }
+      });
+    }
+  };
+
+  const handleCancelEditLearnt = () => {
+    setIsLearnt(workoutExercise?.exercise.is_mastered || false);
+    setIsEditingLearnt(false);
+  };
+
+  // Notes handlers
+  const handleSaveNotes = async () => {
+    if (!workoutExercise) return;
+
+    setIsSavingNotes(true);
+    const { error } = await updateExerciseNotes(workoutExercise.exercise_id, notes);
+
+    if (error) {
+      showAlert('Error Saving', error, 'error');
+      setIsSavingNotes(false);
+      return;
+    }
+
+    setIsSavingNotes(false);
+    setIsEditingNotes(false);
+    showToast('Notes saved successfully', 'success');
+
+    // Update the workoutExercise object to reflect the change
+    if (workoutExercise.exercise) {
+      setWorkoutExercise({
+        ...workoutExercise,
+        exercise: { ...workoutExercise.exercise, notes }
+      });
+    }
+  };
+
+  const handleCancelEditNotes = () => {
+    setNotes(workoutExercise?.exercise.notes || '');
+    setIsEditingNotes(false);
   };
 
   const confirmCancel = async () => {
@@ -565,6 +638,42 @@ const WorkoutExerciseDetailPage = () => {
           )}
         </div>
 
+        {/* Notes Section - Editable */}
+        <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 mt-6'>
+          <div className='flex items-center justify-between mb-4'>
+            <h2 className='text-xl font-semibold text-gray-900 dark:text-white'>Notes</h2>
+            {!isEditingNotes && (
+              <Button onClick={() => setIsEditingNotes(true)} variant='text' size='sm'>
+                Edit
+              </Button>
+            )}
+          </div>
+
+          {isEditingNotes ? (
+            <div>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                rows={6}
+                className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white'
+                placeholder='Add notes about equipment settings, technique tips, etc.'
+              />
+              <div className='flex items-center justify-end space-x-3 mt-4'>
+                <Button onClick={handleCancelEditNotes} disabled={isSavingNotes} variant='ghost' size='sm'>
+                  Cancel
+                </Button>
+                <Button onClick={handleSaveNotes} disabled={isSavingNotes} variant='primary' size='sm'>
+                  {isSavingNotes ? 'Saving...' : 'Save'}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className='text-gray-900 dark:text-white whitespace-pre-wrap'>
+              {notes || <p className='text-gray-500 dark:text-gray-400 italic'>No notes yet</p>}
+            </div>
+          )}
+        </div>
+
         {/* Video Section */}
         {workoutExercise.exercise.video_url && (
           <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 mt-6'>
@@ -698,6 +807,52 @@ const WorkoutExerciseDetailPage = () => {
                     );
                   })}
                 </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Experience Level Section - Editable */}
+        <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 mt-6'>
+          <div className='flex items-center justify-between mb-4'>
+            <h2 className='text-xl font-semibold text-gray-900 dark:text-white'>
+              Experience Level
+            </h2>
+            {!isEditingLearnt && (
+              <Button onClick={() => setIsEditingLearnt(true)} variant='text' size='sm'>
+                Edit
+              </Button>
+            )}
+          </div>
+
+          {isEditingLearnt ? (
+            <div>
+              <select
+                value={isLearnt ? 'learnt' : 'not-learnt'}
+                onChange={(e) => setIsLearnt(e.target.value === 'learnt')}
+                className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white'>
+                <option value='not-learnt'>Not Learnt</option>
+                <option value='learnt'>Learnt</option>
+              </select>
+              <div className='flex items-center justify-end space-x-3 mt-4'>
+                <Button onClick={handleCancelEditLearnt} disabled={isSavingLearnt} variant='ghost' size='sm'>
+                  Cancel
+                </Button>
+                <Button onClick={handleSaveLearnt} disabled={isSavingLearnt} variant='primary' size='sm'>
+                  {isSavingLearnt ? 'Saving...' : 'Save'}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className='flex items-center'>
+              {isLearnt ? (
+                <span className='inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'>
+                  Learnt
+                </span>
+              ) : (
+                <span className='inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'>
+                  Not Learnt
+                </span>
               )}
             </div>
           )}

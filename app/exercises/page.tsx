@@ -19,6 +19,7 @@ const ExercisesPage = () => {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasLoadedFilters, setHasLoadedFilters] = useState(false);
 
   // Filter and sort states
   const [searchTerm, setSearchTerm] = useState('');
@@ -48,9 +49,9 @@ const ExercisesPage = () => {
     setAlertModalOpen(true);
   };
 
-  // Load filters from sessionStorage on mount
+  // Load filters from localStorage on mount
   useEffect(() => {
-    const savedFilters = sessionStorage.getItem('exerciseFilters');
+    const savedFilters = localStorage.getItem('exerciseFilters');
     if (savedFilters) {
       try {
         const filters = JSON.parse(savedFilters);
@@ -67,11 +68,14 @@ const ExercisesPage = () => {
         // If parsing fails, ignore and use defaults
       }
     }
+    setHasLoadedFilters(true);
     loadExercises();
   }, []);
 
-  // Save filters to sessionStorage whenever they change
+  // Save filters to localStorage whenever they change (but not on initial mount)
   useEffect(() => {
+    if (!hasLoadedFilters) return; // Don't save until we've loaded from localStorage
+
     const filters = {
       searchTerm,
       movementType,
@@ -83,8 +87,8 @@ const ExercisesPage = () => {
       sortBy,
       showFilters,
     };
-    sessionStorage.setItem('exerciseFilters', JSON.stringify(filters));
-  }, [searchTerm, movementType, pattern, primaryBodyPart, secondaryBodyPart, equipment, isMastered, sortBy, showFilters]);
+    localStorage.setItem('exerciseFilters', JSON.stringify(filters));
+  }, [hasLoadedFilters, searchTerm, movementType, pattern, primaryBodyPart, secondaryBodyPart, equipment, isMastered, sortBy, showFilters]);
 
   const loadExercises = async () => {
     setLoading(true);
