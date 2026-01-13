@@ -346,7 +346,7 @@ const WorkoutExerciseDetailPage = () => {
   const breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Workouts', href: '/workouts' },
     { label: 'Workout', href: `/workouts/${workoutId}` },
-    { label: workoutExercise.exercise.name, truncate: true },
+    { label: 'Exercise' },
   ];
 
   return (

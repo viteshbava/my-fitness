@@ -180,7 +180,7 @@ const ExerciseDetailPage = () => {
   // Breadcrumb items
   const breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Exercises', href: '/exercises' },
-    { label: exercise.name },
+    { label: 'Exercise' },
   ];
 
   return (
