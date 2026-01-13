@@ -1,4 +1,5 @@
 import React from 'react';
+import ModalOverlay from './ModalOverlay';
 
 interface AlertModalProps {
   isOpen: boolean;
@@ -15,8 +16,6 @@ const AlertModal: React.FC<AlertModalProps> = ({
   onClose,
   type = 'info',
 }) => {
-  if (!isOpen) return null;
-
   const getTypeStyles = () => {
     switch (type) {
       case 'error':
@@ -44,8 +43,8 @@ const AlertModal: React.FC<AlertModalProps> = ({
   };
 
   return (
-    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'>
-      <div className='bg-white rounded-lg shadow-xl max-w-md w-full mx-4'>
+    <ModalOverlay isOpen={isOpen} onClose={onClose} preventBackgroundClick={true}>
+      <div className='bg-white rounded-lg shadow-xl max-w-md w-full'>
         <div className={`border-l-4 ${getTypeStyles()} p-6 rounded-t-lg`}>
           <h3 className='text-lg font-semibold mb-2'>{title}</h3>
           <p className='text-sm'>{message}</p>
@@ -58,7 +57,7 @@ const AlertModal: React.FC<AlertModalProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 };
 

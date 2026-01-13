@@ -1,4 +1,5 @@
 import React from 'react';
+import ModalOverlay from './ModalOverlay';
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -21,11 +22,9 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   onCancel,
   isDangerous = false,
 }) => {
-  if (!isOpen) return null;
-
   return (
-    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'>
-      <div className='bg-white rounded-lg shadow-xl max-w-md w-full mx-4'>
+    <ModalOverlay isOpen={isOpen} onClose={onCancel} preventBackgroundClick={true}>
+      <div className='bg-white rounded-lg shadow-xl max-w-md w-full'>
         <div className='p-6'>
           <h3 className='text-lg font-semibold text-gray-900 mb-2'>{title}</h3>
           <p className='text-sm text-gray-600'>{message}</p>
@@ -45,7 +44,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 };
 
