@@ -25,10 +25,8 @@ const RenameWorkoutModal: React.FC<RenameWorkoutModalProps> = ({
 
   return (
     <ModalOverlay isOpen={isOpen} onClose={onCancel}>
-      <div className='bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-lg w-full mx-4'>
-        <h2 className='text-xl font-semibold text-gray-900 dark:text-white mb-4'>
-          Rename Workout
-        </h2>
+      <div className='bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full mx-4 p-6'>
+        <h2 className='text-xl font-semibold text-gray-900 dark:text-white mb-4'>Rename Workout</h2>
 
         <div className='mb-4'>
           <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>

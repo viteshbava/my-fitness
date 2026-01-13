@@ -68,16 +68,26 @@ const ModalOverlay: React.FC<ModalOverlayProps> = ({
 
   return (
     <div
-      className='fixed inset-0 z-100 flex items-center justify-center p-4'
+      className='fixed inset-0 z-100 flex items-center justify-center'
       onClick={handleOverlayClick}
       style={{
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         backdropFilter: 'blur(2px)',
-        pointerEvents: 'auto'
       }}>
-      <div className='flex items-center justify-center' onClick={(e) => e.stopPropagation()}>
-        {children}
-      </div>
+      {React.Children.map(children, (child) => {
+        if (React.isValidElement(child)) {
+          return React.cloneElement(child as React.ReactElement<any>, {
+            onClick: (e: React.MouseEvent) => {
+              e.stopPropagation();
+              const originalOnClick = (child as any).props.onClick;
+              if (originalOnClick) {
+                originalOnClick(e);
+              }
+            },
+          });
+        }
+        return child;
+      })}
     </div>
   );
 };
