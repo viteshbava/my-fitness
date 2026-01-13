@@ -50,7 +50,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
   return (
     <div
       onClick={handleClick}
-      className='bg-white dark:bg-gray-800 rounded-lg shadow p-10 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 transition-all border border-transparent flex items-stretch gap-4 relative cursor-pointer'>
+      className='bg-white dark:bg-gray-800 rounded-lg shadow p-10 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 active:shadow-md active:scale-[0.98] active:border-blue-600 dark:active:border-blue-500 transition-all border border-transparent flex items-stretch gap-4 relative cursor-pointer'>
       {/* Up Arrow - Top Left */}
       {!isFirst && (
         <button
@@ -58,7 +58,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
             e.stopPropagation();
             onMoveUp();
           }}
-          className='absolute top-2 left-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer z-10'
+          className='absolute top-2 left-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 active:text-gray-700 dark:active:text-gray-200 active:scale-90 transition-all cursor-pointer z-10'
           aria-label='Move up'>
           <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
             <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 15l7-7 7 7' />
@@ -94,7 +94,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
             e.stopPropagation();
             onMoveDown();
           }}
-          className='absolute bottom-2 left-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer z-10'
+          className='absolute bottom-2 left-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 active:text-gray-700 dark:active:text-gray-200 active:scale-90 transition-all cursor-pointer z-10'
           aria-label='Move down'>
           <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
             <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
