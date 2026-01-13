@@ -119,11 +119,8 @@ const WorkoutExerciseDetailPage = () => {
       }
 
       // Load historical workout data (last 3 workouts)
-      const { data: historicalWorkouts, error: historicalError } = await fetchHistoricalWorkoutExercises(
-        data.exercise_id,
-        workoutId,
-        3
-      );
+      const { data: historicalWorkouts, error: historicalError } =
+        await fetchHistoricalWorkoutExercises(data.exercise_id, workoutId, 3);
       if (historicalError) {
         console.error('Error loading historical data:', historicalError);
       }
@@ -344,7 +341,7 @@ const WorkoutExerciseDetailPage = () => {
 
   // Breadcrumb items
   const breadcrumbItems: BreadcrumbItem[] = [
-    { label: 'Workouts', href: '/workouts' },
+    { label: 'Calendar', href: '/workouts' },
     { label: 'Workout', href: `/workouts/${workoutId}` },
     { label: 'Exercise' },
   ];
@@ -416,7 +413,12 @@ const WorkoutExerciseDetailPage = () => {
               fill='none'
               stroke='currentColor'
               viewBox='0 0 24 24'>
-              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                strokeWidth={2}
+                d='M19 9l-7 7-7-7'
+              />
             </svg>
           </button>
 
@@ -451,7 +453,9 @@ const WorkoutExerciseDetailPage = () => {
                 </p>
               </div>
               <div>
-                <p className='text-sm font-medium text-gray-500 dark:text-gray-400'>Movement Type</p>
+                <p className='text-sm font-medium text-gray-500 dark:text-gray-400'>
+                  Movement Type
+                </p>
                 <p className='text-lg text-gray-900 dark:text-white'>
                   {workoutExercise.exercise.movement_type}
                 </p>
@@ -601,7 +605,12 @@ const WorkoutExerciseDetailPage = () => {
               fill='none'
               stroke='currentColor'
               viewBox='0 0 24 24'>
-              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                strokeWidth={2}
+                d='M19 9l-7 7-7-7'
+              />
             </svg>
           </button>
 
@@ -609,9 +618,12 @@ const WorkoutExerciseDetailPage = () => {
             <div className='mt-4'>
               {historicalData.length === 0 ? (
                 <div>
-                  <p className='text-gray-500 dark:text-gray-400'>No previous workout data for this exercise</p>
+                  <p className='text-gray-500 dark:text-gray-400'>
+                    No previous workout data for this exercise
+                  </p>
                   <p className='text-xs text-gray-400 dark:text-gray-500 mt-2'>
-                    This could mean: (1) This is the first time doing this exercise, or (2) Previous workouts don't have completed sets
+                    This could mean: (1) This is the first time doing this exercise, or (2) Previous
+                    workouts don't have completed sets
                   </p>
                 </div>
               ) : (
@@ -622,7 +634,11 @@ const WorkoutExerciseDetailPage = () => {
                     if (workoutIndex > 0) {
                       const currentDate = new Date(workout.date);
                       const previousDate = new Date(historicalData[workoutIndex - 1].date);
-                      const totalDays = Math.round(Math.abs((currentDate.getTime() - previousDate.getTime()) / (1000 * 60 * 60 * 24)));
+                      const totalDays = Math.round(
+                        Math.abs(
+                          (currentDate.getTime() - previousDate.getTime()) / (1000 * 60 * 60 * 24)
+                        )
+                      );
 
                       if (totalDays < 7) {
                         timeGapText = `${totalDays} day${totalDays !== 1 ? 's' : ''} gap`;
@@ -632,7 +648,9 @@ const WorkoutExerciseDetailPage = () => {
                         if (days === 0) {
                           timeGapText = `${weeks} week${weeks !== 1 ? 's' : ''} gap`;
                         } else {
-                          timeGapText = `${weeks} week${weeks !== 1 ? 's' : ''}, ${days} day${days !== 1 ? 's' : ''} gap`;
+                          timeGapText = `${weeks} week${weeks !== 1 ? 's' : ''}, ${days} day${
+                            days !== 1 ? 's' : ''
+                          } gap`;
                         }
                       }
                     }
