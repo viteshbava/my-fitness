@@ -63,36 +63,28 @@ const CustomWorkoutCalendar: React.FC<CustomWorkoutCalendarProps> = ({
     <div className="bg-gray-900 text-white rounded-lg">
       {/* Header */}
       <div className="p-4 border-b border-gray-700">
-        <div className="flex items-center justify-between mb-4">
+        <div className="mb-4">
           <h1 className="text-2xl font-semibold">Calendar</h1>
-          <button className="text-blue-400 hover:text-blue-300 transition-colors cursor-pointer px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg">
-            Add Request
-          </button>
         </div>
 
         {/* Month Navigation and View Toggle */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           {/* Month Navigation */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-2 flex-shrink min-w-0">
             <button
               onClick={handlePreviousMonth}
-              className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors cursor-pointer"
+              className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors cursor-pointer flex-shrink-0"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <div className="text-center min-w-[180px]">
-              <div className="font-semibold">
-                {format(currentMonth, 'MMMM')}
-              </div>
-              <div className="text-gray-400 text-sm">
-                {format(currentMonth, 'yyyy')}
-              </div>
+            <div className="text-center font-semibold min-w-0 flex-shrink truncate">
+              {format(currentMonth, 'MMMM yyyy')}
             </div>
             <button
               onClick={handleNextMonth}
-              className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors cursor-pointer"
+              className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors cursor-pointer flex-shrink-0"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -101,10 +93,10 @@ const CustomWorkoutCalendar: React.FC<CustomWorkoutCalendarProps> = ({
           </div>
 
           {/* View Toggle */}
-          <div className="flex bg-gray-800 rounded-lg p-1">
+          <div className="flex bg-gray-800 rounded-lg p-1 flex-shrink-0">
             <button
               onClick={() => setView('month')}
-              className={`px-4 py-2 rounded-md transition-colors cursor-pointer ${
+              className={`px-3 py-1.5 text-sm rounded-md transition-colors cursor-pointer ${
                 view === 'month'
                   ? 'bg-gray-700 text-white'
                   : 'text-gray-400 hover:text-white'
@@ -114,7 +106,7 @@ const CustomWorkoutCalendar: React.FC<CustomWorkoutCalendarProps> = ({
             </button>
             <button
               onClick={() => setView('list')}
-              className={`px-4 py-2 rounded-md transition-colors cursor-pointer ${
+              className={`px-3 py-1.5 text-sm rounded-md transition-colors cursor-pointer ${
                 view === 'list'
                   ? 'bg-gray-700 text-white'
                   : 'text-gray-400 hover:text-white'
