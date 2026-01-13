@@ -1,7 +1,17 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, addMonths, subMonths, startOfWeek, endOfWeek } from 'date-fns';
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameMonth,
+  addMonths,
+  subMonths,
+  startOfWeek,
+  endOfWeek,
+} from 'date-fns';
 import { Workout } from '@/types/database';
 
 interface CustomWorkoutCalendarProps {
@@ -60,58 +70,60 @@ const CustomWorkoutCalendar: React.FC<CustomWorkoutCalendarProps> = ({
   const dayHeaders = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   return (
-    <div className="bg-gray-900 text-white rounded-lg">
+    <div className='bg-gray-900 text-white rounded-lg'>
       {/* Header */}
-      <div className="p-4 border-b border-gray-700">
-        <div className="mb-4">
-          <h1 className="text-2xl font-semibold">Calendar</h1>
+      <div className='p-4 border-b border-gray-700'>
+        <div className='mb-4'>
+          <h1 className='text-2xl font-semibold'>Calendar</h1>
         </div>
 
         {/* Month Navigation and View Toggle */}
-        <div className="flex items-center justify-between gap-2">
+        <div className='flex items-center justify-between gap-2'>
           {/* Month Navigation */}
-          <div className="flex items-center gap-2 flex-shrink min-w-0">
+          <div className='flex items-center gap-2 shrink min-w-0'>
             <button
               onClick={handlePreviousMonth}
-              className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors cursor-pointer flex-shrink-0"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              className='p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors cursor-pointer shrink-0'>
+              <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth={2}
+                  d='M15 19l-7-7 7-7'
+                />
               </svg>
             </button>
-            <div className="text-center font-semibold min-w-0 flex-shrink truncate">
+            <div className='text-center font-semibold min-w-0 shrink truncate'>
               {format(currentMonth, 'MMMM yyyy')}
             </div>
             <button
               onClick={handleNextMonth}
-              className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors cursor-pointer flex-shrink-0"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              className='p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors cursor-pointer shrink-0'>
+              <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth={2}
+                  d='M9 5l7 7-7 7'
+                />
               </svg>
             </button>
           </div>
 
           {/* View Toggle */}
-          <div className="flex bg-gray-800 rounded-lg p-1 flex-shrink-0">
+          <div className='flex bg-gray-800 rounded-lg p-1 shrink-0'>
             <button
               onClick={() => setView('month')}
               className={`px-3 py-1.5 text-sm rounded-md transition-colors cursor-pointer ${
-                view === 'month'
-                  ? 'bg-gray-700 text-white'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
+                view === 'month' ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white'
+              }`}>
               Month
             </button>
             <button
               onClick={() => setView('list')}
               className={`px-3 py-1.5 text-sm rounded-md transition-colors cursor-pointer ${
-                view === 'list'
-                  ? 'bg-gray-700 text-white'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
+                view === 'list' ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white'
+              }`}>
               List
             </button>
           </div>
@@ -120,21 +132,18 @@ const CustomWorkoutCalendar: React.FC<CustomWorkoutCalendarProps> = ({
 
       {/* Calendar Grid */}
       {view === 'month' && (
-        <div className="p-4">
+        <div className='p-4'>
           {/* Day Headers */}
-          <div className="grid grid-cols-7 mb-2">
+          <div className='grid grid-cols-7 mb-2'>
             {dayHeaders.map((day) => (
-              <div
-                key={day}
-                className="text-center text-gray-400 font-medium py-2 text-sm"
-              >
+              <div key={day} className='text-center text-gray-400 font-medium py-2 text-sm'>
                 {day}
               </div>
             ))}
           </div>
 
           {/* Calendar Days */}
-          <div className="grid grid-cols-7 gap-px bg-gray-700">
+          <div className='grid grid-cols-7 gap-px bg-gray-700'>
             {calendarDays.map((day, index) => {
               const workoutsForDay = getWorkoutsForDate(day);
               const isCurrentMonth = isSameMonth(day, currentMonth);
@@ -145,19 +154,18 @@ const CustomWorkoutCalendar: React.FC<CustomWorkoutCalendarProps> = ({
                   key={index}
                   onClick={() => isCurrentMonth && handleDateClick(day)}
                   className={`
-                    min-h-[100px] bg-gray-900 p-2
+                    min-h-25 bg-gray-900 p-2
                     ${isCurrentMonth ? 'cursor-pointer hover:bg-gray-800' : 'opacity-40'}
                     transition-colors
-                  `}
-                >
-                  <div className="text-right mb-1">
+                  `}>
+                  <div className='text-right mb-1'>
                     <span className={`text-sm ${isCurrentMonth ? 'text-white' : 'text-gray-600'}`}>
                       {dateStr}
                     </span>
                   </div>
 
                   {/* Workout Pills */}
-                  <div className="space-y-1">
+                  <div className='space-y-1'>
                     {workoutsForDay.map((workout, idx) => (
                       <div
                         key={workout.id}
@@ -165,8 +173,7 @@ const CustomWorkoutCalendar: React.FC<CustomWorkoutCalendarProps> = ({
                           e.stopPropagation();
                           onSelectWorkout(workout);
                         }}
-                        className="bg-green-500 hover:bg-green-600 text-white text-xs px-2 py-1 rounded cursor-pointer transition-colors"
-                      >
+                        className='bg-green-500 hover:bg-green-600 text-white text-xs px-2 py-1 rounded cursor-pointer transition-colors'>
                         Full Body
                       </div>
                     ))}
@@ -180,8 +187,8 @@ const CustomWorkoutCalendar: React.FC<CustomWorkoutCalendarProps> = ({
 
       {/* List View */}
       {view === 'list' && (
-        <div className="p-4">
-          <div className="space-y-2">
+        <div className='p-4'>
+          <div className='space-y-2'>
             {workouts
               .filter((w) => {
                 const workoutDate = new Date(w.date);
@@ -192,25 +199,31 @@ const CustomWorkoutCalendar: React.FC<CustomWorkoutCalendarProps> = ({
                 <div
                   key={workout.id}
                   onClick={() => onSelectWorkout(workout)}
-                  className="bg-gray-800 hover:bg-gray-700 p-4 rounded-lg cursor-pointer transition-colors"
-                >
-                  <div className="flex items-center justify-between">
+                  className='bg-gray-800 hover:bg-gray-700 p-4 rounded-lg cursor-pointer transition-colors'>
+                  <div className='flex items-center justify-between'>
                     <div>
-                      <div className="font-medium">Full Body</div>
-                      <div className="text-sm text-gray-400">
+                      <div className='font-medium'>Full Body</div>
+                      <div className='text-sm text-gray-400'>
                         {format(new Date(workout.date), 'EEEE, MMMM d, yyyy')}
                       </div>
                     </div>
-                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    <svg
+                      className='w-5 h-5 text-gray-400'
+                      fill='none'
+                      stroke='currentColor'
+                      viewBox='0 0 24 24'>
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        strokeWidth={2}
+                        d='M9 5l7 7-7 7'
+                      />
                     </svg>
                   </div>
                 </div>
               ))}
             {workouts.filter((w) => isSameMonth(new Date(w.date), currentMonth)).length === 0 && (
-              <div className="text-center text-gray-400 py-8">
-                No workouts this month
-              </div>
+              <div className='text-center text-gray-400 py-8'>No workouts this month</div>
             )}
           </div>
         </div>
