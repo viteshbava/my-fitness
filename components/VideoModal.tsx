@@ -2,7 +2,6 @@
 
 import React from 'react';
 import ModalOverlay from './ModalOverlay';
-import Button from './Button';
 
 interface VideoModalProps {
   isOpen: boolean;
@@ -61,13 +60,6 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, videoUrl, exerciseName,
             allowFullScreen
             title={`${exerciseName} Video`}
           />
-        </div>
-
-        {/* Footer */}
-        <div className='p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end'>
-          <Button onClick={onClose} variant='primary'>
-            Close
-          </Button>
         </div>
       </div>
     </ModalOverlay>
