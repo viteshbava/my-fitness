@@ -478,7 +478,7 @@ const WorkoutExerciseDetailPage = () => {
             </div>
             {!isInProgress ? (
               <Button onClick={handleEnterInProgress} variant='primary'>
-                Start Editing
+                Edit
               </Button>
             ) : (
               <div className='flex gap-2'>
