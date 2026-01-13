@@ -267,7 +267,7 @@ const WorkoutExerciseDetailPage = () => {
     if (workoutExercise.exercise) {
       setWorkoutExercise({
         ...workoutExercise,
-        exercise: { ...workoutExercise.exercise, is_mastered: isLearnt }
+        exercise: { ...workoutExercise.exercise, is_mastered: isLearnt },
       });
     }
   };
@@ -298,7 +298,7 @@ const WorkoutExerciseDetailPage = () => {
     if (workoutExercise.exercise) {
       setWorkoutExercise({
         ...workoutExercise,
-        exercise: { ...workoutExercise.exercise, notes }
+        exercise: { ...workoutExercise.exercise, notes },
       });
     }
   };
@@ -625,7 +625,7 @@ const WorkoutExerciseDetailPage = () => {
           )}
 
           {isInProgress && (
-            <div className='mt-4 flex flex-col gap-2'>
+            <div className='mt-4 flex flex-col md:flex-row justify-end gap-2'>
               <Button onClick={handleAddSet} variant='primary'>
                 Add Set
               </Button>
@@ -659,10 +659,18 @@ const WorkoutExerciseDetailPage = () => {
                 placeholder='Add notes about equipment settings, technique tips, etc.'
               />
               <div className='flex items-center justify-end space-x-3 mt-4'>
-                <Button onClick={handleCancelEditNotes} disabled={isSavingNotes} variant='ghost' size='sm'>
+                <Button
+                  onClick={handleCancelEditNotes}
+                  disabled={isSavingNotes}
+                  variant='ghost'
+                  size='sm'>
                   Cancel
                 </Button>
-                <Button onClick={handleSaveNotes} disabled={isSavingNotes} variant='primary' size='sm'>
+                <Button
+                  onClick={handleSaveNotes}
+                  disabled={isSavingNotes}
+                  variant='primary'
+                  size='sm'>
                   {isSavingNotes ? 'Saving...' : 'Save'}
                 </Button>
               </div>
@@ -835,10 +843,18 @@ const WorkoutExerciseDetailPage = () => {
                 <option value='learnt'>Learnt</option>
               </select>
               <div className='flex items-center justify-end space-x-3 mt-4'>
-                <Button onClick={handleCancelEditLearnt} disabled={isSavingLearnt} variant='ghost' size='sm'>
+                <Button
+                  onClick={handleCancelEditLearnt}
+                  disabled={isSavingLearnt}
+                  variant='ghost'
+                  size='sm'>
                   Cancel
                 </Button>
-                <Button onClick={handleSaveLearnt} disabled={isSavingLearnt} variant='primary' size='sm'>
+                <Button
+                  onClick={handleSaveLearnt}
+                  disabled={isSavingLearnt}
+                  variant='primary'
+                  size='sm'>
                   {isSavingLearnt ? 'Saving...' : 'Save'}
                 </Button>
               </div>
