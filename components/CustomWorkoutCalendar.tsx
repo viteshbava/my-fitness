@@ -7,6 +7,7 @@ import {
   endOfMonth,
   eachDayOfInterval,
   isSameMonth,
+  isToday,
   addMonths,
   subMonths,
   startOfWeek,
@@ -147,6 +148,7 @@ const CustomWorkoutCalendar: React.FC<CustomWorkoutCalendarProps> = ({
             {calendarDays.map((day, index) => {
               const workoutsForDay = getWorkoutsForDate(day);
               const isCurrentMonth = isSameMonth(day, currentMonth);
+              const isTodayDate = isToday(day);
               const dateStr = format(day, 'd');
 
               return (
@@ -156,10 +158,11 @@ const CustomWorkoutCalendar: React.FC<CustomWorkoutCalendarProps> = ({
                   className={`
                     min-h-25 bg-gray-900
                     ${isCurrentMonth ? 'cursor-pointer hover:bg-gray-800' : 'opacity-40'}
+                    ${isTodayDate && isCurrentMonth ? 'ring-2 ring-blue-500 bg-blue-900/30' : ''}
                     transition-colors
                   `}>
                   <div className='text-right mb-1'>
-                    <span className={`text-sm ${isCurrentMonth ? 'text-white' : 'text-gray-600'}`}>
+                    <span className={`text-sm ${isTodayDate && isCurrentMonth ? 'text-blue-400 font-bold' : isCurrentMonth ? 'text-white' : 'text-gray-600'}`}>
                       {dateStr}
                     </span>
                   </div>

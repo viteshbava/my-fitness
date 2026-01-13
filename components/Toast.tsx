@@ -71,7 +71,7 @@ const Toast: React.FC<ToastProps> = ({ id, message, type, onClose, duration = 30
 
   return (
     <div
-      className={`${bgColor} text-white px-6 py-4 rounded-lg shadow-lg flex items-center space-x-3 min-w-[300px] max-w-md animate-slide-in-top`}>
+      className={`${bgColor} text-white px-6 py-4 rounded-lg shadow-lg flex items-center space-x-3 min-w-[300px] max-w-md animate-slide-in-bottom md:animate-slide-in-top`}>
       <div className='flex-shrink-0'>{icon}</div>
       <p className='flex-1 font-medium'>{message}</p>
       <button

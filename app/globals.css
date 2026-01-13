@@ -18,7 +18,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Toast Animation */
+/* Toast Animations */
 @keyframes slide-in-top {
   from {
     transform: translateY(-100%);
@@ -30,8 +30,23 @@ body {
   }
 }
 
+@keyframes slide-in-bottom {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 .animate-slide-in-top {
   animation: slide-in-top 0.3s ease-out;
+}
+
+.animate-slide-in-bottom {
+  animation: slide-in-bottom 0.3s ease-out;
 }
 
 /* Calendar Dark Mode Styles */
