@@ -169,7 +169,7 @@ const ExerciseDetailPage = () => {
           <p className='text-red-600 dark:text-red-400 mb-4'>{error || 'Exercise not found'}</p>
           <Link
             href='/exercises'
-            className='text-blue-600 hover:text-blue-700 dark:text-blue-400 cursor-pointer'>
+            className='text-blue-600 hover:text-blue-700 dark:text-blue-400 active:text-blue-800 dark:active:text-blue-500 active:scale-95 transition-all cursor-pointer'>
             Back to Exercise Library
           </Link>
         </div>
@@ -261,7 +261,7 @@ const ExerciseDetailPage = () => {
             {!isEditingLearnt && (
               <button
                 onClick={() => setIsEditingLearnt(true)}
-                className='px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400'>
+                className='px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 active:text-blue-800 dark:active:text-blue-500 active:scale-95 transition-all cursor-pointer'>
                 Edit
               </button>
             )}
@@ -280,13 +280,13 @@ const ExerciseDetailPage = () => {
                 <button
                   onClick={handleCancelEditLearnt}
                   disabled={isSavingLearnt}
-                  className='px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 disabled:opacity-50'>
+                  className='px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 active:text-gray-950 dark:active:text-gray-100 active:scale-95 transition-all cursor-pointer disabled:opacity-50'>
                   Cancel
                 </button>
                 <button
                   onClick={handleSaveLearnt}
                   disabled={isSavingLearnt}
-                  className='px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium disabled:opacity-50'>
+                  className='px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium active:bg-blue-800 active:scale-95 transition-all cursor-pointer disabled:opacity-50'>
                   {isSavingLearnt ? 'Saving...' : 'Save'}
                 </button>
               </div>
@@ -313,7 +313,7 @@ const ExerciseDetailPage = () => {
             {!isEditingNotes && (
               <button
                 onClick={() => setIsEditingNotes(true)}
-                className='px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400'>
+                className='px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 active:text-blue-800 dark:active:text-blue-500 active:scale-95 transition-all cursor-pointer'>
                 Edit
               </button>
             )}
@@ -332,13 +332,13 @@ const ExerciseDetailPage = () => {
                 <button
                   onClick={handleCancelEditNotes}
                   disabled={isSavingNotes}
-                  className='px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 disabled:opacity-50'>
+                  className='px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 active:text-gray-950 dark:active:text-gray-100 active:scale-95 transition-all cursor-pointer disabled:opacity-50'>
                   Cancel
                 </button>
                 <button
                   onClick={handleSaveNotes}
                   disabled={isSavingNotes}
-                  className='px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium disabled:opacity-50'>
+                  className='px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium active:bg-blue-800 active:scale-95 transition-all cursor-pointer disabled:opacity-50'>
                   {isSavingNotes ? 'Saving...' : 'Save'}
                 </button>
               </div>
@@ -401,7 +401,7 @@ const ExerciseDetailPage = () => {
         <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6'>
           <button
             onClick={() => setShowHistorical(!showHistorical)}
-            className='w-full flex items-center justify-between text-left cursor-pointer hover:opacity-80 transition-opacity'>
+            className='w-full flex items-center justify-between text-left cursor-pointer hover:opacity-80 active:opacity-60 active:scale-[0.99] transition-all'>
             <h2 className='text-xl font-semibold text-gray-900 dark:text-white'>
               Latest Workouts
               <span className='text-sm text-gray-500 ml-2'>

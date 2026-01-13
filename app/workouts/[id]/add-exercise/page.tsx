@@ -164,7 +164,7 @@ const AddExercisePage = () => {
         <div className="mb-8">
           <Link
             href={`/workouts/${workoutId}`}
-            className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 mb-4 inline-block cursor-pointer"
+            className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 active:text-blue-800 dark:active:text-blue-500 active:scale-95 transition-all mb-4 inline-block cursor-pointer"
           >
             ← Back to Workout
           </Link>
@@ -189,7 +189,7 @@ const AddExercisePage = () => {
           {searchTerm && (
             <button
               onClick={() => setSearchTerm('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 active:text-gray-700 dark:active:text-gray-200 active:scale-90 transition-all cursor-pointer"
               aria-label="Clear search"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -210,7 +210,7 @@ const AddExercisePage = () => {
             <div className="p-4 flex items-center justify-between">
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center space-x-3 flex-1 hover:opacity-80 transition-opacity cursor-pointer"
+                className="flex items-center space-x-3 flex-1 hover:opacity-80 active:opacity-60 active:scale-[0.99] transition-all cursor-pointer"
               >
                 <svg
                   className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform ${
@@ -237,7 +237,7 @@ const AddExercisePage = () => {
               {hasActiveFilters && (
                 <button
                   onClick={clearFilters}
-                  className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 ml-4 cursor-pointer"
+                  className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 active:text-blue-800 dark:active:text-blue-500 active:scale-95 transition-all ml-4 cursor-pointer"
                 >
                   Clear All
                 </button>
@@ -398,7 +398,7 @@ const AddExercisePage = () => {
               <div
                 key={exercise.id}
                 onClick={() => !adding && handleAddExercise(exercise)}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 transition-all p-6 cursor-pointer border border-transparent"
+                className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 active:shadow active:scale-[0.98] active:border-blue-600 dark:active:border-blue-500 transition-all p-6 cursor-pointer border border-transparent"
               >
                 <div className="flex items-start justify-between mb-2">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">

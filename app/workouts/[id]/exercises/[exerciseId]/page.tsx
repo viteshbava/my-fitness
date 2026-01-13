@@ -331,7 +331,7 @@ const WorkoutExerciseDetailPage = () => {
           <p className='text-gray-600 dark:text-gray-400'>Exercise not found</p>
           <Link
             href={`/workouts/${workoutId}`}
-            className='mt-4 inline-block text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 cursor-pointer'>
+            className='mt-4 inline-block text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 active:text-blue-800 dark:active:text-blue-500 active:scale-95 transition-all cursor-pointer'>
             Back to Workout
           </Link>
         </div>
@@ -402,7 +402,7 @@ const WorkoutExerciseDetailPage = () => {
         <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6'>
           <button
             onClick={() => setShowExerciseDetails(!showExerciseDetails)}
-            className='w-full flex items-center justify-between text-left cursor-pointer hover:opacity-80 transition-opacity'>
+            className='w-full flex items-center justify-between text-left cursor-pointer hover:opacity-80 active:opacity-60 active:scale-[0.99] transition-all'>
             <h2 className='text-xl font-semibold text-gray-900 dark:text-white'>
               Exercise Details
             </h2>
@@ -478,19 +478,19 @@ const WorkoutExerciseDetailPage = () => {
             {!isInProgress ? (
               <button
                 onClick={handleEnterInProgress}
-                className='px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors cursor-pointer'>
+                className='px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 active:scale-95 text-white font-medium rounded-md transition-all cursor-pointer'>
                 Start Editing
               </button>
             ) : (
               <div className='flex gap-2'>
                 <button
                   onClick={handleCancelClick}
-                  className='px-4 py-2 bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium rounded-md transition-colors cursor-pointer'>
+                  className='px-4 py-2 bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 active:bg-gray-500 dark:active:bg-gray-400 active:scale-95 text-gray-800 dark:text-white font-medium rounded-md transition-all cursor-pointer'>
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
-                  className='px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-md transition-colors cursor-pointer'>
+                  className='px-4 py-2 bg-green-600 hover:bg-green-700 active:bg-green-800 active:scale-95 text-white font-medium rounded-md transition-all cursor-pointer'>
                   Save
                 </button>
               </div>
@@ -560,13 +560,13 @@ const WorkoutExerciseDetailPage = () => {
             <div className='mt-4 flex gap-2'>
               <button
                 onClick={handleAddSet}
-                className='px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors cursor-pointer'>
+                className='px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 active:scale-95 text-white font-medium rounded-md transition-all cursor-pointer'>
                 Add Set
               </button>
               {sets.length > 1 && (
                 <button
                   onClick={handleDeleteLastSet}
-                  className='px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-md transition-colors cursor-pointer'>
+                  className='px-4 py-2 bg-red-600 hover:bg-red-700 active:bg-red-800 active:scale-95 text-white font-medium rounded-md transition-all cursor-pointer'>
                   Delete Last Set
                 </button>
               )}
@@ -593,7 +593,7 @@ const WorkoutExerciseDetailPage = () => {
         <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 mt-6'>
           <button
             onClick={() => setShowHistorical(!showHistorical)}
-            className='w-full flex items-center justify-between text-left cursor-pointer hover:opacity-80 transition-opacity'>
+            className='w-full flex items-center justify-between text-left cursor-pointer hover:opacity-80 active:opacity-60 active:scale-[0.99] transition-all'>
             <h2 className='text-xl font-semibold text-gray-900 dark:text-white'>
               Previous Workouts
               <span className='text-sm text-gray-500 ml-2'>({historicalData.length})</span>

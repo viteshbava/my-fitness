@@ -34,7 +34,7 @@ const VideoThumbnail: React.FC<VideoThumbnailProps> = ({
       <>
         <button
           onClick={() => setIsModalOpen(true)}
-          className='flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors cursor-pointer text-sm'>
+          className='flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 active:scale-95 text-white rounded-md transition-all cursor-pointer text-sm'>
           <svg className='w-4 h-4' fill='currentColor' viewBox='0 0 24 24'>
             <path d='M8 5v14l11-7z' />
           </svg>
@@ -56,7 +56,7 @@ const VideoThumbnail: React.FC<VideoThumbnailProps> = ({
     <>
       <button
         onClick={() => setIsModalOpen(true)}
-        className={`w-full flex items-center justify-center gap-3 px-6 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors cursor-pointer ${className}`}>
+        className={`w-full flex items-center justify-center gap-3 px-6 py-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 active:scale-[0.98] text-white rounded-lg transition-all cursor-pointer ${className}`}>
         <svg className='w-6 h-6' fill='currentColor' viewBox='0 0 24 24'>
           <path d='M8 5v14l11-7z' />
         </svg>

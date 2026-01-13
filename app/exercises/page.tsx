@@ -199,7 +199,7 @@ const ExercisesPage = () => {
           {searchTerm && (
             <button
               onClick={() => setSearchTerm('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 active:text-gray-700 dark:active:text-gray-200 active:scale-90 transition-all cursor-pointer"
               aria-label="Clear search"
             >
               <svg
@@ -225,7 +225,7 @@ const ExercisesPage = () => {
             <div className="p-4 flex items-center justify-between">
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center space-x-3 flex-1 hover:opacity-80 transition-opacity cursor-pointer"
+                className="flex items-center space-x-3 flex-1 hover:opacity-80 active:opacity-60 active:scale-[0.99] transition-all cursor-pointer"
               >
                 <svg
                   className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform ${
@@ -254,7 +254,7 @@ const ExercisesPage = () => {
               {hasActiveFilters && (
                 <button
                   onClick={clearFilters}
-                  className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 ml-4 cursor-pointer"
+                  className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 active:text-blue-800 dark:active:text-blue-500 active:scale-95 transition-all ml-4 cursor-pointer"
                 >
                   Clear All
                 </button>
@@ -402,7 +402,7 @@ const ExercisesPage = () => {
               <Link
                 key={exercise.id}
                 href={`/exercises/${exercise.id}`}
-                className="block bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow p-6 cursor-pointer"
+                className="block bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg active:shadow active:scale-[0.98] transition-all p-6 cursor-pointer"
               >
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">

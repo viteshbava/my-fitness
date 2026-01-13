@@ -135,7 +135,7 @@ const WorkoutsPage = () => {
                     <div
                       key={workout.id}
                       onClick={() => handleSelectWorkout(workout)}
-                      className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer border border-transparent hover:border-blue-500 dark:hover:border-blue-400"
+                      className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 active:bg-gray-200 dark:active:bg-gray-500 active:scale-[0.98] transition-all cursor-pointer border border-transparent hover:border-blue-500 dark:hover:border-blue-400"
                     >
                       <div className="flex items-center justify-between">
                         <div>
@@ -186,7 +186,7 @@ const WorkoutsPage = () => {
               <div className="flex flex-col space-y-2">
                 <button
                   onClick={handleCreateWorkout}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors cursor-pointer"
+                  className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 active:scale-95 text-white font-medium py-2 px-4 rounded-md transition-all cursor-pointer"
                 >
                   Create New Workout
                 </button>
@@ -196,7 +196,7 @@ const WorkoutsPage = () => {
                     setSelectedDate(null);
                     setNewWorkoutName('');
                   }}
-                  className="w-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium py-2 px-4 rounded-md transition-colors cursor-pointer"
+                  className="w-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 active:bg-gray-400 dark:active:bg-gray-500 active:scale-95 text-gray-800 dark:text-gray-200 font-medium py-2 px-4 rounded-md transition-all cursor-pointer"
                 >
                   Close
                 </button>

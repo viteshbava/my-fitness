@@ -32,13 +32,13 @@ const AlertModal: React.FC<AlertModalProps> = ({
   const getButtonStyles = () => {
     switch (type) {
       case 'error':
-        return 'bg-red-600 hover:bg-red-700';
+        return 'bg-red-600 hover:bg-red-700 active:bg-red-800';
       case 'warning':
-        return 'bg-yellow-600 hover:bg-yellow-700';
+        return 'bg-yellow-600 hover:bg-yellow-700 active:bg-yellow-800';
       case 'success':
-        return 'bg-green-600 hover:bg-green-700';
+        return 'bg-green-600 hover:bg-green-700 active:bg-green-800';
       default:
-        return 'bg-blue-600 hover:bg-blue-700';
+        return 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800';
     }
   };
 
@@ -52,7 +52,7 @@ const AlertModal: React.FC<AlertModalProps> = ({
         <div className='p-4 flex justify-end'>
           <button
             onClick={onClose}
-            className={`px-4 py-2 text-white rounded-md ${getButtonStyles()} transition-colors cursor-pointer`}>
+            className={`px-4 py-2 text-white rounded-md ${getButtonStyles()} active:scale-95 transition-all cursor-pointer`}>
             OK
           </button>
         </div>

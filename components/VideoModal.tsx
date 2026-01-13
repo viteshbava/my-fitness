@@ -38,7 +38,7 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, videoUrl, exerciseName,
           <h2 className='text-xl font-semibold text-gray-900 dark:text-white'>{exerciseName}</h2>
           <button
             onClick={onClose}
-            className='text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer'
+            className='text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 active:text-gray-700 dark:active:text-gray-200 active:scale-90 transition-all cursor-pointer'
             aria-label='Close modal'>
             <svg className='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
               <path
@@ -66,7 +66,7 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, videoUrl, exerciseName,
         <div className='p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end'>
           <button
             onClick={onClose}
-            className='px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors cursor-pointer'>
+            className='px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 active:scale-95 text-white rounded-md transition-all cursor-pointer'>
             Close
           </button>
         </div>

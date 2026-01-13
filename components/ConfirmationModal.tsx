@@ -32,13 +32,13 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         <div className='p-4 flex justify-end gap-3 bg-gray-50 rounded-b-lg'>
           <button
             onClick={onCancel}
-            className='px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors cursor-pointer'>
+            className='px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 active:bg-gray-100 active:scale-95 transition-all cursor-pointer'>
             {cancelText}
           </button>
           <button
             onClick={onConfirm}
-            className={`px-4 py-2 text-white rounded-md transition-colors cursor-pointer ${
-              isDangerous ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'
+            className={`px-4 py-2 text-white rounded-md active:scale-95 transition-all cursor-pointer ${
+              isDangerous ? 'bg-red-600 hover:bg-red-700 active:bg-red-800' : 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800'
             }`}>
             {confirmText}
           </button>

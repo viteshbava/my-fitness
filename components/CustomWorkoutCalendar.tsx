@@ -84,7 +84,7 @@ const CustomWorkoutCalendar: React.FC<CustomWorkoutCalendarProps> = ({
           <div className='flex items-center gap-2 shrink min-w-0'>
             <button
               onClick={handlePreviousMonth}
-              className='p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors cursor-pointer shrink-0'>
+              className='p-2 bg-gray-800 hover:bg-gray-700 active:bg-gray-600 active:scale-95 rounded-lg transition-all cursor-pointer shrink-0'>
               <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                 <path
                   strokeLinecap='round'
@@ -99,7 +99,7 @@ const CustomWorkoutCalendar: React.FC<CustomWorkoutCalendarProps> = ({
             </div>
             <button
               onClick={handleNextMonth}
-              className='p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors cursor-pointer shrink-0'>
+              className='p-2 bg-gray-800 hover:bg-gray-700 active:bg-gray-600 active:scale-95 rounded-lg transition-all cursor-pointer shrink-0'>
               <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                 <path
                   strokeLinecap='round'
@@ -115,15 +115,15 @@ const CustomWorkoutCalendar: React.FC<CustomWorkoutCalendarProps> = ({
           <div className='flex bg-gray-800 rounded-lg p-1 shrink-0'>
             <button
               onClick={() => setView('month')}
-              className={`px-3 py-1.5 text-sm rounded-md transition-colors cursor-pointer ${
-                view === 'month' ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white'
+              className={`px-3 py-1.5 text-sm rounded-md transition-all cursor-pointer ${
+                view === 'month' ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white active:text-gray-100 active:scale-95'
               }`}>
               Month
             </button>
             <button
               onClick={() => setView('list')}
-              className={`px-3 py-1.5 text-sm rounded-md transition-colors cursor-pointer ${
-                view === 'list' ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white'
+              className={`px-3 py-1.5 text-sm rounded-md transition-all cursor-pointer ${
+                view === 'list' ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-white active:text-gray-100 active:scale-95'
               }`}>
               List
             </button>
@@ -157,9 +157,9 @@ const CustomWorkoutCalendar: React.FC<CustomWorkoutCalendarProps> = ({
                   onClick={() => isCurrentMonth && handleDateClick(day)}
                   className={`
                     min-h-25 bg-gray-900
-                    ${isCurrentMonth ? 'cursor-pointer hover:bg-gray-800' : 'opacity-40'}
+                    ${isCurrentMonth ? 'cursor-pointer hover:bg-gray-800 active:bg-gray-700 active:scale-[0.99]' : 'opacity-40'}
                     ${isTodayDate && isCurrentMonth ? 'ring-2 ring-blue-500 bg-blue-900/30' : ''}
-                    transition-colors
+                    transition-all
                   `}>
                   <div className='text-right mb-1'>
                     <span className={`text-sm ${isTodayDate && isCurrentMonth ? 'text-blue-400 font-bold' : isCurrentMonth ? 'text-white' : 'text-gray-600'}`}>
@@ -176,7 +176,7 @@ const CustomWorkoutCalendar: React.FC<CustomWorkoutCalendarProps> = ({
                           e.stopPropagation();
                           onSelectWorkout(workout);
                         }}
-                        className='bg-green-500 hover:bg-green-600 text-white text-xs p-1 rounded cursor-pointer transition-colors'>
+                        className='bg-green-500 hover:bg-green-600 active:bg-green-700 active:scale-95 text-white text-xs p-1 rounded cursor-pointer transition-all'>
                         {workout.name}
                       </div>
                     ))}
@@ -202,7 +202,7 @@ const CustomWorkoutCalendar: React.FC<CustomWorkoutCalendarProps> = ({
                 <div
                   key={workout.id}
                   onClick={() => onSelectWorkout(workout)}
-                  className='bg-gray-800 hover:bg-gray-700 p-4 rounded-lg cursor-pointer transition-colors'>
+                  className='bg-gray-800 hover:bg-gray-700 active:bg-gray-600 active:scale-[0.98] p-4 rounded-lg cursor-pointer transition-all'>
                   <div className='flex items-center justify-between'>
                     <div>
                       <div className='font-medium'>{workout.name}</div>
