@@ -154,7 +154,7 @@ const CustomWorkoutCalendar: React.FC<CustomWorkoutCalendarProps> = ({
                   key={index}
                   onClick={() => isCurrentMonth && handleDateClick(day)}
                   className={`
-                    min-h-25 bg-gray-900 p-2
+                    min-h-25 bg-gray-900
                     ${isCurrentMonth ? 'cursor-pointer hover:bg-gray-800' : 'opacity-40'}
                     transition-colors
                   `}>
@@ -173,7 +173,7 @@ const CustomWorkoutCalendar: React.FC<CustomWorkoutCalendarProps> = ({
                           e.stopPropagation();
                           onSelectWorkout(workout);
                         }}
-                        className='bg-green-500 hover:bg-green-600 text-white text-xs px-2 py-1 rounded cursor-pointer transition-colors'>
+                        className='bg-green-500 hover:bg-green-600 text-white text-xs p-1 rounded cursor-pointer transition-colors'>
                         Full Body
                       </div>
                     ))}
