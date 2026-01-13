@@ -38,14 +38,12 @@
     "next": "^16.1.1",
     "postcss": "^8.5.6",
     "react": "^19.2.3",
-    "react-big-calendar": "^1.19.4",
     "react-dom": "^19.2.3",
     "recharts": "^3.6.0",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3"
   },
   "devDependencies": {
-    "@types/react-big-calendar": "^1.16.3",
     "tsx": "^4.21.0"
   }
 }
