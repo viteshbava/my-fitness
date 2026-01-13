@@ -32,7 +32,7 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, videoUrl, exerciseName,
 
   return (
     <ModalOverlay isOpen={isOpen} onClose={onClose}>
-      <div className='bg-white dark:bg-gray-800 rounded-lg shadow-xl w-[calc(100vw-2rem)] h-[calc(100vh-2rem)] overflow-hidden flex flex-col'>
+      <div className='bg-white dark:bg-gray-800 rounded-lg shadow-xl w-[calc(100vw-2rem)] h-[calc(100svh-2rem)] overflow-hidden flex flex-col'>
         {/* Header */}
         <div className='flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700'>
           <h2 className='text-xl font-semibold text-gray-900 dark:text-white'>{exerciseName}</h2>
