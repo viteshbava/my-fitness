@@ -24,8 +24,8 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   isDangerous = false,
 }) => {
   return (
-    <ModalOverlay isOpen={isOpen} onClose={onCancel} preventBackgroundClick={true}>
-      <div className='bg-white rounded-lg shadow-xl max-w-md w-full'>
+    <ModalOverlay isOpen={isOpen} onClose={onCancel}>
+      <div className='bg-white rounded-lg shadow-xl max-w-lg w-full mx-4'>
         <div className='p-6'>
           <h3 className='text-lg font-semibold text-gray-900 mb-2'>{title}</h3>
           <p className='text-sm text-gray-600'>{message}</p>

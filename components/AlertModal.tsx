@@ -44,8 +44,8 @@ const AlertModal: React.FC<AlertModalProps> = ({
   };
 
   return (
-    <ModalOverlay isOpen={isOpen} onClose={onClose} preventBackgroundClick={true}>
-      <div className='bg-white rounded-lg shadow-xl max-w-md w-full'>
+    <ModalOverlay isOpen={isOpen} onClose={onClose}>
+      <div className='bg-white rounded-lg shadow-xl max-w-lg w-full mx-4'>
         <div className={`border-l-4 ${getTypeStyles()} p-6 rounded-t-lg`}>
           <h3 className='text-lg font-semibold mb-2'>{title}</h3>
           <p className='text-sm'>{message}</p>

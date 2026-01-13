@@ -40,6 +40,23 @@ const ModalOverlay: React.FC<ModalOverlayProps> = ({
     };
   }, [isOpen]);
 
+  // Handle Escape key press
+  useEffect(() => {
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscapeKey);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -58,10 +75,7 @@ const ModalOverlay: React.FC<ModalOverlayProps> = ({
         backdropFilter: 'blur(2px)',
         pointerEvents: 'auto'
       }}>
-      <div
-        className='relative w-full flex items-center justify-center'
-        onClick={(e) => e.stopPropagation()}
-        style={{ pointerEvents: 'auto' }}>
+      <div className='flex items-center justify-center' onClick={(e) => e.stopPropagation()}>
         {children}
       </div>
     </div>
