@@ -14,7 +14,7 @@ import {
   endOfWeek,
 } from 'date-fns';
 import { Workout } from '@/types/database';
-import { getColorCalendarClasses } from '@/lib/utils/colors';
+import { getColorCalendarClasses, getColorPillClasses } from '@/lib/utils/colors';
 
 interface CustomWorkoutCalendarProps {
   workouts: Workout[];
@@ -205,10 +205,16 @@ const CustomWorkoutCalendar: React.FC<CustomWorkoutCalendarProps> = ({
                   onClick={() => onSelectWorkout(workout)}
                   className='bg-gray-800 hover:bg-gray-700 active:bg-gray-600 active:scale-[0.98] p-4 rounded-lg cursor-pointer transition-all'>
                   <div className='flex items-center justify-between'>
-                    <div>
-                      <div className='font-medium'>{workout.name}</div>
-                      <div className='text-sm text-gray-400'>
-                        {format(new Date(workout.date), 'EEEE, MMMM d, yyyy')}
+                    <div className='flex items-center gap-3'>
+                      <div
+                        className={`w-3 h-3 rounded-full ${getColorPillClasses(workout.color)}`}
+                        aria-label={`Workout color: ${workout.color || 'green'}`}
+                      />
+                      <div>
+                        <div className='font-medium'>{workout.name}</div>
+                        <div className='text-sm text-gray-400'>
+                          {format(new Date(workout.date), 'EEEE, MMMM d, yyyy')}
+                        </div>
                       </div>
                     </div>
                     <svg
