@@ -59,6 +59,33 @@ export interface WorkoutWithExercises extends Workout {
   workout_exercises: WorkoutExerciseWithExercise[];
 }
 
+// Workout Template table
+export interface WorkoutTemplate {
+  id: string;
+  name: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Template Exercise table
+export interface TemplateExercise {
+  id: string;
+  template_id: string;
+  exercise_id: string;
+  order_index: number;
+  created_at: string;
+  updated_at: string;
+}
+
+// Extended types for joined data
+export interface TemplateExerciseWithExercise extends TemplateExercise {
+  exercise: Exercise;
+}
+
+export interface WorkoutTemplateWithExercises extends WorkoutTemplate {
+  template_exercises: TemplateExerciseWithExercise[];
+}
+
 // API Response types
 export interface ApiResponse<T> {
   data: T | null;
