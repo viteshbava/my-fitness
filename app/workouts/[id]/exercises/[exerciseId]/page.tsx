@@ -112,8 +112,10 @@ const WorkoutExerciseDetailPage = () => {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isInProgress]);
 
-  const loadWorkoutExercise = async () => {
-    setLoading(true);
+  const loadWorkoutExercise = async (showLoadingScreen: boolean = true) => {
+    if (showLoadingScreen) {
+      setLoading(true);
+    }
     const { data, error } = await fetchWorkoutExerciseById(exerciseId);
 
     if (error) {
@@ -156,7 +158,9 @@ const WorkoutExerciseDetailPage = () => {
         setBestSet(bestSetData);
       }
     }
-    setLoading(false);
+    if (showLoadingScreen) {
+      setLoading(false);
+    }
   };
 
   // Helper function to check if a set is complete
@@ -257,8 +261,8 @@ const WorkoutExerciseDetailPage = () => {
     setSets(cleanedSets);
     setIsInProgress(false);
 
-    // Reload to get fresh data
-    await loadWorkoutExercise();
+    // Reload to get fresh data (without showing loading screen)
+    await loadWorkoutExercise(false);
 
     // Stop saving indicator
     setIsSaving(false);
