@@ -10,6 +10,8 @@ import ModalOverlay from '@/components/ModalOverlay';
 import Button from '@/components/Button';
 import { useToast } from '@/components/ToastProvider';
 import { format } from 'date-fns';
+import ColorSelector from '@/components/ColorSelector';
+import { DEFAULT_COLOR_ID } from '@/lib/utils/colors';
 
 const WorkoutsPage = () => {
   const router = useRouter();
@@ -20,6 +22,7 @@ const WorkoutsPage = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [workoutsOnSelectedDate, setWorkoutsOnSelectedDate] = useState<Workout[]>([]);
   const [newWorkoutName, setNewWorkoutName] = useState('');
+  const [newWorkoutColor, setNewWorkoutColor] = useState(DEFAULT_COLOR_ID);
 
   // Alert modal state
   const [alertModalOpen, setAlertModalOpen] = useState(false);
@@ -74,6 +77,7 @@ const WorkoutsPage = () => {
     setSelectedDate(date);
     setShowCreateModal(true);
     setNewWorkoutName('');
+    setNewWorkoutColor(DEFAULT_COLOR_ID);
   };
 
   const handleCreateWorkout = async () => {
@@ -85,7 +89,7 @@ const WorkoutsPage = () => {
     }
 
     const dateStr = format(selectedDate, 'yyyy-MM-dd');
-    const { data, error } = await createWorkout(dateStr, newWorkoutName.trim());
+    const { data, error } = await createWorkout(dateStr, newWorkoutName.trim(), newWorkoutColor);
 
     if (error) {
       showAlert('Error Creating Workout', error, 'error');
@@ -98,6 +102,7 @@ const WorkoutsPage = () => {
       setShowCreateModal(false);
       setSelectedDate(null);
       setNewWorkoutName('');
+      setNewWorkoutColor(DEFAULT_COLOR_ID);
       router.push(`/workouts/${data.id}`);
     }
   };
@@ -191,6 +196,13 @@ const WorkoutsPage = () => {
               />
             </div>
 
+            <div className="mb-4">
+              <ColorSelector
+                selectedColorId={newWorkoutColor}
+                onColorChange={setNewWorkoutColor}
+              />
+            </div>
+
             <div className="flex flex-col space-y-2">
               <Button onClick={handleCreateWorkout} variant="primary" fullWidth>
                 Create New Workout
@@ -200,6 +212,7 @@ const WorkoutsPage = () => {
                   setShowCreateModal(false);
                   setSelectedDate(null);
                   setNewWorkoutName('');
+                  setNewWorkoutColor(DEFAULT_COLOR_ID);
                 }}
                 variant="secondary"
                 fullWidth

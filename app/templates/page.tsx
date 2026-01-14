@@ -11,6 +11,8 @@ import {
 import { WorkoutTemplate } from '@/types/database';
 import AlertModal from '@/components/AlertModal';
 import ConfirmationModal from '@/components/ConfirmationModal';
+import ColorSelector from '@/components/ColorSelector';
+import { DEFAULT_COLOR_ID, getColorPillClasses } from '@/lib/utils/colors';
 
 const TemplatesPage = () => {
   const router = useRouter();
@@ -31,6 +33,7 @@ const TemplatesPage = () => {
 
   const [showNewTemplateInput, setShowNewTemplateInput] = useState(false);
   const [newTemplateName, setNewTemplateName] = useState('');
+  const [newTemplateColor, setNewTemplateColor] = useState(DEFAULT_COLOR_ID);
   const [isCreating, setIsCreating] = useState(false);
 
   const showAlert = (
@@ -67,7 +70,7 @@ const TemplatesPage = () => {
     }
 
     setIsCreating(true);
-    const { data, error } = await createWorkoutTemplate(newTemplateName.trim());
+    const { data, error } = await createWorkoutTemplate(newTemplateName.trim(), newTemplateColor);
 
     if (error) {
       showAlert('Error Creating Template', error, 'error');
@@ -175,6 +178,12 @@ const TemplatesPage = () => {
               className="w-full px-4 py-2 mb-3 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
               autoFocus
             />
+            <div className="mb-3">
+              <ColorSelector
+                selectedColorId={newTemplateColor}
+                onColorChange={setNewTemplateColor}
+              />
+            </div>
             <div className="flex gap-2">
               <button
                 onClick={handleCreateTemplate}
@@ -187,6 +196,7 @@ const TemplatesPage = () => {
                 onClick={() => {
                   setShowNewTemplateInput(false);
                   setNewTemplateName('');
+                  setNewTemplateColor(DEFAULT_COLOR_ID);
                 }}
                 disabled={isCreating}
                 className="flex-1 px-4 py-2 bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-lg font-semibold cursor-pointer transition-colors"
@@ -242,13 +252,19 @@ const TemplatesPage = () => {
                 className="block bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:shadow-md p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
               >
                 <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      {template.name}
-                    </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                      Created {new Date(template.created_at).toLocaleDateString()}
-                    </p>
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-3 h-3 rounded-full ${getColorPillClasses(template.color)}`}
+                      aria-label={`Template color: ${template.color || 'green'}`}
+                    />
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        {template.name}
+                      </h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Created {new Date(template.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
                   </div>
                   <svg
                     className="w-5 h-5 text-gray-400"

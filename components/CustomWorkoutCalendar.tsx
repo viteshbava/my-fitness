@@ -14,6 +14,7 @@ import {
   endOfWeek,
 } from 'date-fns';
 import { Workout } from '@/types/database';
+import { getColorCalendarClasses } from '@/lib/utils/colors';
 
 interface CustomWorkoutCalendarProps {
   workouts: Workout[];
@@ -176,7 +177,7 @@ const CustomWorkoutCalendar: React.FC<CustomWorkoutCalendarProps> = ({
                           e.stopPropagation();
                           onSelectWorkout(workout);
                         }}
-                        className='bg-green-500 hover:bg-green-600 active:bg-green-700 active:scale-95 text-white text-xs p-1 rounded cursor-pointer transition-all'>
+                        className={`${getColorCalendarClasses(workout.color)} active:scale-95 text-xs p-1 rounded cursor-pointer transition-all`}>
                         {workout.name}
                       </div>
                     ))}

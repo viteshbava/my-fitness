@@ -27,6 +27,7 @@ export interface Workout {
   id: string;
   name: string;
   date: string;
+  color: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -63,6 +64,7 @@ export interface WorkoutWithExercises extends Workout {
 export interface WorkoutTemplate {
   id: string;
   name: string;
+  color: string | null;
   created_at: string;
   updated_at: string;
 }

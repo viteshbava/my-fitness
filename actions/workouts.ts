@@ -101,13 +101,14 @@ export const fetchWorkoutById = async (
  */
 export const createWorkout = async (
   date: string,
-  name: string
+  name: string,
+  color: string = 'green'
 ): Promise<ApiResponse<Workout>> => {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
       .from('workouts')
-      .insert({ date, name })
+      .insert({ date, name, color })
       .select()
       .single();
 
@@ -143,6 +144,32 @@ export const updateWorkoutName = async (
     return {
       data: null,
       error: err instanceof Error ? err.message : 'Failed to update workout name',
+    };
+  }
+};
+
+/**
+ * Update workout color
+ */
+export const updateWorkoutColor = async (
+  workoutId: string,
+  color: string
+): Promise<ApiResponse<Workout>> => {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('workouts')
+      .update({ color })
+      .eq('id', workoutId)
+      .select()
+      .single();
+
+    if (error) return { data: null, error: error.message };
+    return { data, error: null };
+  } catch (err) {
+    return {
+      data: null,
+      error: err instanceof Error ? err.message : 'Failed to update workout color',
     };
   }
 };

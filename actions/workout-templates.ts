@@ -80,13 +80,14 @@ export const fetchWorkoutTemplateById = async (
  * Create a new workout template
  */
 export const createWorkoutTemplate = async (
-  name: string
+  name: string,
+  color: string = 'green'
 ): Promise<ApiResponse<WorkoutTemplate>> => {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
       .from('workout_templates')
-      .insert({ name })
+      .insert({ name, color })
       .select()
       .single();
 
@@ -122,6 +123,32 @@ export const updateWorkoutTemplateName = async (
     return {
       data: null,
       error: err instanceof Error ? err.message : 'Failed to update workout template name',
+    };
+  }
+};
+
+/**
+ * Update workout template color
+ */
+export const updateWorkoutTemplateColor = async (
+  templateId: string,
+  color: string
+): Promise<ApiResponse<WorkoutTemplate>> => {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('workout_templates')
+      .update({ color })
+      .eq('id', templateId)
+      .select()
+      .single();
+
+    if (error) return { data: null, error: error.message };
+    return { data, error: null };
+  } catch (err) {
+    return {
+      data: null,
+      error: err instanceof Error ? err.message : 'Failed to update workout template color',
     };
   }
 };
@@ -276,12 +303,13 @@ export const createWorkoutFromTemplate = async (
     if (templateError) return { data: null, error: templateError.message };
     if (!template) return { data: null, error: 'Template not found' };
 
-    // Create the workout with the template's name
+    // Create the workout with the template's name and color
     const { data: workout, error: workoutError } = await supabase
       .from('workouts')
       .insert({
         name: template.name,
         date: date,
+        color: template.color || 'green',
       })
       .select()
       .single();

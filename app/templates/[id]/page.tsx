@@ -6,6 +6,7 @@ import Link from 'next/link';
 import {
   fetchWorkoutTemplateById,
   updateWorkoutTemplateName,
+  updateWorkoutTemplateColor,
   deleteWorkoutTemplate,
   removeExerciseFromTemplate,
   updateTemplateExercisesOrder,
@@ -17,6 +18,8 @@ import AlertModal from '@/components/AlertModal';
 import ConfirmationModal from '@/components/ConfirmationModal';
 import RenameWorkoutModal from '@/components/RenameWorkoutModal';
 import KebabMenu from '@/components/KebabMenu';
+import ColorSelector from '@/components/ColorSelector';
+import { getColorPillClasses } from '@/lib/utils/colors';
 
 // Template Exercise Card Component
 interface TemplateExerciseCardProps {
@@ -150,6 +153,9 @@ const TemplateDetailPage = () => {
   const [renameTemplateModalOpen, setRenameTemplateModalOpen] = useState(false);
   const [newTemplateName, setNewTemplateName] = useState('');
 
+  // Color change state
+  const [isChangingColor, setIsChangingColor] = useState(false);
+
   const showAlert = (
     title: string,
     message: string,
@@ -279,6 +285,24 @@ const TemplateDetailPage = () => {
     setTemplateExercises(newExercises);
   };
 
+  const handleColorChange = async (colorId: string) => {
+    if (!template) return;
+
+    setIsChangingColor(true);
+    const { data, error } = await updateWorkoutTemplateColor(templateId, colorId);
+
+    if (error) {
+      showAlert('Error Changing Color', error, 'error');
+      setIsChangingColor(false);
+      return;
+    }
+
+    if (data) {
+      setTemplate({ ...template, color: data.color });
+      setIsChangingColor(false);
+    }
+  };
+
   const handleLogWorkout = async () => {
     if (!template) return;
 
@@ -348,9 +372,15 @@ const TemplateDetailPage = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </Link>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex-1">
-              {template.name}
-            </h1>
+            <div className="flex items-center gap-3 flex-1">
+              <div
+                className={`w-6 h-6 rounded-full ${getColorPillClasses(template.color)}`}
+                aria-label={`Template color: ${template.color || 'green'}`}
+              />
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                {template.name}
+              </h1>
+            </div>
             <KebabMenu
               items={[
                 {
@@ -364,6 +394,17 @@ const TemplateDetailPage = () => {
                 },
               ]}
             />
+          </div>
+
+          {/* Color Selector */}
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-6">
+            <ColorSelector
+              selectedColorId={template.color || 'green'}
+              onColorChange={handleColorChange}
+            />
+            {isChangingColor && (
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Updating color...</p>
+            )}
           </div>
         </div>
 

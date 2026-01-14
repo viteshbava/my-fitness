@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { fetchWorkoutById, deleteWorkout, updateWorkoutName } from '@/actions/workouts';
+import { fetchWorkoutById, deleteWorkout, updateWorkoutName, updateWorkoutColor } from '@/actions/workouts';
 import {
   updateWorkoutExercisesOrder,
   fetchBestSetsForExercises,
@@ -16,6 +16,8 @@ import { useToast } from '@/components/ToastProvider';
 import { format } from 'date-fns';
 import { formatSetsSummary } from '@/lib/controllers/workout-exercise-controller';
 import KebabMenu from '@/components/KebabMenu';
+import ColorSelector from '@/components/ColorSelector';
+import { getColorPillClasses } from '@/lib/utils/colors';
 
 // Exercise Card Component
 interface ExerciseCardProps {
@@ -131,6 +133,9 @@ const WorkoutDetailPage = () => {
   const [renameWorkoutModalOpen, setRenameWorkoutModalOpen] = useState(false);
   const [newWorkoutName, setNewWorkoutName] = useState('');
 
+  // Color change state
+  const [isChangingColor, setIsChangingColor] = useState(false);
+
   const showAlert = (
     title: string,
     message: string,
@@ -214,6 +219,24 @@ const WorkoutDetailPage = () => {
     if (workout) {
       setNewWorkoutName(workout.name);
       setRenameWorkoutModalOpen(true);
+    }
+  };
+
+  const handleColorChange = async (colorId: string) => {
+    if (!workout) return;
+
+    setIsChangingColor(true);
+    const { data, error } = await updateWorkoutColor(workout.id, colorId);
+
+    if (error) {
+      showAlert('Error Changing Color', error, 'error');
+      setIsChangingColor(false);
+      return;
+    }
+
+    if (data) {
+      setWorkout({ ...workout, color: data.color });
+      setIsChangingColor(false);
     }
   };
 
@@ -301,13 +324,19 @@ const WorkoutDetailPage = () => {
             ← Back to Calendar
           </Link>
           <div className='flex items-start justify-between'>
-            <div>
-              <h1 className='text-3xl font-bold text-gray-900 dark:text-white mb-1'>
-                {workout.name}
-              </h1>
-              <p className='text-lg text-gray-600 dark:text-gray-400'>
-                {format(new Date(workout.date), 'EEEE, MMMM d, yyyy')}
-              </p>
+            <div className='flex items-center gap-3 flex-1'>
+              <div
+                className={`w-6 h-6 rounded-full ${getColorPillClasses(workout.color)}`}
+                aria-label={`Workout color: ${workout.color || 'green'}`}
+              />
+              <div>
+                <h1 className='text-3xl font-bold text-gray-900 dark:text-white mb-1'>
+                  {workout.name}
+                </h1>
+                <p className='text-lg text-gray-600 dark:text-gray-400'>
+                  {format(new Date(workout.date), 'EEEE, MMMM d, yyyy')}
+                </p>
+              </div>
             </div>
 
             {/* Kebab Menu */}
@@ -345,6 +374,17 @@ const WorkoutDetailPage = () => {
                 },
               ]}
             />
+          </div>
+
+          {/* Color Selector */}
+          <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-4 mt-4'>
+            <ColorSelector
+              selectedColorId={workout.color || 'green'}
+              onColorChange={handleColorChange}
+            />
+            {isChangingColor && (
+              <p className='text-sm text-gray-500 dark:text-gray-400 mt-2'>Updating color...</p>
+            )}
           </div>
         </div>
 
