@@ -14,11 +14,13 @@ import {
   fetchMostRecentWorkoutWithData,
   fetchHistoricalWorkoutExercises,
   fetchBestSetForExercise,
+  getNextWorkoutExercise,
 } from '@/actions/workout-exercises';
 import { updateExerciseNotes, updateExerciseIsLearnt } from '@/actions/exercises';
 import { WorkoutExerciseWithExercise, Set } from '@/types/database';
 import AlertModal from '@/components/AlertModal';
 import ConfirmationModal from '@/components/ConfirmationModal';
+import SaveProgressModal from '@/components/SaveProgressModal';
 import Button from '@/components/Button';
 import { useToast } from '@/components/ToastProvider';
 import { format } from 'date-fns';
@@ -68,6 +70,11 @@ const WorkoutExerciseDetailPage = () => {
   // Confirmation modals
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
+
+  // Save progress modal
+  const [saveProgressModalOpen, setSaveProgressModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [nextExerciseId, setNextExerciseId] = useState<string | null>(null);
 
   const showAlert = (
     title: string,
@@ -217,12 +224,18 @@ const WorkoutExerciseDetailPage = () => {
       return;
     }
 
+    // Show modal and start saving
+    setSaveProgressModalOpen(true);
+    setIsSaving(true);
+
     // Remove empty sets before final save
     const cleanedSets = removeEmptySets(sets);
 
     // Save sets and update exercise best set and last_used_date
     const { error: updateError } = await saveWorkoutExerciseSets(exerciseId, cleanedSets);
     if (updateError) {
+      setSaveProgressModalOpen(false);
+      setIsSaving(false);
       showAlert('Error Saving', updateError, 'error');
       return;
     }
@@ -230,20 +243,41 @@ const WorkoutExerciseDetailPage = () => {
     // Clear draft snapshot
     const { error: clearError } = await clearDraftSnapshot(exerciseId);
     if (clearError) {
+      setSaveProgressModalOpen(false);
+      setIsSaving(false);
       showAlert('Error', 'Failed to clear draft', 'error');
       return;
     }
 
+    // Check if there's a next exercise
+    const { data: nextExercise } = await getNextWorkoutExercise(workoutId, exerciseId);
+    setNextExerciseId(nextExercise?.id || null);
+
+    // Update state
     setSets(cleanedSets);
     setIsInProgress(false);
-    showToast('Changes saved successfully', 'success');
 
     // Reload to get fresh data
     await loadWorkoutExercise();
+
+    // Stop saving indicator
+    setIsSaving(false);
   };
 
   const handleCancelClick = () => {
     setCancelModalOpen(true);
+  };
+
+  const handleBackToWorkout = () => {
+    setSaveProgressModalOpen(false);
+    router.push(`/workouts/${workoutId}`);
+  };
+
+  const handleNextExercise = () => {
+    if (nextExerciseId) {
+      setSaveProgressModalOpen(false);
+      router.push(`/workouts/${workoutId}/exercises/${nextExerciseId}`);
+    }
   };
 
   // Experience Level handlers
@@ -906,6 +940,14 @@ const WorkoutExerciseDetailPage = () => {
         onConfirm={confirmCancel}
         onCancel={() => setCancelModalOpen(false)}
         isDangerous={true}
+      />
+
+      {/* Save Progress Modal */}
+      <SaveProgressModal
+        isOpen={saveProgressModalOpen}
+        isSaving={isSaving}
+        onBackToWorkout={handleBackToWorkout}
+        onNextExercise={nextExerciseId ? handleNextExercise : undefined}
       />
     </div>
   );

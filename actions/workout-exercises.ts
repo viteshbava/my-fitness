@@ -596,3 +596,53 @@ export const fetchBestSetsForExercises = async (
   }
 };
 
+/**
+ * Get the next workout exercise in a workout
+ * Returns the next exercise based on order_index
+ */
+export const getNextWorkoutExercise = async (
+  workoutId: string,
+  currentWorkoutExerciseId: string
+): Promise<ApiResponse<WorkoutExerciseWithExercise | null>> => {
+  try {
+    const supabase = await createClient();
+
+    // Get the current workout exercise's order_index
+    const { data: currentExercise, error: currentError } = await supabase
+      .from('workout_exercises')
+      .select('order_index')
+      .eq('id', currentWorkoutExerciseId)
+      .single();
+
+    if (currentError) return { data: null, error: currentError.message };
+
+    // Get the next exercise (lowest order_index greater than current)
+    const { data: nextExercise, error: nextError } = await supabase
+      .from('workout_exercises')
+      .select(`
+        *,
+        exercise:exercises (*)
+      `)
+      .eq('workout_id', workoutId)
+      .gt('order_index', currentExercise.order_index)
+      .order('order_index', { ascending: true })
+      .limit(1)
+      .single();
+
+    if (nextError) {
+      // If no next exercise found, return null
+      if (nextError.code === 'PGRST116') {
+        return { data: null, error: null };
+      }
+      return { data: null, error: nextError.message };
+    }
+
+    return { data: nextExercise, error: null };
+  } catch (err) {
+    return {
+      data: null,
+      error: err instanceof Error ? err.message : 'Failed to get next exercise',
+    };
+  }
+};
+
