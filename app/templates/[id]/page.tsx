@@ -38,12 +38,26 @@ const TemplateExerciseCard: React.FC<TemplateExerciseCardProps> = ({
   onMoveDown,
   onDelete,
 }) => {
+  const router = useRouter();
+  const params = useParams();
+  const templateId = params.id as string;
+
+  const handleClick = () => {
+    router.push(`/templates/${templateId}/exercises/${templateExercise.exercise.id}`);
+  };
+
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-10 border border-transparent flex items-stretch gap-4 relative">
+    <div
+      onClick={handleClick}
+      className="bg-white dark:bg-gray-800 rounded-lg shadow p-10 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 active:shadow-md active:scale-[0.98] active:border-blue-600 dark:active:border-blue-500 transition-all border border-transparent flex items-stretch gap-4 relative cursor-pointer"
+    >
       {/* Up Arrow - Top Left */}
       {!isFirst && (
         <button
-          onClick={onMoveUp}
+          onClick={(e) => {
+            e.stopPropagation();
+            onMoveUp();
+          }}
           className="absolute top-2 left-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 active:text-gray-700 dark:active:text-gray-200 active:scale-90 transition-all cursor-pointer z-10"
           aria-label="Move up"
         >
@@ -75,7 +89,10 @@ const TemplateExerciseCard: React.FC<TemplateExerciseCardProps> = ({
 
       {/* Delete Button - Top Right */}
       <button
-        onClick={onDelete}
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete();
+        }}
         className="absolute top-2 right-2 text-red-400 hover:text-red-600 dark:hover:text-red-300 active:text-red-700 dark:active:text-red-200 active:scale-90 transition-all cursor-pointer z-10"
         aria-label="Remove exercise"
       >
@@ -87,7 +104,10 @@ const TemplateExerciseCard: React.FC<TemplateExerciseCardProps> = ({
       {/* Down Arrow - Bottom Left */}
       {!isLast && (
         <button
-          onClick={onMoveDown}
+          onClick={(e) => {
+            e.stopPropagation();
+            onMoveDown();
+          }}
           className="absolute bottom-2 left-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 active:text-gray-700 dark:active:text-gray-200 active:scale-90 transition-all cursor-pointer z-10"
           aria-label="Move down"
         >
