@@ -558,9 +558,6 @@ const WorkoutExerciseDetailPage = () => {
                 <Button onClick={handleCancelClick} variant='secondary'>
                   Cancel
                 </Button>
-                <Button onClick={handleSave} variant='success'>
-                  Save
-                </Button>
               </div>
             )}
           </div>
@@ -629,11 +626,14 @@ const WorkoutExerciseDetailPage = () => {
               <Button onClick={handleAddSet} variant='primary'>
                 Add Set
               </Button>
-              {sets.length > 1 && (
+              {/* {sets.length > 1 && (
                 <Button onClick={handleDeleteLastSet} variant='danger'>
                   Delete Last Set
                 </Button>
-              )}
+              )} */}
+              <Button onClick={handleSave} variant='success'>
+                Save Exercise
+              </Button>
             </div>
           )}
         </div>
