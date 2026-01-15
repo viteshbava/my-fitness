@@ -13,23 +13,8 @@ const Home = () => {
           </p>
         </header>
 
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 mb-6">
-            <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">
-              Welcome!
-            </h2>
-            <p className="text-gray-600 dark:text-gray-300 mb-4">
-              This is your personal fitness training application. Here you can:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-300 mb-6">
-              <li>Browse and search exercises from your exercise library</li>
-              <li>Plan and schedule workouts on a calendar</li>
-              <li>Log your sets, reps, and weights during workouts</li>
-              <li>Track your progress over time with charts and history</li>
-            </ul>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Link href="/exercises" className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg active:shadow active:scale-[0.98] transition-all cursor-pointer">
               <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-3">
                 Exercise Library
@@ -39,6 +24,18 @@ const Home = () => {
               </p>
               <div className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 active:scale-95 transition-all text-white rounded-md text-sm font-medium">
                 Browse Exercises
+              </div>
+            </Link>
+
+            <Link href="/templates" className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg active:shadow active:scale-[0.98] transition-all cursor-pointer">
+              <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-3">
+                Templates
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 mb-4">
+                Create and manage workout templates for quick workout planning.
+              </p>
+              <div className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 active:scale-95 transition-all text-white rounded-md text-sm font-medium">
+                View Templates
               </div>
             </Link>
 
@@ -53,15 +50,6 @@ const Home = () => {
                 View Calendar
               </div>
             </Link>
-          </div>
-
-          <div className="mt-8 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-green-900 dark:text-green-100 mb-2">
-              Setup Status
-            </h3>
-            <p className="text-green-800 dark:text-green-200">
-              Sprint 3 Complete: Workout management with calendar view and exercise assignment ready!
-            </p>
           </div>
         </div>
       </div>
