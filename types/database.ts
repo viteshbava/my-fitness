@@ -53,6 +53,10 @@ export interface WorkoutExercise {
 // Extended types for joined data
 export interface WorkoutExerciseWithExercise extends WorkoutExercise {
   exercise: Exercise;
+  workout?: {
+    name: string;
+    date: string;
+  };
 }
 
 export interface WorkoutWithExercises extends Workout {

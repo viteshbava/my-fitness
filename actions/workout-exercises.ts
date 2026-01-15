@@ -181,7 +181,8 @@ export const fetchWorkoutExerciseById = cache(async (
       .from('workout_exercises')
       .select(`
         *,
-        exercise:exercises (*)
+        exercise:exercises (*),
+        workout:workouts (name, date)
       `)
       .eq('id', workoutExerciseId)
       .single();

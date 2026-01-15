@@ -511,6 +511,26 @@ const WorkoutExerciseDetailPage = () => {
         {/* Breadcrumb */}
         {!isInProgress && <Breadcrumb items={breadcrumbItems} />}
 
+        {/* Workout Context */}
+        {workoutExercise.workout && (
+          <div className='mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg'>
+            <div className='flex items-center justify-between'>
+              <div>
+                <p className='text-sm text-blue-600 dark:text-blue-400 font-medium'>Workout</p>
+                <h2 className='text-xl font-semibold text-blue-900 dark:text-blue-100'>
+                  {workoutExercise.workout.name}
+                </h2>
+              </div>
+              <div className='text-right'>
+                <p className='text-sm text-blue-600 dark:text-blue-400 font-medium'>Date</p>
+                <p className='text-lg text-blue-900 dark:text-blue-100'>
+                  {format(new Date(workoutExercise.workout.date), 'MMM d, yyyy')}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div className='mb-8'>
           <div className='flex items-start justify-between'>
