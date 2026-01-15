@@ -17,15 +17,18 @@ import ProgressChart from '@/components/ProgressChart';
 import VideoThumbnail from '@/components/VideoThumbnail';
 import Breadcrumb, { BreadcrumbItem } from '@/components/Breadcrumb';
 import SectionLoader from '@/components/SectionLoader';
+import AddToTemplateModal from '@/components/AddToTemplateModal';
 
 interface ExerciseDetailViewProps {
   exerciseId: string;
   breadcrumbItems: BreadcrumbItem[];
+  showAddToTemplate?: boolean;
 }
 
 const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({
   exerciseId,
   breadcrumbItems,
+  showAddToTemplate = false,
 }) => {
   const { showToast } = useToast();
 
@@ -49,6 +52,9 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({
   const [isLearnt, setIsLearnt] = useState(false);
   const [isEditingLearnt, setIsEditingLearnt] = useState(false);
   const [isSavingLearnt, setIsSavingLearnt] = useState(false);
+
+  // Add to Template modal state
+  const [addToTemplateModalOpen, setAddToTemplateModalOpen] = useState(false);
 
   // Alert modal state
   const [alertModalOpen, setAlertModalOpen] = useState(false);
@@ -240,9 +246,36 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({
           </div>
 
           {/* Video */}
-          <div className='mb-6'>
+          <div className='mb-4'>
             <VideoThumbnail videoUrl={exercise.video_url} exerciseName={exercise.name} />
           </div>
+
+          {/* Add to Template Button */}
+          {showAddToTemplate && (
+            <div className='mb-6'>
+              <Button
+                onClick={() => setAddToTemplateModalOpen(true)}
+                variant='secondary'
+                size='lg'
+                fullWidth
+              >
+                <svg
+                  className='w-6 h-6 mr-2 inline'
+                  fill='none'
+                  stroke='currentColor'
+                  viewBox='0 0 24 24'
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M12 4v16m8-8H4'
+                  />
+                </svg>
+                Add to Template
+              </Button>
+            </div>
+          )}
 
           {/* Exercise Details Grid */}
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-6'>
@@ -423,6 +456,16 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({
           </SectionLoader>
         </div>
       </div>
+
+      {/* Add to Template Modal */}
+      {exercise && (
+        <AddToTemplateModal
+          isOpen={addToTemplateModalOpen}
+          onClose={() => setAddToTemplateModalOpen(false)}
+          exerciseId={exercise.id}
+          exerciseName={exercise.name}
+        />
+      )}
 
       {/* Alert Modal */}
       <AlertModal

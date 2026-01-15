@@ -15,7 +15,13 @@ const ExerciseDetailPage = () => {
     { label: 'Exercise' },
   ];
 
-  return <ExerciseDetailView exerciseId={exerciseId} breadcrumbItems={breadcrumbItems} />;
+  return (
+    <ExerciseDetailView
+      exerciseId={exerciseId}
+      breadcrumbItems={breadcrumbItems}
+      showAddToTemplate={true}
+    />
+  );
 };
 
 export default ExerciseDetailPage;
