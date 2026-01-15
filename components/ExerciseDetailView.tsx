@@ -313,22 +313,23 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({
               )}
             </div>
             {isEditingLearnt ? (
-              <div className='flex items-center gap-4'>
-                <label className='flex items-center gap-2'>
-                  <input
-                    type='checkbox'
-                    checked={isLearnt}
-                    onChange={(e) => setIsLearnt(e.target.checked)}
-                    className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600'
-                  />
-                  <span className='text-sm text-gray-900 dark:text-white'>Learnt</span>
-                </label>
-                <Button onClick={handleSaveLearnt} disabled={isSavingLearnt} size='sm'>
-                  {isSavingLearnt ? 'Saving...' : 'Save'}
-                </Button>
-                <Button onClick={handleCancelEditLearnt} variant='secondary' size='sm'>
-                  Cancel
-                </Button>
+              <div>
+                <select
+                  value={isLearnt ? 'learnt' : 'not-learnt'}
+                  onChange={(e) => setIsLearnt(e.target.value === 'learnt')}
+                  className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white'
+                >
+                  <option value='not-learnt'>Not Learnt</option>
+                  <option value='learnt'>Learnt</option>
+                </select>
+                <div className='flex items-center justify-end space-x-3 mt-4'>
+                  <Button onClick={handleCancelEditLearnt} disabled={isSavingLearnt} variant='ghost' size='sm'>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleSaveLearnt} disabled={isSavingLearnt} variant='primary' size='sm'>
+                    {isSavingLearnt ? 'Saving...' : 'Save'}
+                  </Button>
+                </div>
               </div>
             ) : (
               <p className='text-base text-gray-900 dark:text-white'>
