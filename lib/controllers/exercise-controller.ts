@@ -35,6 +35,8 @@ export const sortExercisesByName = (
 
 /**
  * Search exercises by name
+ * Supports multi-word search where ALL words must match (case-insensitive, partial matches allowed)
+ * Example: "bench press barbell" will match "Bench Press Flat Barbell"
  */
 export const searchExercisesByName = (
   exercises: Exercise[],
@@ -44,10 +46,17 @@ export const searchExercisesByName = (
     return exercises;
   }
 
-  const lowerSearchTerm = searchTerm.toLowerCase();
-  return exercises.filter(exercise =>
-    exercise.name.toLowerCase().includes(lowerSearchTerm)
-  );
+  // Split search term into individual words and convert to lowercase
+  const searchWords = searchTerm
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(word => word.length > 0);
+
+  // Filter exercises where ALL search words are found in the exercise name
+  return exercises.filter(exercise => {
+    const lowerExerciseName = exercise.name.toLowerCase();
+    return searchWords.every(word => lowerExerciseName.includes(word));
+  });
 };
 
 /**
