@@ -680,6 +680,7 @@ const WorkoutExerciseDetailPage = () => {
                         {isInProgress ? (
                           <input
                             type='number'
+                            inputMode='numeric'
                             step='0.5'
                             min='0'
                             value={set.weight ?? ''}
@@ -695,6 +696,7 @@ const WorkoutExerciseDetailPage = () => {
                         {isInProgress ? (
                           <input
                             type='number'
+                            inputMode='numeric'
                             step='1'
                             min='0'
                             value={set.reps ?? ''}
