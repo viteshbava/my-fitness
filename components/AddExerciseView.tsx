@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { fetchExercises } from '@/actions/exercises';
 import { Exercise } from '@/types/database';
 import AlertModal from '@/components/AlertModal';
+import ExerciseCard from '@/components/ExerciseCard';
 import {
   applyFilters,
   applySorting,
@@ -395,33 +396,12 @@ const AddExerciseView: React.FC<AddExerciseViewProps> = ({
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredAndSortedExercises.map((exercise) => (
-              <div
+              <ExerciseCard
                 key={exercise.id}
+                exercise={exercise}
                 onClick={() => !adding && handleAddExercise(exercise)}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 active:shadow active:scale-[0.98] active:border-blue-600 dark:active:border-blue-500 transition-all p-6 cursor-pointer border border-transparent"
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    {exercise.name}
-                  </h3>
-                  {exercise.is_mastered && (
-                    <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                      Learnt
-                    </span>
-                  )}
-                </div>
-                <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
-                  <p>
-                    <span className="font-medium">Primary:</span> {exercise.primary_body_part}
-                  </p>
-                  <p>
-                    <span className="font-medium">Equipment:</span> {exercise.equipment}
-                  </p>
-                  <p>
-                    <span className="font-medium">Pattern:</span> {exercise.pattern}
-                  </p>
-                </div>
-              </div>
+                className="hover:border hover:border-blue-500 dark:hover:border-blue-400 active:border-blue-600 dark:active:border-blue-500 border border-transparent"
+              />
             ))}
           </div>
         )}
