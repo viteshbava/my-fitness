@@ -12,11 +12,11 @@ import { WorkoutWithExercises, WorkoutExerciseWithExercise, Set } from '@/types/
 import AlertModal from '@/components/AlertModal';
 import ConfirmationModal from '@/components/ConfirmationModal';
 import RenameWorkoutModal from '@/components/RenameWorkoutModal';
+import ColorSelectorModal from '@/components/ColorSelectorModal';
 import { useToast } from '@/components/ToastProvider';
 import { format } from 'date-fns';
 import { formatSetsSummary } from '@/lib/controllers/workout-exercise-controller';
 import KebabMenu from '@/components/KebabMenu';
-import ColorSelector from '@/components/ColorSelector';
 import { getColorPillClasses } from '@/lib/utils/colors';
 import SectionLoader from '@/components/SectionLoader';
 
@@ -143,8 +143,8 @@ const WorkoutDetailPage = () => {
   const [renameWorkoutModalOpen, setRenameWorkoutModalOpen] = useState(false);
   const [newWorkoutName, setNewWorkoutName] = useState('');
 
-  // Color change state
-  const [isChangingColor, setIsChangingColor] = useState(false);
+  // Color selector modal state
+  const [colorSelectorModalOpen, setColorSelectorModalOpen] = useState(false);
 
   const showAlert = (
     title: string,
@@ -246,21 +246,23 @@ const WorkoutDetailPage = () => {
     }
   };
 
+  const handleChangeColorClick = () => {
+    setColorSelectorModalOpen(true);
+  };
+
   const handleColorChange = async (colorId: string) => {
     if (!workout) return;
 
-    setIsChangingColor(true);
     const { data, error } = await updateWorkoutColor(workout.id, colorId);
 
     if (error) {
       showAlert('Error Changing Color', error, 'error');
-      setIsChangingColor(false);
       return;
     }
 
     if (data) {
       setWorkout({ ...workout, color: data.color });
-      setIsChangingColor(false);
+      showToast('Workout color updated', 'success');
     }
   };
 
@@ -382,6 +384,21 @@ const WorkoutDetailPage = () => {
                   isDangerous: false,
                 },
                 {
+                  label: 'Change Color',
+                  onClick: handleChangeColorClick,
+                  icon: (
+                    <svg fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        strokeWidth={2}
+                        d='M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01'
+                      />
+                    </svg>
+                  ),
+                  isDangerous: false,
+                },
+                {
                   label: 'Delete Workout',
                   onClick: handleDeleteWorkoutClick,
                   icon: (
@@ -398,17 +415,6 @@ const WorkoutDetailPage = () => {
                 },
               ]}
             />
-          </div>
-
-          {/* Color Selector */}
-          <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-4 mt-4'>
-            <ColorSelector
-              selectedColorId={workout.color || 'green'}
-              onColorChange={handleColorChange}
-            />
-            {isChangingColor && (
-              <p className='text-sm text-gray-500 dark:text-gray-400 mt-2'>Updating color...</p>
-            )}
           </div>
         </div>
 
@@ -507,6 +513,14 @@ const WorkoutDetailPage = () => {
           setRenameWorkoutModalOpen(false);
           setNewWorkoutName('');
         }}
+      />
+
+      {/* Color Selector Modal */}
+      <ColorSelectorModal
+        isOpen={colorSelectorModalOpen}
+        selectedColorId={workout?.color || 'green'}
+        onColorChange={handleColorChange}
+        onClose={() => setColorSelectorModalOpen(false)}
       />
     </div>
   );
