@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { fetchExercises } from '@/actions/exercises';
+import { fetchExercisesWithUsageStatus } from '@/actions/exercises';
 import {
   applyFilters,
   applySorting,
@@ -93,7 +93,7 @@ const ExercisesPage = () => {
 
   const loadExercises = async () => {
     setLoading(true);
-    const { data, error } = await fetchExercises();
+    const { data, error } = await fetchExercisesWithUsageStatus();
 
     if (error) {
       setError(error);
@@ -133,7 +133,7 @@ const ExercisesPage = () => {
       equipment,
       isMastered,
     });
-    return applySorting(filtered, sortBy);
+    return applySorting(filtered);
   }, [
     exercises,
     searchTerm,
@@ -143,7 +143,6 @@ const ExercisesPage = () => {
     secondaryBodyPart,
     equipment,
     isMastered,
-    sortBy,
   ]);
 
   // Check if any filters are active

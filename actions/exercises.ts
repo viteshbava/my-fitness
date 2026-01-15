@@ -8,7 +8,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
-import { Exercise, Set, ApiSuccessResponse } from '@/types/database';
+import type { Exercise, Set, ApiSuccessResponse } from '@/types/database';
 import { revalidatePath } from 'next/cache';
 import { cache } from 'react';
 
@@ -32,6 +32,61 @@ export const fetchExercises = async (): Promise<{
     return {
       data: null,
       error: err instanceof Error ? err.message : 'Failed to fetch exercises',
+    };
+  }
+};
+
+/**
+ * Fetch exercises with their usage status (whether they have been done)
+ * Returns exercises with an additional `has_been_done` flag
+ */
+export const fetchExercisesWithUsageStatus = async (): Promise<{
+  data: (Exercise & { has_been_done: boolean })[] | null;
+  error: string | null;
+}> => {
+  try {
+    const supabase = await createClient();
+
+    // Fetch all exercises
+    const { data: exercises, error: exercisesError } = await supabase
+      .from('exercises')
+      .select('*')
+      .order('name', { ascending: true });
+
+    if (exercisesError) {
+      return { data: null, error: exercisesError.message };
+    }
+
+    // Fetch all workout exercises with their sets
+    const { data: workoutExercises, error: workoutExercisesError } = await supabase
+      .from('workout_exercises')
+      .select('exercise_id, sets');
+
+    if (workoutExercisesError) {
+      return { data: null, error: workoutExercisesError.message };
+    }
+
+    // Create a Set of exercise IDs that have been done (have at least one set with reps > 0)
+    const doneExerciseIds = new Set<string>();
+    (workoutExercises || []).forEach((we: any) => {
+      const sets = we.sets || [];
+      const hasValidSet = sets.some((set: Set) => set.reps !== null && set.reps > 0);
+      if (hasValidSet) {
+        doneExerciseIds.add(we.exercise_id);
+      }
+    });
+
+    // Map exercises with their usage status
+    const exercisesWithStatus = (exercises || []).map(exercise => ({
+      ...exercise,
+      has_been_done: doneExerciseIds.has(exercise.id)
+    }));
+
+    return { data: exercisesWithStatus, error: null };
+  } catch (err) {
+    return {
+      data: null,
+      error: err instanceof Error ? err.message : 'Failed to fetch exercises with usage status',
     };
   }
 };
@@ -153,33 +208,39 @@ export const updateExerciseLastPerformedSets = async (
 };
 
 /**
- * Update the last_used_date for an exercise
- * Called when a workout exercise is saved with data
+ * Check if an exercise has been done (has at least one valid set in any workout)
+ * A valid set is one with reps > 0
+ * Cached for performance
  */
-export const updateExerciseLastUsedDate = async (
-  exerciseId: string,
-  date: string
-): Promise<ApiSuccessResponse> => {
+export const hasExerciseBeenDone = cache(async (
+  exerciseId: string
+): Promise<{ data: boolean; error: string | null }> => {
   try {
     const supabase = await createClient();
-    const { error } = await supabase
-      .from('exercises')
-      .update({ last_used_date: date })
-      .eq('id', exerciseId);
+    const { data, error } = await supabase
+      .from('workout_exercises')
+      .select('sets')
+      .eq('exercise_id', exerciseId)
+      .limit(100); // Check up to 100 workout exercises
 
     if (error) {
-      return { success: false, error: error.message };
+      return { data: false, error: error.message };
     }
 
-    return { success: true, error: null };
+    // Check if any workout exercise has at least one set with reps > 0
+    const hasValidSet = (data || []).some((we: any) => {
+      const sets = we.sets || [];
+      return sets.some((set: Set) => set.reps !== null && set.reps > 0);
+    });
+
+    return { data: hasValidSet, error: null };
   } catch (err) {
     return {
-      success: false,
-      error: err instanceof Error ? err.message : 'Failed to update last used date',
+      data: false,
+      error: err instanceof Error ? err.message : 'Failed to check exercise usage',
     };
   }
-};
-
+});
 
 /**
  * Fetch all workout exercises for a given exercise (for max weight and historical data)

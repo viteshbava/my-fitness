@@ -180,32 +180,22 @@ export const applyFilters = (
 };
 
 /**
- * Sort exercises by last used date
+ * Sort exercises by name (last_used_date sorting is no longer supported)
+ * This function is kept for backwards compatibility
  */
 export const sortExercisesByLastUsed = (
   exercises: Exercise[]
 ): Exercise[] => {
-  return [...exercises].sort((a, b) => {
-    // Put exercises with no last_used_date at the end
-    if (!a.last_used_date && !b.last_used_date) return 0;
-    if (!a.last_used_date) return 1;
-    if (!b.last_used_date) return -1;
-
-    // Sort by most recent first
-    return new Date(b.last_used_date).getTime() - new Date(a.last_used_date).getTime();
-  });
+  // Since last_used_date has been removed, just sort by name
+  return sortExercisesByName(exercises);
 };
 
 /**
  * Apply sorting to exercises
  */
 export const applySorting = (
-  exercises: Exercise[],
-  sortBy: 'name' | 'last_used_date'
+  exercises: Exercise[]
 ): Exercise[] => {
-  if (sortBy === 'last_used_date') {
-    return sortExercisesByLastUsed(exercises);
-  }
   return sortExercisesByName(exercises);
 };
 

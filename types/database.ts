@@ -17,7 +17,6 @@ export interface Exercise {
   equipment: string;
   is_mastered: boolean;
   notes: string | null;
-  last_used_date: string | null;
   created_at: string;
   updated_at: string;
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import { Exercise } from '@/types/database';
 
 interface ExerciseCardProps {
-  exercise: Exercise;
+  exercise: Exercise & { has_been_done?: boolean };
   onClick?: () => void;
   href?: string;
   className?: string;
@@ -16,6 +16,10 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
 }) => {
   const baseClasses =
     'block bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg active:shadow active:scale-[0.98] transition-all p-6 cursor-pointer';
+
+  // Show "Never Done" if has_been_done is explicitly false
+  // If has_been_done is undefined, don't show the badge (backwards compatibility)
+  const neverDone = exercise.has_been_done === false;
 
   const content = (
     <>
@@ -34,6 +38,11 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
         <span className="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-md text-base font-semibold">
           {exercise.pattern}
         </span>
+        {neverDone && (
+          <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 ml-2">
+            Never Done
+          </span>
+        )}
       </div>
       <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
         <p>

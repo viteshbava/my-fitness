@@ -222,7 +222,7 @@ export const updateWorkoutExerciseSets = async (
 };
 
 /**
- * Update workout exercise sets and also update the parent exercise's last_used_date
+ * Update workout exercise sets
  * This should be called when finalizing/saving a workout exercise
  */
 export const saveWorkoutExerciseSets = async (
@@ -232,49 +232,13 @@ export const saveWorkoutExerciseSets = async (
   try {
     const supabase = await createClient();
 
-    // First, update the workout_exercise sets
+    // Update the workout_exercise sets
     const { error: updateError } = await supabase
       .from('workout_exercises')
       .update({ sets })
       .eq('id', workoutExerciseId);
 
     if (updateError) return { success: false, error: updateError.message };
-
-    // Get the workout exercise with its exercise_id and workout date
-    const { data: workoutExercise, error: fetchError } = await supabase
-      .from('workout_exercises')
-      .select(`
-        exercise_id,
-        workout:workouts!inner (date)
-      `)
-      .eq('id', workoutExerciseId)
-      .single();
-
-    if (fetchError) return { success: false, error: fetchError.message };
-
-    const exerciseId = workoutExercise.exercise_id;
-    const workoutDate = (workoutExercise.workout as any).date;
-
-    // Get current exercise last_used_date
-    const { data: exercise, error: exerciseFetchError } = await supabase
-      .from('exercises')
-      .select('last_used_date')
-      .eq('id', exerciseId)
-      .single();
-
-    if (exerciseFetchError) return { success: false, error: exerciseFetchError.message };
-
-    // Update last_used_date if this workout is more recent
-    if (!exercise.last_used_date || workoutDate > exercise.last_used_date) {
-      const { error: exerciseUpdateError } = await supabase
-        .from('exercises')
-        .update({ last_used_date: workoutDate })
-        .eq('id', exerciseId);
-
-      if (exerciseUpdateError) {
-        return { success: false, error: exerciseUpdateError.message };
-      }
-    }
 
     return { success: true, error: null };
   } catch (err) {

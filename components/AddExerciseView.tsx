@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { fetchExercises } from '@/actions/exercises';
+import { fetchExercisesWithUsageStatus } from '@/actions/exercises';
 import { Exercise } from '@/types/database';
 import AlertModal from '@/components/AlertModal';
 import ExerciseCard from '@/components/ExerciseCard';
@@ -43,7 +43,6 @@ const AddExerciseView: React.FC<AddExerciseViewProps> = ({
   const [secondaryBodyPart, setSecondaryBodyPart] = useState('');
   const [equipment, setEquipment] = useState('');
   const [isMastered, setIsMastered] = useState<boolean | null>(true);
-  const [sortBy, setSortBy] = useState<'name' | 'last_used_date'>('name');
   const [showFilters, setShowFilters] = useState(false);
 
   // Alert modal state
@@ -69,7 +68,7 @@ const AddExerciseView: React.FC<AddExerciseViewProps> = ({
 
   const loadExercises = async () => {
     setLoading(true);
-    const { data, error } = await fetchExercises();
+    const { data, error } = await fetchExercisesWithUsageStatus();
 
     if (error) {
       showAlert('Error Loading Exercises', error, 'error');
@@ -102,7 +101,7 @@ const AddExerciseView: React.FC<AddExerciseViewProps> = ({
       equipment,
       isMastered,
     });
-    return applySorting(filtered, sortBy);
+    return applySorting(filtered);
   }, [
     exercises,
     searchTerm,
@@ -112,7 +111,6 @@ const AddExerciseView: React.FC<AddExerciseViewProps> = ({
     secondaryBodyPart,
     equipment,
     isMastered,
-    sortBy,
   ]);
 
   // Check if any filters are active
@@ -366,24 +364,11 @@ const AddExerciseView: React.FC<AddExerciseViewProps> = ({
           )}
         </div>
 
-        {/* Sort Options */}
-        <div className="mb-6 flex items-center justify-between">
+        {/* Exercise count */}
+        <div className="mb-6">
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Showing {filteredAndSortedExercises.length} of {exercises.length} exercises
+            Showing {filteredAndSortedExercises.length} of {exercises.length} exercises (sorted alphabetically)
           </p>
-          <div className="flex items-center space-x-2">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Sort by:
-            </label>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as 'name' | 'last_used_date')}
-              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-            >
-              <option value="name">Alphabetical</option>
-              <option value="last_used_date">Last Used</option>
-            </select>
-          </div>
         </div>
 
         {/* Exercise Grid */}

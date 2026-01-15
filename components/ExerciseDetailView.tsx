@@ -6,6 +6,7 @@ import {
   updateExerciseNotes,
   updateExerciseIsLearnt,
   fetchExerciseHistoricalData,
+  hasExerciseBeenDone,
 } from '@/actions/exercises';
 import { fetchBestSetForExercise } from '@/actions/workout-exercises';
 import { Exercise, Set } from '@/types/database';
@@ -42,6 +43,10 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({
   const [historicalError, setHistoricalError] = useState<string | null>(null);
   const [bestSetError, setBestSetError] = useState<string | null>(null);
   const [showHistorical, setShowHistorical] = useState(false);
+
+  // Track if exercise has been done (has valid workout sets)
+  const [exerciseHasBeenDone, setExerciseHasBeenDone] = useState<boolean | null>(null);
+  const [loadingHasBeenDone, setLoadingHasBeenDone] = useState(false);
 
   // Notes editing state
   const [notes, setNotes] = useState('');
@@ -111,11 +116,24 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({
    * Phase 2: Load historical and best set data progressively in parallel
    */
   const loadProgressiveData = async (exerciseId: string) => {
-    // Load both in parallel for better performance
+    // Load all in parallel for better performance
     Promise.all([
       loadHistoricalData(exerciseId),
-      loadBestSet(exerciseId)
+      loadBestSet(exerciseId),
+      loadHasBeenDone(exerciseId)
     ]);
+  };
+
+  const loadHasBeenDone = async (exerciseId: string) => {
+    setLoadingHasBeenDone(true);
+
+    const { data: hasBeenDone, error } = await hasExerciseBeenDone(exerciseId);
+
+    if (!error) {
+      setExerciseHasBeenDone(hasBeenDone);
+    }
+
+    setLoadingHasBeenDone(false);
   };
 
   const loadHistoricalData = async (exerciseId: string) => {
@@ -243,6 +261,11 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({
             <span className='inline-block px-4 py-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-md text-lg font-bold'>
               {exercise.pattern}
             </span>
+            {exerciseHasBeenDone === false && (
+              <span className='inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 ml-3'>
+                Never Done
+              </span>
+            )}
           </div>
 
           {/* Video */}
