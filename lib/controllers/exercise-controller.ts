@@ -180,6 +180,79 @@ export const applyFilters = (
 };
 
 /**
+ * Apply filters and return both fully filtered results and search-only matches
+ *
+ * When a text search is active WITH other filters, this returns:
+ * - filteredResults: exercises that match ALL criteria (search + filters)
+ * - searchOnlyMatches: exercises that match ONLY the text search (but not the other filters)
+ *
+ * This helps users understand why some search results aren't showing up due to active filters.
+ */
+export const applyFiltersWithSearchFallback = (
+  exercises: Exercise[],
+  filters: {
+    searchTerm?: string;
+    movementType?: string;
+    pattern?: string;
+    primaryBodyPart?: string;
+    secondaryBodyPart?: string;
+    equipment?: string;
+    isMastered?: boolean | null;
+  }
+): { filteredResults: Exercise[]; searchOnlyMatches: Exercise[] } => {
+  // Check if any non-search filters are active
+  const hasActiveFilters =
+    !!filters.movementType ||
+    !!filters.pattern ||
+    !!filters.primaryBodyPart ||
+    !!filters.secondaryBodyPart ||
+    !!filters.equipment ||
+    (filters.isMastered !== undefined && filters.isMastered !== null);
+
+  // Get fully filtered results (search + all filters)
+  const filteredResults = applyFilters(exercises, filters);
+
+  // If there's a search term AND active filters, get search-only matches
+  let searchOnlyMatches: Exercise[] = [];
+  if (filters.searchTerm && hasActiveFilters) {
+    // Apply only non-search filters to get what filters alone would return
+    let filterOnlyResults = exercises;
+    if (filters.movementType) {
+      filterOnlyResults = filterByMovementType(filterOnlyResults, filters.movementType);
+    }
+    if (filters.pattern) {
+      filterOnlyResults = filterByPattern(filterOnlyResults, filters.pattern);
+    }
+    if (filters.primaryBodyPart) {
+      filterOnlyResults = filterByPrimaryBodyPart(filterOnlyResults, filters.primaryBodyPart);
+    }
+    if (filters.secondaryBodyPart) {
+      filterOnlyResults = filterBySecondaryBodyPart(filterOnlyResults, filters.secondaryBodyPart);
+    }
+    if (filters.equipment) {
+      filterOnlyResults = filterByEquipment(filterOnlyResults, filters.equipment);
+    }
+    if (filters.isMastered !== undefined && filters.isMastered !== null) {
+      filterOnlyResults = filterByMasteredStatus(filterOnlyResults, filters.isMastered);
+    }
+
+    // Get exercises that match search term
+    const searchResults = searchExercisesByName(exercises, filters.searchTerm);
+
+    // Find exercises that match search but not the filters
+    // (these are exercises in searchResults but not in filterOnlyResults)
+    searchOnlyMatches = searchResults.filter(
+      exercise => !filterOnlyResults.find(filtered => filtered.id === exercise.id)
+    );
+  }
+
+  return {
+    filteredResults,
+    searchOnlyMatches
+  };
+};
+
+/**
  * Sort exercises by name (last_used_date sorting is no longer supported)
  * This function is kept for backwards compatibility
  */

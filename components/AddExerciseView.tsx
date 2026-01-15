@@ -8,6 +8,7 @@ import AlertModal from '@/components/AlertModal';
 import ExerciseCard from '@/components/ExerciseCard';
 import {
   applyFilters,
+  applyFiltersWithSearchFallback,
   applySorting,
   getUniqueMovementTypes,
   getUniquePatterns,
@@ -91,8 +92,8 @@ const AddExerciseView: React.FC<AddExerciseViewProps> = ({
   const uniqueEquipment = useMemo(() => getUniqueEquipment(exercises), [exercises]);
 
   // Apply filters and sorting
-  const filteredAndSortedExercises = useMemo(() => {
-    const filtered = applyFilters(exercises, {
+  const { filteredAndSortedExercises, searchOnlyExercises } = useMemo(() => {
+    const { filteredResults, searchOnlyMatches } = applyFiltersWithSearchFallback(exercises, {
       searchTerm,
       movementType,
       pattern,
@@ -101,7 +102,10 @@ const AddExerciseView: React.FC<AddExerciseViewProps> = ({
       equipment,
       isMastered,
     });
-    return applySorting(filtered);
+    return {
+      filteredAndSortedExercises: applySorting(filteredResults),
+      searchOnlyExercises: applySorting(searchOnlyMatches),
+    };
   }, [
     exercises,
     searchTerm,
@@ -372,23 +376,57 @@ const AddExerciseView: React.FC<AddExerciseViewProps> = ({
         </div>
 
         {/* Exercise Grid */}
-        {filteredAndSortedExercises.length === 0 ? (
+        {filteredAndSortedExercises.length === 0 && searchOnlyExercises.length === 0 ? (
           <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow">
             <p className="text-gray-500 dark:text-gray-400">
               No exercises found matching your filters.
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredAndSortedExercises.map((exercise) => (
-              <ExerciseCard
-                key={exercise.id}
-                exercise={exercise}
-                onClick={() => !adding && handleAddExercise(exercise)}
-                className="hover:border hover:border-blue-500 dark:hover:border-blue-400 active:border-blue-600 dark:active:border-blue-500 border border-transparent"
-              />
-            ))}
-          </div>
+          <>
+            {/* Fully filtered results */}
+            {filteredAndSortedExercises.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                {filteredAndSortedExercises.map((exercise) => (
+                  <ExerciseCard
+                    key={exercise.id}
+                    exercise={exercise}
+                    onClick={() => !adding && handleAddExercise(exercise)}
+                    className="hover:border hover:border-blue-500 dark:hover:border-blue-400 active:border-blue-600 dark:active:border-blue-500 border border-transparent"
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Search-only matches (filtered out) */}
+            {searchOnlyExercises.length > 0 && (
+              <div className="mt-8">
+                <div className="mb-4 px-4 py-3 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <span className="font-semibold">
+                      {searchOnlyExercises.length} additional exercise{searchOnlyExercises.length !== 1 ? 's' : ''}
+                    </span>{' '}
+                    match your search but don't meet the filter criteria
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {searchOnlyExercises.map((exercise) => (
+                    <div
+                      key={exercise.id}
+                      className="opacity-60 hover:opacity-80 transition-opacity"
+                      style={{ filter: 'grayscale(30%)' }}
+                    >
+                      <ExerciseCard
+                        exercise={exercise}
+                        onClick={() => !adding && handleAddExercise(exercise)}
+                        className="border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 
