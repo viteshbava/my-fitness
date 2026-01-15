@@ -12,7 +12,7 @@ import { WorkoutExercise, Set } from '@/types/database';
 
 export const calculateMaxWeight = (sets: Set[]): number => {
   return sets
-    .filter(set => (set.reps || 0) >= 6)
+    .filter((set) => (set.reps || 0) >= 6)
     .reduce((max, set) => Math.max(max, set.weight || 0), 0);
 };
 
@@ -23,16 +23,17 @@ export const calculateMaxWeight = (sets: Set[]): number => {
 export const calculateMaxWeightAcrossHistory = (
   historicalData: Array<{ date: string; sets: Set[] }>
 ): number => {
-  const allSets = historicalData.flatMap(workout => workout.sets);
+  const allSets = historicalData.flatMap((workout) => workout.sets);
   return calculateMaxWeight(allSets);
 };
 
 export const getCompletionStatus = (sets: Set[]): 'none' | 'partial' | 'complete' => {
   if (!sets || sets.length === 0) return 'none';
 
-  const completedSets = sets.filter(set =>
-    (set.weight !== null && set.weight !== undefined) ||
-    (set.reps !== null && set.reps !== undefined)
+  const completedSets = sets.filter(
+    (set) =>
+      (set.weight !== null && set.weight !== undefined) ||
+      (set.reps !== null && set.reps !== undefined)
   );
 
   if (completedSets.length === 0) return 'none';
@@ -52,9 +53,10 @@ export const getCompletionColor = (status: 'none' | 'partial' | 'complete'): str
 };
 
 export const formatSetsSummary = (sets: Set[]): string => {
-  const completedSets = sets.filter(set =>
-    (set.weight !== null && set.weight !== undefined) ||
-    (set.reps !== null && set.reps !== undefined)
+  const completedSets = sets.filter(
+    (set) =>
+      (set.weight !== null && set.weight !== undefined) ||
+      (set.reps !== null && set.reps !== undefined)
   );
 
   if (completedSets.length === 0) return 'No sets completed';
@@ -67,13 +69,14 @@ export const formatSetsSummary = (sets: Set[]): string => {
  * Otherwise, default to 3 empty sets
  */
 export const createDefaultSets = (previousSets?: Set[]): Set[] => {
-  let setCount = 3; // Default
+  let setCount = 4; // Default
 
   if (previousSets && previousSets.length > 0) {
     // Count completed sets from previous workout
-    const completedCount = previousSets.filter(set =>
-      (set.weight !== null && set.weight !== undefined) ||
-      (set.reps !== null && set.reps !== undefined)
+    const completedCount = previousSets.filter(
+      (set) =>
+        (set.weight !== null && set.weight !== undefined) ||
+        (set.reps !== null && set.reps !== undefined)
     ).length;
 
     if (completedCount > 0) {
@@ -93,9 +96,10 @@ export const createDefaultSets = (previousSets?: Set[]): Set[] => {
  * A set is considered empty if both weight AND reps are null/undefined
  */
 export const removeEmptySets = (sets: Set[]): Set[] => {
-  const nonEmptySets = sets.filter(set =>
-    (set.weight !== null && set.weight !== undefined) ||
-    (set.reps !== null && set.reps !== undefined)
+  const nonEmptySets = sets.filter(
+    (set) =>
+      (set.weight !== null && set.weight !== undefined) ||
+      (set.reps !== null && set.reps !== undefined)
   );
 
   // Renumber sets sequentially
