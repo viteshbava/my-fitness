@@ -552,8 +552,9 @@ export const fetchBestSetForExercise = cache(async (
 /**
  * Fetch best sets for multiple exercises at once
  * Returns a map of exercise_id -> best set
+ * Cached for performance - revalidated when workouts are updated
  */
-export const fetchBestSetsForExercises = async (
+export const fetchBestSetsForExercises = cache(async (
   exerciseIds: string[]
 ): Promise<ApiResponse<Record<string, Set | null>>> => {
   try {
@@ -599,7 +600,7 @@ export const fetchBestSetsForExercises = async (
       error: err instanceof Error ? err.message : 'Failed to fetch best sets',
     };
   }
-};
+});
 
 /**
  * Get the next workout exercise in a workout

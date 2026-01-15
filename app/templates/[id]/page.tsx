@@ -20,11 +20,13 @@ import RenameWorkoutModal from '@/components/RenameWorkoutModal';
 import KebabMenu from '@/components/KebabMenu';
 import ColorSelector from '@/components/ColorSelector';
 import { getColorPillClasses } from '@/lib/utils/colors';
+import SectionLoader from '@/components/SectionLoader';
 
 // Template Exercise Card Component
 interface TemplateExerciseCardProps {
   templateExercise: TemplateExerciseWithExercise;
   bestSet: Set | null;
+  loadingBestSet: boolean;
   isFirst: boolean;
   isLast: boolean;
   onMoveUp: () => void;
@@ -35,6 +37,7 @@ interface TemplateExerciseCardProps {
 const TemplateExerciseCard: React.FC<TemplateExerciseCardProps> = ({
   templateExercise,
   bestSet,
+  loadingBestSet,
   isFirst,
   isLast,
   onMoveUp,
@@ -82,11 +85,17 @@ const TemplateExerciseCard: React.FC<TemplateExerciseCardProps> = ({
           </span>
         </div>
         <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
-          {bestSet && (
-            <p>
-              <span className="font-medium">Best Set:</span> {bestSet.weight}kg × {bestSet.reps} reps
-            </p>
-          )}
+          <SectionLoader
+            loading={loadingBestSet}
+            skeleton='text'
+            skeletonLines={1}
+            isEmpty={!bestSet}>
+            {bestSet && (
+              <p>
+                <span className="font-medium">Best Set:</span> {bestSet.weight}kg × {bestSet.reps} reps
+              </p>
+            )}
+          </SectionLoader>
         </div>
       </div>
 
@@ -132,6 +141,7 @@ const TemplateDetailPage = () => {
   const [templateExercises, setTemplateExercises] = useState<TemplateExerciseWithExercise[]>([]);
   const [bestSets, setBestSets] = useState<Record<string, Set | null>>({});
   const [loading, setLoading] = useState(true);
+  const [loadingBestSets, setLoadingBestSets] = useState(false);
   const [isCreatingWorkout, setIsCreatingWorkout] = useState(false);
 
   // Alert modal state
@@ -169,6 +179,9 @@ const TemplateDetailPage = () => {
     loadTemplate();
   }, [templateId]);
 
+  /**
+   * Phase 1: Load only template data to show page quickly
+   */
   const loadTemplate = async () => {
     setLoading(true);
     const { data, error } = await fetchWorkoutTemplateById(templateId);
@@ -188,17 +201,24 @@ const TemplateDetailPage = () => {
     setTemplate(data);
     setTemplateExercises(data.template_exercises || []);
     setNewTemplateName(data.name);
-
-    // Fetch best sets for all exercises
-    if (data.template_exercises && data.template_exercises.length > 0) {
-      const exerciseIds = data.template_exercises.map(te => te.exercise.id);
-      const { data: bestSetsData } = await fetchBestSetsForExercises(exerciseIds);
-      if (bestSetsData) {
-        setBestSets(bestSetsData);
-      }
-    }
-
     setLoading(false);
+
+    // Phase 2: Load best sets progressively in background
+    if (data.template_exercises && data.template_exercises.length > 0) {
+      loadBestSets(data.template_exercises.map(te => te.exercise.id));
+    }
+  };
+
+  /**
+   * Phase 2: Load best sets for all exercises progressively
+   */
+  const loadBestSets = async (exerciseIds: string[]) => {
+    setLoadingBestSets(true);
+    const { data: bestSetsData } = await fetchBestSetsForExercises(exerciseIds);
+    if (bestSetsData) {
+      setBestSets(bestSetsData);
+    }
+    setLoadingBestSets(false);
   };
 
   const handleRenameTemplate = async () => {
@@ -458,6 +478,7 @@ const TemplateDetailPage = () => {
                 key={templateExercise.id}
                 templateExercise={templateExercise}
                 bestSet={bestSets[templateExercise.exercise.id] || null}
+                loadingBestSet={loadingBestSets}
                 isFirst={index === 0}
                 isLast={index === templateExercises.length - 1}
                 onMoveUp={() => moveExercise(index, 'up')}

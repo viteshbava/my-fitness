@@ -18,12 +18,14 @@ import { formatSetsSummary } from '@/lib/controllers/workout-exercise-controller
 import KebabMenu from '@/components/KebabMenu';
 import ColorSelector from '@/components/ColorSelector';
 import { getColorPillClasses } from '@/lib/utils/colors';
+import SectionLoader from '@/components/SectionLoader';
 
 // Exercise Card Component
 interface ExerciseCardProps {
   workoutExercise: WorkoutExerciseWithExercise;
   workoutId: string;
   bestSet: Set | null;
+  loadingBestSet: boolean;
   isFirst: boolean;
   isLast: boolean;
   onMoveUp: () => void;
@@ -34,6 +36,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
   workoutExercise,
   workoutId,
   bestSet,
+  loadingBestSet,
   isFirst,
   isLast,
   onMoveUp,
@@ -80,11 +83,17 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
           </span>
         </div>
         <div className='space-y-1 text-sm text-gray-600 dark:text-gray-400'>
-          {bestSet && (
-            <p>
-              <span className='font-medium'>Best Set:</span> {bestSet.weight}kg × {bestSet.reps}reps
-            </p>
-          )}
+          <SectionLoader
+            loading={loadingBestSet}
+            skeleton='text'
+            skeletonLines={1}
+            isEmpty={!bestSet}>
+            {bestSet && (
+              <p>
+                <span className='font-medium'>Best Set:</span> {bestSet.weight}kg × {bestSet.reps}reps
+              </p>
+            )}
+          </SectionLoader>
           <p className='font-medium text-gray-700 dark:text-gray-300'>{setsSummary}</p>
         </div>
       </div>
@@ -117,6 +126,7 @@ const WorkoutDetailPage = () => {
   const [workoutExercises, setWorkoutExercises] = useState<WorkoutExerciseWithExercise[]>([]);
   const [bestSets, setBestSets] = useState<Record<string, Set | null>>({});
   const [loading, setLoading] = useState(true);
+  const [loadingBestSets, setLoadingBestSets] = useState(false);
 
   // Alert modal state
   const [alertModalOpen, setAlertModalOpen] = useState(false);
@@ -149,6 +159,9 @@ const WorkoutDetailPage = () => {
     loadWorkout();
   }, [workoutId]);
 
+  /**
+   * Phase 1: Load only workout data to show page quickly
+   */
   const loadWorkout = async () => {
     setLoading(true);
     const { data, error } = await fetchWorkoutById(workoutId);
@@ -162,17 +175,28 @@ const WorkoutDetailPage = () => {
     if (data) {
       setWorkout(data);
       setWorkoutExercises(data.workout_exercises || []);
+      setLoading(false);
 
-      // Fetch best sets for all exercises in this workout
+      // Phase 2: Load best sets progressively in background
       const exerciseIds = (data.workout_exercises || []).map((we) => we.exercise_id);
       if (exerciseIds.length > 0) {
-        const { data: bestSetsData } = await fetchBestSetsForExercises(exerciseIds);
-        if (bestSetsData) {
-          setBestSets(bestSetsData);
-        }
+        loadBestSets(exerciseIds);
       }
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
+  };
+
+  /**
+   * Phase 2: Load best sets for all exercises progressively
+   */
+  const loadBestSets = async (exerciseIds: string[]) => {
+    setLoadingBestSets(true);
+    const { data: bestSetsData } = await fetchBestSetsForExercises(exerciseIds);
+    if (bestSetsData) {
+      setBestSets(bestSetsData);
+    }
+    setLoadingBestSets(false);
   };
 
   const moveExercise = async (fromIndex: number, toIndex: number) => {
@@ -421,6 +445,7 @@ const WorkoutDetailPage = () => {
                   workoutExercise={we}
                   workoutId={workoutId}
                   bestSet={bestSets[we.exercise_id] || null}
+                  loadingBestSet={loadingBestSets}
                   isFirst={index === 0}
                   isLast={index === workoutExercises.length - 1}
                   onMoveUp={() => handleMoveUp(index)}
