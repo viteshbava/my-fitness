@@ -202,7 +202,7 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({
 
           {/* Video */}
           <div className='mb-6'>
-            <VideoThumbnail videoUrl={exercise.video_url} />
+            <VideoThumbnail videoUrl={exercise.video_url} exerciseName={exercise.name} />
           </div>
 
           {/* Exercise Details Grid */}

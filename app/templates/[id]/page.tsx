@@ -201,8 +201,13 @@ const TemplateDetailPage = () => {
     setLoading(false);
   };
 
-  const handleRenameTemplate = async (newName: string) => {
-    const { data, error } = await updateWorkoutTemplateName(templateId, newName);
+  const handleRenameTemplate = async () => {
+    if (!newTemplateName.trim()) {
+      showAlert('Name Required', 'Please enter a template name', 'warning');
+      return;
+    }
+
+    const { data, error } = await updateWorkoutTemplateName(templateId, newTemplateName.trim());
 
     if (error) {
       showAlert('Error Renaming Template', error, 'error');
@@ -500,9 +505,10 @@ const TemplateDetailPage = () => {
       {/* Rename Template Modal */}
       <RenameWorkoutModal
         isOpen={renameTemplateModalOpen}
-        currentName={newTemplateName}
+        workoutName={newTemplateName}
+        onWorkoutNameChange={setNewTemplateName}
         onSave={handleRenameTemplate}
-        onClose={() => setRenameTemplateModalOpen(false)}
+        onCancel={() => setRenameTemplateModalOpen(false)}
       />
     </div>
   );
