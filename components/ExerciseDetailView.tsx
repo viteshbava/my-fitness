@@ -16,6 +16,7 @@ import { format } from 'date-fns';
 import ProgressChart from '@/components/ProgressChart';
 import VideoThumbnail from '@/components/VideoThumbnail';
 import Breadcrumb, { BreadcrumbItem } from '@/components/Breadcrumb';
+import SectionLoader from '@/components/SectionLoader';
 
 interface ExerciseDetailViewProps {
   exerciseId: string;
@@ -32,7 +33,11 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({
   const [historicalData, setHistoricalData] = useState<Array<{ date: string; sets: Set[] }>>([]);
   const [bestSet, setBestSet] = useState<Set | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingHistorical, setLoadingHistorical] = useState(false);
+  const [loadingBestSet, setLoadingBestSet] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [historicalError, setHistoricalError] = useState<string | null>(null);
+  const [bestSetError, setBestSetError] = useState<string | null>(null);
   const [showHistorical, setShowHistorical] = useState(false);
 
   // Notes editing state
@@ -63,10 +68,13 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({
   };
 
   useEffect(() => {
-    loadExercise();
+    loadExerciseBasicInfo();
   }, [exerciseId]);
 
-  const loadExercise = async () => {
+  /**
+   * Phase 1: Load only basic exercise info to show the page quickly
+   */
+  const loadExerciseBasicInfo = async () => {
     setLoading(true);
     const { data, error } = await fetchExerciseById(exerciseId);
 
@@ -87,20 +95,51 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({
     setExercise(data);
     setNotes(data.notes || '');
     setIsLearnt(data.is_mastered || false);
+    setLoading(false);
 
-    // Load historical workout data for this exercise
-    const { data: historical } = await fetchExerciseHistoricalData(data.id);
-    if (historical) {
+    // Phase 2: Load non-critical data in background (parallel)
+    loadProgressiveData(data.id);
+  };
+
+  /**
+   * Phase 2: Load historical and best set data progressively in parallel
+   */
+  const loadProgressiveData = async (exerciseId: string) => {
+    // Load both in parallel for better performance
+    Promise.all([
+      loadHistoricalData(exerciseId),
+      loadBestSet(exerciseId)
+    ]);
+  };
+
+  const loadHistoricalData = async (exerciseId: string) => {
+    setLoadingHistorical(true);
+    setHistoricalError(null);
+
+    const { data: historical, error } = await fetchExerciseHistoricalData(exerciseId);
+
+    if (error) {
+      setHistoricalError(error);
+    } else if (historical) {
       setHistoricalData(historical);
     }
 
-    // Load best set
-    const { data: bestSetData } = await fetchBestSetForExercise(data.id);
-    if (bestSetData) {
+    setLoadingHistorical(false);
+  };
+
+  const loadBestSet = async (exerciseId: string) => {
+    setLoadingBestSet(true);
+    setBestSetError(null);
+
+    const { data: bestSetData, error } = await fetchBestSetForExercise(exerciseId);
+
+    if (error) {
+      setBestSetError(error);
+    } else if (bestSetData) {
       setBestSet(bestSetData);
     }
 
-    setLoading(false);
+    setLoadingBestSet(false);
   };
 
   const handleSaveNotes = async () => {
@@ -265,17 +304,25 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({
             )}
           </div>
 
-          {/* Best Set (Max Weight) */}
-          {bestSet && (
-            <div className='mb-6'>
-              <p className='text-sm font-medium text-gray-500 dark:text-gray-400 mb-2'>
-                Maximum Weight (≥6 reps)
-              </p>
-              <p className='text-2xl font-bold text-blue-600 dark:text-blue-400'>
-                {bestSet.weight}kg × {bestSet.reps} reps
-              </p>
-            </div>
-          )}
+          {/* Best Set (Max Weight) - Progressive Loading */}
+          <div className='mb-6'>
+            <p className='text-sm font-medium text-gray-500 dark:text-gray-400 mb-2'>
+              Maximum Weight (≥6 reps)
+            </p>
+            <SectionLoader
+              loading={loadingBestSet}
+              error={bestSetError}
+              skeleton='text'
+              skeletonLines={1}
+              isEmpty={!bestSet}
+              emptyMessage='No max weight recorded yet'>
+              {bestSet && (
+                <p className='text-2xl font-bold text-blue-600 dark:text-blue-400'>
+                  {bestSet.weight}kg × {bestSet.reps} reps
+                </p>
+              )}
+            </SectionLoader>
+          </div>
 
           {/* Notes */}
           <div>
@@ -316,23 +363,28 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({
           </div>
         </div>
 
-        {/* Progress Chart */}
-        {historicalData.length > 0 && (
-          <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6'>
-            <h2 className='text-xl font-semibold text-gray-900 dark:text-white mb-4'>
-              Progress Chart
-            </h2>
+        {/* Progress Chart - Progressive Loading */}
+        <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6'>
+          <h2 className='text-xl font-semibold text-gray-900 dark:text-white mb-4'>
+            Progress Chart
+          </h2>
+          <SectionLoader
+            loading={loadingHistorical}
+            error={historicalError}
+            skeleton='chart'
+            isEmpty={historicalData.length === 0}
+            emptyMessage='No workout history for this exercise yet'>
             <ProgressChart historicalData={historicalData} />
-          </div>
-        )}
+          </SectionLoader>
+        </div>
 
-        {/* Historical Data */}
+        {/* Historical Data - Progressive Loading */}
         <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6'>
           <div className='flex items-center justify-between mb-4'>
             <h2 className='text-xl font-semibold text-gray-900 dark:text-white'>
               Historical Performance
             </h2>
-            {historicalData.length > 3 && (
+            {!loadingHistorical && historicalData.length > 3 && (
               <button
                 onClick={() => setShowHistorical(!showHistorical)}
                 className='text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 cursor-pointer transition-colors'
@@ -342,9 +394,13 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({
             )}
           </div>
 
-          {historicalData.length === 0 ? (
-            <p className='text-gray-500 dark:text-gray-400'>No workout history for this exercise yet</p>
-          ) : (
+          <SectionLoader
+            loading={loadingHistorical}
+            error={historicalError}
+            skeleton='table'
+            skeletonLines={3}
+            isEmpty={historicalData.length === 0}
+            emptyMessage='No workout history for this exercise yet'>
             <div className='space-y-6'>
               {(showHistorical ? historicalData : historicalData.slice(0, 3)).map((session, index) => (
                 <div key={index} className='border-b border-gray-200 dark:border-gray-700 pb-4 last:border-b-0'>
@@ -364,7 +420,7 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({
                 </div>
               ))}
             </div>
-          )}
+          </SectionLoader>
         </div>
       </div>
 

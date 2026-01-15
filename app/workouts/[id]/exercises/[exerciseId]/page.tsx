@@ -32,6 +32,7 @@ import {
 import VideoThumbnail from '@/components/VideoThumbnail';
 import Breadcrumb, { BreadcrumbItem } from '@/components/Breadcrumb';
 import KebabMenu from '@/components/KebabMenu';
+import SectionLoader from '@/components/SectionLoader';
 
 const WorkoutExerciseDetailPage = () => {
   const params = useParams();
@@ -46,6 +47,11 @@ const WorkoutExerciseDetailPage = () => {
   const [historicalData, setHistoricalData] = useState<Array<{ date: string; sets: Set[] }>>([]);
   const [bestSet, setBestSet] = useState<Set | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingPreviousSets, setLoadingPreviousSets] = useState(false);
+  const [loadingHistorical, setLoadingHistorical] = useState(false);
+  const [loadingBestSet, setLoadingBestSet] = useState(false);
+  const [historicalError, setHistoricalError] = useState<string | null>(null);
+  const [bestSetError, setBestSetError] = useState<string | null>(null);
   const [isInProgress, setIsInProgress] = useState(false);
   const [autoSaving, setAutoSaving] = useState(false);
   const [showHistorical, setShowHistorical] = useState(false);
@@ -112,6 +118,9 @@ const WorkoutExerciseDetailPage = () => {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isInProgress]);
 
+  /**
+   * Phase 1: Load only critical workout exercise data to show page quickly
+   */
   const loadWorkoutExercise = async (showLoadingScreen: boolean = true) => {
     if (showLoadingScreen) {
       setLoading(true);
@@ -130,37 +139,75 @@ const WorkoutExerciseDetailPage = () => {
       setNotes(data.exercise.notes || '');
       setIsLearnt(data.exercise.is_mastered || false);
 
-      // Load previous workout data for placeholders
-      const { data: previousData } = await fetchMostRecentWorkoutWithData(
-        data.exercise_id,
-        workoutId
-      );
-      if (previousData) {
-        setPreviousSets(previousData);
+      if (showLoadingScreen) {
+        setLoading(false);
       }
 
-      // Load historical workout data (last 3 workouts)
-      const { data: historicalWorkouts, error: historicalError } =
-        await fetchHistoricalWorkoutExercises(data.exercise_id, workoutId, 3);
-      if (historicalError) {
-        console.error('Error loading historical data:', historicalError);
+      // Phase 2: Load non-critical data progressively in parallel
+      loadProgressiveData(data.exercise_id);
+    } else {
+      if (showLoadingScreen) {
+        setLoading(false);
       }
-      if (historicalWorkouts) {
-        console.log('Historical workouts loaded:', historicalWorkouts);
-        setHistoricalData(historicalWorkouts);
-      } else {
-        console.log('No historical workouts found');
-      }
+    }
+  };
 
-      // Load best set
-      const { data: bestSetData } = await fetchBestSetForExercise(data.exercise_id);
-      if (bestSetData) {
-        setBestSet(bestSetData);
-      }
+  /**
+   * Phase 2: Load previous sets, historical data, and best set in parallel
+   */
+  const loadProgressiveData = async (exerciseId: string) => {
+    // Load all three in parallel for best performance
+    Promise.all([
+      loadPreviousSets(exerciseId),
+      loadHistoricalData(exerciseId),
+      loadBestSet(exerciseId)
+    ]);
+  };
+
+  const loadPreviousSets = async (exerciseId: string) => {
+    setLoadingPreviousSets(true);
+
+    const { data: previousData } = await fetchMostRecentWorkoutWithData(
+      exerciseId,
+      workoutId
+    );
+
+    if (previousData) {
+      setPreviousSets(previousData);
     }
-    if (showLoadingScreen) {
-      setLoading(false);
+
+    setLoadingPreviousSets(false);
+  };
+
+  const loadHistoricalData = async (exerciseId: string) => {
+    setLoadingHistorical(true);
+    setHistoricalError(null);
+
+    const { data: historicalWorkouts, error: historicalError } =
+      await fetchHistoricalWorkoutExercises(exerciseId, workoutId, 3);
+
+    if (historicalError) {
+      setHistoricalError(historicalError);
+    } else if (historicalWorkouts) {
+      setHistoricalData(historicalWorkouts);
     }
+
+    setLoadingHistorical(false);
+  };
+
+  const loadBestSet = async (exerciseId: string) => {
+    setLoadingBestSet(true);
+    setBestSetError(null);
+
+    const { data: bestSetData, error } = await fetchBestSetForExercise(exerciseId);
+
+    if (error) {
+      setBestSetError(error);
+    } else if (bestSetData) {
+      setBestSet(bestSetData);
+    }
+
+    setLoadingBestSet(false);
   };
 
   // Helper function to check if a set is complete
@@ -477,14 +524,21 @@ const WorkoutExerciseDetailPage = () => {
                   {workoutExercise.exercise.pattern}
                 </span>
               </div>
-              {bestSet && (
-                <p className='text-lg text-gray-600 dark:text-gray-400'>
-                  Best Set:{' '}
-                  <span className='font-semibold'>
-                    {bestSet.weight}kg × {bestSet.reps}reps
-                  </span>
-                </p>
-              )}
+              <SectionLoader
+                loading={loadingBestSet}
+                error={bestSetError}
+                skeleton='text'
+                skeletonLines={1}
+                isEmpty={!bestSet}>
+                {bestSet && (
+                  <p className='text-lg text-gray-600 dark:text-gray-400'>
+                    Best Set:{' '}
+                    <span className='font-semibold'>
+                      {bestSet.weight}kg × {bestSet.reps}reps
+                    </span>
+                  </p>
+                )}
+              </SectionLoader>
             </div>
             {!isInProgress && (
               <KebabMenu
@@ -735,14 +789,16 @@ const WorkoutExerciseDetailPage = () => {
           </div>
         )}
 
-        {/* Historical Data Section */}
+        {/* Historical Data Section - Progressive Loading */}
         <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 mt-6'>
           <button
             onClick={() => setShowHistorical(!showHistorical)}
             className='w-full flex items-center justify-between text-left cursor-pointer hover:opacity-80 active:opacity-60 active:scale-[0.99] transition-all'>
             <h2 className='text-xl font-semibold text-gray-900 dark:text-white'>
               Previous Workouts
-              <span className='text-sm text-gray-500 ml-2'>({historicalData.length})</span>
+              {!loadingHistorical && (
+                <span className='text-sm text-gray-500 ml-2'>({historicalData.length})</span>
+              )}
             </h2>
             <svg
               className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform ${
@@ -762,17 +818,13 @@ const WorkoutExerciseDetailPage = () => {
 
           {showHistorical && (
             <div className='mt-4'>
-              {historicalData.length === 0 ? (
-                <div>
-                  <p className='text-gray-500 dark:text-gray-400'>
-                    No previous workout data for this exercise
-                  </p>
-                  <p className='text-xs text-gray-400 dark:text-gray-500 mt-2'>
-                    This could mean: (1) This is the first time doing this exercise, or (2) Previous
-                    workouts don't have completed sets
-                  </p>
-                </div>
-              ) : (
+              <SectionLoader
+                loading={loadingHistorical}
+                error={historicalError}
+                skeleton='table'
+                skeletonLines={3}
+                isEmpty={historicalData.length === 0}
+                emptyMessage='No previous workout data for this exercise'>
                 <div className='space-y-6'>
                   {historicalData.map((workout, workoutIndex) => {
                     // Calculate time gap since previous workout
@@ -853,7 +905,7 @@ const WorkoutExerciseDetailPage = () => {
                     );
                   })}
                 </div>
-              )}
+              </SectionLoader>
             </div>
           )}
         </div>

@@ -9,6 +9,8 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { Exercise, Set, ApiSuccessResponse } from '@/types/database';
+import { revalidatePath } from 'next/cache';
+import { cache } from 'react';
 
 export const fetchExercises = async (): Promise<{
   data: Exercise[] | null;
@@ -34,7 +36,11 @@ export const fetchExercises = async (): Promise<{
   }
 };
 
-export const fetchExerciseById = async (
+/**
+ * Cached fetch for exercise by ID
+ * Cache is automatically invalidated when mutations occur
+ */
+export const fetchExerciseById = cache(async (
   id: string
 ): Promise<{ data: Exercise | null; error: string | null }> => {
   try {
@@ -56,7 +62,7 @@ export const fetchExerciseById = async (
       error: err instanceof Error ? err.message : 'Failed to fetch exercise',
     };
   }
-};
+});
 
 export const updateExerciseNotes = async (
   id: string,
@@ -74,6 +80,10 @@ export const updateExerciseNotes = async (
     if (error) {
       return { data: null, error: error.message };
     }
+
+    // Revalidate exercise-related pages
+    revalidatePath('/exercises');
+    revalidatePath(`/exercises/${id}`);
 
     return { data, error: null };
   } catch (err) {
@@ -100,6 +110,10 @@ export const updateExerciseIsLearnt = async (
     if (error) {
       return { data: null, error: error.message };
     }
+
+    // Revalidate exercise-related pages
+    revalidatePath('/exercises');
+    revalidatePath(`/exercises/${id}`);
 
     return { data, error: null };
   } catch (err) {
@@ -170,8 +184,9 @@ export const updateExerciseLastUsedDate = async (
 /**
  * Fetch all workout exercises for a given exercise (for max weight and historical data)
  * Returns all sets from all workouts for this exercise
+ * Cached for performance - revalidated when workouts are updated
  */
-export const fetchExerciseHistoricalData = async (
+export const fetchExerciseHistoricalData = cache(async (
   exerciseId: string
 ): Promise<{
   data: Array<{ date: string; sets: Set[] }> | null;
@@ -218,6 +233,6 @@ export const fetchExerciseHistoricalData = async (
       error: err instanceof Error ? err.message : 'Failed to fetch exercise historical data',
     };
   }
-};
+});
 
 // Add more exercise-related actions as needed

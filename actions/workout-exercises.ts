@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { WorkoutExercise, WorkoutExerciseWithExercise, ApiResponse, ApiSuccessResponse, Set } from '@/types/database';
+import { cache } from 'react';
 
 /**
  * Fetch workout exercises for a specific workout
@@ -169,8 +170,9 @@ export const updateWorkoutExercisesOrder = async (
 
 /**
  * Fetch a single workout exercise by ID with exercise details
+ * Cached for performance - revalidated when workouts are updated
  */
-export const fetchWorkoutExerciseById = async (
+export const fetchWorkoutExerciseById = cache(async (
   workoutExerciseId: string
 ): Promise<ApiResponse<WorkoutExerciseWithExercise>> => {
   try {
@@ -192,7 +194,7 @@ export const fetchWorkoutExerciseById = async (
       error: err instanceof Error ? err.message : 'Failed to fetch workout exercise',
     };
   }
-};
+});
 
 /**
  * Update workout exercise sets
@@ -373,8 +375,9 @@ export const restoreFromDraftSnapshot = async (
 /**
  * Find the most recent workout exercise with actual data (non-zero reps)
  * for use as placeholders when editing sets
+ * Cached for performance - revalidated when workouts are updated
  */
-export const fetchMostRecentWorkoutWithData = async (
+export const fetchMostRecentWorkoutWithData = cache(async (
   exerciseId: string,
   currentWorkoutId: string
 ): Promise<ApiResponse<Set[]>> => {
@@ -432,13 +435,14 @@ export const fetchMostRecentWorkoutWithData = async (
       error: err instanceof Error ? err.message : 'Failed to fetch workout data',
     };
   }
-};
+});
 
 /**
  * Fetch historical workout exercises for a given exercise
  * Returns the last N workouts with this exercise, ordered by workout date descending
+ * Cached for performance - revalidated when workouts are updated
  */
-export const fetchHistoricalWorkoutExercises = async (
+export const fetchHistoricalWorkoutExercises = cache(async (
   exerciseId: string,
   currentWorkoutId: string,
   limit: number = 3
@@ -499,13 +503,14 @@ export const fetchHistoricalWorkoutExercises = async (
       error: err instanceof Error ? err.message : 'Failed to fetch historical workout data',
     };
   }
-};
+});
 
 /**
  * Fetch best set for an exercise across all historical workouts
  * Returns the set with the heaviest weight where at least 6 reps were completed
+ * Cached for performance - revalidated when workouts are updated
  */
-export const fetchBestSetForExercise = async (
+export const fetchBestSetForExercise = cache(async (
   exerciseId: string
 ): Promise<ApiResponse<Set | null>> => {
   try {
@@ -542,7 +547,7 @@ export const fetchBestSetForExercise = async (
       error: err instanceof Error ? err.message : 'Failed to fetch best set',
     };
   }
-};
+});
 
 /**
  * Fetch best sets for multiple exercises at once
