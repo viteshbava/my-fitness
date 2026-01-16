@@ -19,6 +19,8 @@ import { formatSetsSummary } from '@/lib/controllers/workout-exercise-controller
 import KebabMenu from '@/components/KebabMenu';
 import { getColorPillClasses } from '@/lib/utils/colors';
 import SectionLoader from '@/components/SectionLoader';
+import SwapButton from '@/components/SwapButton';
+import SwapAnimationStyles from '@/components/SwapAnimationStyles';
 
 // Exercise Card Component
 interface ExerciseCardProps {
@@ -84,62 +86,6 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
         </SectionLoader>
         <p className='font-medium text-gray-700 dark:text-gray-300'>{setsSummary}</p>
       </div>
-
-      {/* CSS for animations */}
-      <style jsx>{`
-        @keyframes slideUp {
-          0% {
-            transform: translateY(20px);
-            opacity: 0.7;
-          }
-          100% {
-            transform: translateY(0);
-            opacity: 1;
-          }
-        }
-        @keyframes slideDown {
-          0% {
-            transform: translateY(-20px);
-            opacity: 0.7;
-          }
-          100% {
-            transform: translateY(0);
-            opacity: 1;
-          }
-        }
-        .animate-slide-up {
-          animation: slideUp 0.3s ease-out;
-        }
-        .animate-slide-down {
-          animation: slideDown 0.3s ease-out;
-        }
-      `}</style>
-    </div>
-  );
-};
-
-// Swap Button Component - displayed between exercise cards
-interface SwapButtonProps {
-  onSwap: () => void;
-}
-
-const SwapButton: React.FC<SwapButtonProps> = ({ onSwap }) => {
-  return (
-    <div className='flex justify-center py-1'>
-      <button
-        onClick={onSwap}
-        className='p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full active:scale-90 transition-all cursor-pointer'
-        aria-label='Swap exercises'
-        title='Swap order'>
-        <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-          <path
-            strokeLinecap='round'
-            strokeLinejoin='round'
-            strokeWidth={2}
-            d='M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4'
-          />
-        </svg>
-      </button>
     </div>
   );
 };
@@ -382,6 +328,7 @@ const WorkoutDetailPage = () => {
 
   return (
     <div className='min-h-screen bg-gray-50 dark:bg-gray-900'>
+      <SwapAnimationStyles />
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
         {/* Header */}
         <div className='mb-8'>

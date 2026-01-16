@@ -21,28 +21,24 @@ import KebabMenu from '@/components/KebabMenu';
 import ColorSelector from '@/components/ColorSelector';
 import { getColorPillClasses } from '@/lib/utils/colors';
 import SectionLoader from '@/components/SectionLoader';
+import SwapButton from '@/components/SwapButton';
+import SwapAnimationStyles from '@/components/SwapAnimationStyles';
 
 // Template Exercise Card Component
 interface TemplateExerciseCardProps {
   templateExercise: TemplateExerciseWithExercise;
   bestSet: Set | null;
   loadingBestSet: boolean;
-  isFirst: boolean;
-  isLast: boolean;
-  onMoveUp: () => void;
-  onMoveDown: () => void;
   onDelete: () => void;
+  animationDirection?: 'up' | 'down' | null;
 }
 
 const TemplateExerciseCard: React.FC<TemplateExerciseCardProps> = ({
   templateExercise,
   bestSet,
   loadingBestSet,
-  isFirst,
-  isLast,
-  onMoveUp,
-  onMoveDown,
   onDelete,
+  animationDirection,
 }) => {
   const router = useRouter();
   const params = useParams();
@@ -52,29 +48,24 @@ const TemplateExerciseCard: React.FC<TemplateExerciseCardProps> = ({
     router.push(`/templates/${templateId}/exercises/${templateExercise.exercise.id}`);
   };
 
+  // Animation classes based on direction
+  const getAnimationClass = () => {
+    if (animationDirection === 'up') {
+      return 'animate-slide-up';
+    }
+    if (animationDirection === 'down') {
+      return 'animate-slide-down';
+    }
+    return '';
+  };
+
   return (
     <div
       onClick={handleClick}
-      className="bg-white dark:bg-gray-800 rounded-lg shadow p-10 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 active:shadow-md active:scale-[0.98] active:border-blue-600 dark:active:border-blue-500 transition-all border border-transparent flex items-stretch gap-4 relative cursor-pointer"
+      className={`bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 active:shadow-md active:scale-[0.98] active:border-blue-600 dark:active:border-blue-500 transition-all border border-transparent relative cursor-pointer ${getAnimationClass()}`}
     >
-      {/* Up Arrow - Top Left */}
-      {!isFirst && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onMoveUp();
-          }}
-          className="absolute top-2 left-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 active:text-gray-700 dark:active:text-gray-200 active:scale-90 transition-all cursor-pointer z-10"
-          aria-label="Move up"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-          </svg>
-        </button>
-      )}
-
       {/* Card Content */}
-      <div className="grow">
+      <div className="pr-8">
         <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
           {templateExercise.exercise.name}
         </h3>
@@ -112,22 +103,6 @@ const TemplateExerciseCard: React.FC<TemplateExerciseCardProps> = ({
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
-
-      {/* Down Arrow - Bottom Left */}
-      {!isLast && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onMoveDown();
-          }}
-          className="absolute bottom-2 left-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 active:text-gray-700 dark:active:text-gray-200 active:scale-90 transition-all cursor-pointer z-10"
-          aria-label="Move down"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-      )}
     </div>
   );
 };
@@ -143,6 +118,9 @@ const TemplateDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [loadingBestSets, setLoadingBestSets] = useState(false);
   const [isCreatingWorkout, setIsCreatingWorkout] = useState(false);
+
+  // Animation state: tracks which cards are animating and their direction
+  const [animatingCards, setAnimatingCards] = useState<Record<string, 'up' | 'down'>>({});
 
   // Alert modal state
   const [alertModalOpen, setAlertModalOpen] = useState(false);
@@ -283,15 +261,29 @@ const TemplateDetailPage = () => {
     setExerciseToDelete(null);
   };
 
-  const moveExercise = async (index: number, direction: 'up' | 'down') => {
+  const handleSwap = async (index: number) => {
+    // Swap exercise at index with the one below it (index + 1)
+    if (index >= templateExercises.length - 1) return;
+
+    const topCardId = templateExercises[index].id;
+    const bottomCardId = templateExercises[index + 1].id;
+
+    // Set animation directions: top card moves down, bottom card moves up
+    setAnimatingCards({
+      [topCardId]: 'down',
+      [bottomCardId]: 'up',
+    });
+
     const newExercises = [...templateExercises];
-    const targetIndex = direction === 'up' ? index - 1 : index + 1;
 
     // Swap the exercises
-    [newExercises[index], newExercises[targetIndex]] = [
-      newExercises[targetIndex],
+    [newExercises[index], newExercises[index + 1]] = [
+      newExercises[index + 1],
       newExercises[index],
     ];
+
+    // Update local state optimistically
+    setTemplateExercises(newExercises);
 
     // Update order_index for all exercises
     const updates = newExercises.map((exercise, idx) => ({
@@ -299,15 +291,18 @@ const TemplateDetailPage = () => {
       order_index: idx,
     }));
 
-    const { success, error } = await updateTemplateExercisesOrder(updates);
+    const { error } = await updateTemplateExercisesOrder(updates);
 
     if (error) {
+      // Revert on error
+      setTemplateExercises(templateExercises);
       showAlert('Error Reordering Exercises', error, 'error');
-      return;
     }
 
-    // Update local state
-    setTemplateExercises(newExercises);
+    // Clear animations after they complete
+    setTimeout(() => {
+      setAnimatingCards({});
+    }, 300);
   };
 
   const handleColorChange = async (colorId: string) => {
@@ -385,6 +380,7 @@ const TemplateDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
+      <SwapAnimationStyles />
       <div className="max-w-4xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="mb-6">
@@ -472,19 +468,21 @@ const TemplateDetailPage = () => {
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-0">
             {templateExercises.map((templateExercise, index) => (
-              <TemplateExerciseCard
-                key={templateExercise.id}
-                templateExercise={templateExercise}
-                bestSet={bestSets[templateExercise.exercise.id] || null}
-                loadingBestSet={loadingBestSets}
-                isFirst={index === 0}
-                isLast={index === templateExercises.length - 1}
-                onMoveUp={() => moveExercise(index, 'up')}
-                onMoveDown={() => moveExercise(index, 'down')}
-                onDelete={() => handleDeleteExerciseClick(templateExercise)}
-              />
+              <React.Fragment key={templateExercise.id}>
+                <TemplateExerciseCard
+                  templateExercise={templateExercise}
+                  bestSet={bestSets[templateExercise.exercise.id] || null}
+                  loadingBestSet={loadingBestSets}
+                  onDelete={() => handleDeleteExerciseClick(templateExercise)}
+                  animationDirection={animatingCards[templateExercise.id] || null}
+                />
+                {/* Swap button between cards (not after the last one) */}
+                {index < templateExercises.length - 1 && (
+                  <SwapButton onSwap={() => handleSwap(index)} />
+                )}
+              </React.Fragment>
             ))}
           </div>
         )}
