@@ -537,9 +537,24 @@ const WorkoutExerciseDetailPage = () => {
         <div className='mb-8'>
           <div className='flex items-start justify-between'>
             <div>
-              <h1 className='text-3xl font-bold text-gray-900 dark:text-white mb-3'>
-                {workoutExercise.exercise.name}
-              </h1>
+              <div className='flex items-center gap-3 mb-3'>
+                <h1 className='text-3xl font-bold text-gray-900 dark:text-white'>
+                  {workoutExercise.exercise.name}
+                </h1>
+                <Link
+                  href={`/exercises/${workoutExercise.exercise_id}`}
+                  className='p-2 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 cursor-pointer transition-colors'
+                  title='View exercise details'>
+                  <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <path
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      strokeWidth={2}
+                      d='M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14'
+                    />
+                  </svg>
+                </Link>
+              </div>
               {/* Pattern - Always visible and prominent */}
               <div className='mb-3'>
                 <span className='inline-block px-4 py-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-md text-lg font-bold'>
