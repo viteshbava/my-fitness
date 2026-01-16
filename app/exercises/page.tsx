@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { fetchExercisesWithUsageStatus } from '@/actions/exercises';
 import {
   applyFiltersWithSearchFallback,
@@ -19,6 +20,7 @@ import ExerciseFormModal from '@/components/ExerciseFormModal';
 import Button from '@/components/Button';
 
 const ExercisesPage = () => {
+  const router = useRouter();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -56,8 +58,8 @@ const ExercisesPage = () => {
   };
 
   const handleCreateSuccess = (newExercise: Exercise) => {
-    // Add the new exercise to the list and re-sort
-    setExercises((prev) => [...prev, newExercise]);
+    // Navigate to the newly created exercise's detail page
+    router.push(`/exercises/${newExercise.id}`);
   };
 
   // Load filters from localStorage on mount
