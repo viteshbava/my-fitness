@@ -30,6 +30,7 @@ import {
   removeEmptySets,
 } from '@/lib/controllers/workout-exercise-controller';
 import VideoThumbnail from '@/components/VideoThumbnail';
+import ProgressChart from '@/components/ProgressChart';
 import Breadcrumb, { BreadcrumbItem } from '@/components/Breadcrumb';
 import KebabMenu from '@/components/KebabMenu';
 import SectionLoader from '@/components/SectionLoader';
@@ -55,6 +56,7 @@ const WorkoutExerciseDetailPage = () => {
   const [isInProgress, setIsInProgress] = useState(false);
   const [autoSaving, setAutoSaving] = useState(false);
   const [showHistorical, setShowHistorical] = useState(false);
+  const [showProgressChart, setShowProgressChart] = useState(false);
   const [showExerciseDetails, setShowExerciseDetails] = useState(false);
 
   // Exercise notes and learnt state
@@ -810,6 +812,44 @@ const WorkoutExerciseDetailPage = () => {
             />
           </div>
         )}
+
+        {/* Progress Chart - Progressive Loading */}
+        <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 mt-6'>
+          <button
+            onClick={() => setShowProgressChart(!showProgressChart)}
+            className='w-full flex items-center justify-between text-left cursor-pointer hover:opacity-80 active:opacity-60 active:scale-[0.99] transition-all'>
+            <h2 className='text-xl font-semibold text-gray-900 dark:text-white'>
+              Progress Chart
+            </h2>
+            <svg
+              className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform ${
+                showProgressChart ? 'rotate-180' : ''
+              }`}
+              fill='none'
+              stroke='currentColor'
+              viewBox='0 0 24 24'>
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                strokeWidth={2}
+                d='M19 9l-7 7-7-7'
+              />
+            </svg>
+          </button>
+
+          {showProgressChart && (
+            <div className='mt-4'>
+              <SectionLoader
+                loading={loadingHistorical}
+                error={historicalError}
+                skeleton='chart'
+                isEmpty={historicalData.length === 0}
+                emptyMessage='No workout history for this exercise yet'>
+                <ProgressChart historicalData={historicalData} />
+              </SectionLoader>
+            </div>
+          )}
+        </div>
 
         {/* Historical Data Section - Progressive Loading */}
         <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 mt-6'>
