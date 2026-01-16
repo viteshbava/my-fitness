@@ -101,7 +101,18 @@ const ExercisesPage = () => {
       showFilters,
     };
     localStorage.setItem('exerciseFilters', JSON.stringify(filters));
-  }, [hasLoadedFilters, searchTerm, movementType, pattern, primaryBodyPart, secondaryBodyPart, equipment, isMastered, sortBy, showFilters]);
+  }, [
+    hasLoadedFilters,
+    searchTerm,
+    movementType,
+    pattern,
+    primaryBodyPart,
+    secondaryBodyPart,
+    equipment,
+    isMastered,
+    sortBy,
+    showFilters,
+  ]);
 
   const loadExercises = async () => {
     setLoading(true);
@@ -119,15 +130,9 @@ const ExercisesPage = () => {
   };
 
   // Get unique values for filter dropdowns
-  const uniqueMovementTypes = useMemo(
-    () => getUniqueMovementTypes(exercises),
-    [exercises]
-  );
+  const uniqueMovementTypes = useMemo(() => getUniqueMovementTypes(exercises), [exercises]);
   const uniquePatterns = useMemo(() => getUniquePatterns(exercises), [exercises]);
-  const uniquePrimaryBodyParts = useMemo(
-    () => getUniquePrimaryBodyParts(exercises),
-    [exercises]
-  );
+  const uniquePrimaryBodyParts = useMemo(() => getUniquePrimaryBodyParts(exercises), [exercises]);
   const uniqueSecondaryBodyParts = useMemo(
     () => getUniqueSecondaryBodyParts(exercises),
     [exercises]
@@ -184,75 +189,63 @@ const ExercisesPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading exercises...</p>
+      <div className='min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center'>
+        <div className='text-center'>
+          <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto'></div>
+          <p className='mt-4 text-gray-600 dark:text-gray-400'>Loading exercises...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className='min-h-screen bg-gray-50 dark:bg-gray-900'>
+      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
         {/* Header */}
-        <div className="mb-8 flex items-start justify-between">
+        <div className='mb-8 flex items-start justify-between'>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            <h1 className='text-3xl font-bold text-gray-900 dark:text-white mb-2'>
               Exercise Library
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Browse and search all exercises
-            </p>
+            <p className='text-gray-600 dark:text-gray-400'>Browse and search all exercises</p>
           </div>
-          <Button
-            onClick={() => setCreateModalOpen(true)}
-            variant="primary"
-          >
+          <Button onClick={() => setCreateModalOpen(true)} variant='primary'>
             <svg
-              className="w-5 h-5 mr-2 inline"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+              className='w-5 h-5 mr-2 inline'
+              fill='none'
+              stroke='currentColor'
+              viewBox='0 0 24 24'>
               <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
+                strokeLinecap='round'
+                strokeLinejoin='round'
                 strokeWidth={2}
-                d="M12 4v16m8-8H4"
+                d='M12 4v16m8-8H4'
               />
             </svg>
-            Create Exercise
+            New
           </Button>
         </div>
 
         {/* Search Bar */}
-        <div className="mb-6 relative">
+        <div className='mb-6 relative'>
           <input
-            type="text"
-            placeholder="Search exercises by name..."
+            type='text'
+            placeholder='Search exercises by name...'
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-3 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:text-white"
+            className='w-full px-4 py-3 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:text-white'
           />
           {searchTerm && (
             <button
               onClick={() => setSearchTerm('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 active:text-gray-700 dark:active:text-gray-200 active:scale-90 transition-all cursor-pointer"
-              aria-label="Clear search"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 active:text-gray-700 dark:active:text-gray-200 active:scale-90 transition-all cursor-pointer'
+              aria-label='Clear search'>
+              <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                 <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
                   strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
+                  d='M6 18L18 6M6 6l12 12'
                 />
               </svg>
             </button>
@@ -260,33 +253,29 @@ const ExercisesPage = () => {
         </div>
 
         {/* Filters - Collapsible */}
-        <div className="mb-6">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
-            <div className="p-4 flex items-center justify-between">
+        <div className='mb-6'>
+          <div className='bg-white dark:bg-gray-800 rounded-lg shadow'>
+            <div className='p-4 flex items-center justify-between'>
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center space-x-3 flex-1 hover:opacity-80 active:opacity-60 active:scale-[0.99] transition-all cursor-pointer"
-              >
+                className='flex items-center space-x-3 flex-1 hover:opacity-80 active:opacity-60 active:scale-[0.99] transition-all cursor-pointer'>
                 <svg
                   className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform ${
                     showFilters ? 'rotate-90' : ''
                   }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                  fill='none'
+                  stroke='currentColor'
+                  viewBox='0 0 24 24'>
                   <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
                     strokeWidth={2}
-                    d="M9 5l7 7-7 7"
+                    d='M9 5l7 7-7 7'
                   />
                 </svg>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Filters
-                </h2>
+                <h2 className='text-lg font-semibold text-gray-900 dark:text-white'>Filters</h2>
                 {hasActiveFilters && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                  <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'>
                     Active
                   </span>
                 )}
@@ -294,8 +283,7 @@ const ExercisesPage = () => {
               {hasActiveFilters && (
                 <button
                   onClick={clearFilters}
-                  className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 active:text-blue-800 dark:active:text-blue-500 active:scale-95 transition-all ml-4 cursor-pointer"
-                >
+                  className='text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 active:text-blue-800 dark:active:text-blue-500 active:scale-95 transition-all ml-4 cursor-pointer'>
                   Clear All
                 </button>
               )}
@@ -303,19 +291,18 @@ const ExercisesPage = () => {
           </div>
 
           {showFilters && (
-            <div className="mt-3 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className='mt-3 bg-white dark:bg-gray-800 rounded-lg shadow p-6'>
+              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
                 {/* Movement Type */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                     Movement Type
                   </label>
                   <select
                     value={movementType}
                     onChange={(e) => setMovementType(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                  >
-                    <option value="">All</option>
+                    className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white'>
+                    <option value=''>All</option>
                     {uniqueMovementTypes.map((type) => (
                       <option key={type} value={type}>
                         {type}
@@ -326,15 +313,14 @@ const ExercisesPage = () => {
 
                 {/* Pattern */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                     Pattern
                   </label>
                   <select
                     value={pattern}
                     onChange={(e) => setPattern(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                  >
-                    <option value="">All</option>
+                    className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white'>
+                    <option value=''>All</option>
                     {uniquePatterns.map((p) => (
                       <option key={p} value={p}>
                         {p}
@@ -345,15 +331,14 @@ const ExercisesPage = () => {
 
                 {/* Primary Body Part */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                     Primary Body Part
                   </label>
                   <select
                     value={primaryBodyPart}
                     onChange={(e) => setPrimaryBodyPart(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                  >
-                    <option value="">All</option>
+                    className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white'>
+                    <option value=''>All</option>
                     {uniquePrimaryBodyParts.map((part) => (
                       <option key={part} value={part}>
                         {part}
@@ -364,15 +349,14 @@ const ExercisesPage = () => {
 
                 {/* Secondary Body Part */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                     Secondary Body Part
                   </label>
                   <select
                     value={secondaryBodyPart}
                     onChange={(e) => setSecondaryBodyPart(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                  >
-                    <option value="">All</option>
+                    className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white'>
+                    <option value=''>All</option>
                     {uniqueSecondaryBodyParts.map((part) => (
                       <option key={part} value={part}>
                         {part}
@@ -383,15 +367,14 @@ const ExercisesPage = () => {
 
                 {/* Equipment */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                     Equipment
                   </label>
                   <select
                     value={equipment}
                     onChange={(e) => setEquipment(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                  >
-                    <option value="">All</option>
+                    className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white'>
+                    <option value=''>All</option>
                     {uniqueEquipment.map((eq) => (
                       <option key={eq} value={eq}>
                         {eq}
@@ -402,7 +385,7 @@ const ExercisesPage = () => {
 
                 {/* Is Learnt */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                     Experience Level
                   </label>
                   <select
@@ -410,11 +393,10 @@ const ExercisesPage = () => {
                     onChange={(e) =>
                       setIsMastered(e.target.value === '' ? null : e.target.value === 'true')
                     }
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                  >
-                    <option value="">All</option>
-                    <option value="true">Learnt</option>
-                    <option value="false">Not Learnt</option>
+                    className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white'>
+                    <option value=''>All</option>
+                    <option value='true'>Learnt</option>
+                    <option value='false'>Not Learnt</option>
                   </select>
                 </div>
               </div>
@@ -423,16 +405,16 @@ const ExercisesPage = () => {
         </div>
 
         {/* Sort Options */}
-        <div className="mb-6 flex items-center justify-between">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+        <div className='mb-6 flex items-center justify-between'>
+          <p className='text-sm text-gray-600 dark:text-gray-400'>
             Showing {filteredAndSortedExercises.length} of {exercises.length} exercises
           </p>
         </div>
 
         {/* Exercise Grid */}
         {filteredAndSortedExercises.length === 0 && searchOnlyExercises.length === 0 ? (
-          <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow">
-            <p className="text-gray-500 dark:text-gray-400">
+          <div className='text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow'>
+            <p className='text-gray-500 dark:text-gray-400'>
               No exercises found matching your filters.
             </p>
           </div>
@@ -440,7 +422,7 @@ const ExercisesPage = () => {
           <>
             {/* Fully filtered results */}
             {filteredAndSortedExercises.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6'>
                 {filteredAndSortedExercises.map((exercise) => (
                   <Link key={exercise.id} href={`/exercises/${exercise.id}`}>
                     <ExerciseCard exercise={exercise} />
@@ -451,25 +433,25 @@ const ExercisesPage = () => {
 
             {/* Search-only matches (filtered out) */}
             {searchOnlyExercises.length > 0 && (
-              <div className="mt-8">
-                <div className="mb-4 px-4 py-3 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    <span className="font-semibold">
-                      {searchOnlyExercises.length} additional exercise{searchOnlyExercises.length !== 1 ? 's' : ''}
+              <div className='mt-8'>
+                <div className='mb-4 px-4 py-3 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg'>
+                  <p className='text-sm text-gray-600 dark:text-gray-400'>
+                    <span className='font-semibold'>
+                      {searchOnlyExercises.length} additional exercise
+                      {searchOnlyExercises.length !== 1 ? 's' : ''}
                     </span>{' '}
                     match your search but don't meet the filter criteria
                   </p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
                   {searchOnlyExercises.map((exercise) => (
                     <Link key={exercise.id} href={`/exercises/${exercise.id}`}>
                       <div
-                        className="opacity-60 hover:opacity-80 transition-opacity"
-                        style={{ filter: 'grayscale(30%)' }}
-                      >
+                        className='opacity-60 hover:opacity-80 transition-opacity'
+                        style={{ filter: 'grayscale(30%)' }}>
                         <ExerciseCard
                           exercise={exercise}
-                          className="border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
+                          className='border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
                         />
                       </div>
                     </Link>
@@ -495,7 +477,7 @@ const ExercisesPage = () => {
         isOpen={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
         onSuccess={handleCreateSuccess}
-        mode="create"
+        mode='create'
         existingExercises={exercises}
       />
     </div>
