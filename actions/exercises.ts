@@ -324,7 +324,7 @@ export const createExercise = async (
       secondary_body_part: exerciseData.secondary_body_part || '',
       equipment: exerciseData.equipment || 'Unknown',
       notes: exerciseData.notes || null,
-      is_mastered: false,
+      is_mastered: exerciseData.is_mastered,
     };
 
     const { data, error } = await supabase
@@ -389,6 +389,9 @@ export const updateExercise = async (
     }
     if (exerciseData.notes !== undefined) {
       updateData.notes = exerciseData.notes || null;
+    }
+    if (exerciseData.is_mastered !== undefined) {
+      updateData.is_mastered = exerciseData.is_mastered;
     }
 
     const { data, error } = await supabase

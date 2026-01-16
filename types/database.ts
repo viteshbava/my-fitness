@@ -112,6 +112,7 @@ export interface CreateExerciseInput {
   secondary_body_part?: string;
   equipment?: string;
   notes?: string | null;
+  is_mastered: boolean;
 }
 
 export interface UpdateExerciseInput {
@@ -123,6 +124,7 @@ export interface UpdateExerciseInput {
   secondary_body_part?: string;
   equipment?: string;
   notes?: string | null;
+  is_mastered?: boolean;
 }
 
 // Exercise usage types for delete protection and usage viewing

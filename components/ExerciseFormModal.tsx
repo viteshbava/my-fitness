@@ -32,6 +32,7 @@ interface FormData {
   secondary_body_part: string;
   equipment: string;
   notes: string;
+  is_mastered: boolean;
 }
 
 interface FormErrors {
@@ -60,6 +61,7 @@ const ExerciseFormModal: React.FC<ExerciseFormModalProps> = ({
     secondary_body_part: '',
     equipment: '',
     notes: '',
+    is_mastered: false,
   });
 
   // Get unique values for dropdowns
@@ -82,6 +84,7 @@ const ExerciseFormModal: React.FC<ExerciseFormModalProps> = ({
           secondary_body_part: exercise.secondary_body_part || '',
           equipment: exercise.equipment || '',
           notes: exercise.notes || '',
+          is_mastered: exercise.is_mastered || false,
         });
       } else {
         setFormData({
@@ -93,6 +96,7 @@ const ExerciseFormModal: React.FC<ExerciseFormModalProps> = ({
           secondary_body_part: '',
           equipment: '',
           notes: '',
+          is_mastered: false,
         });
       }
       setErrors({});
@@ -147,6 +151,7 @@ const ExerciseFormModal: React.FC<ExerciseFormModalProps> = ({
         secondary_body_part: formData.secondary_body_part || undefined,
         equipment: formData.equipment || undefined,
         notes: formData.notes.trim() || null,
+        is_mastered: formData.is_mastered,
       };
 
       const { data, error } = await createExercise(input);
@@ -172,6 +177,7 @@ const ExerciseFormModal: React.FC<ExerciseFormModalProps> = ({
         secondary_body_part: formData.secondary_body_part,
         equipment: formData.equipment,
         notes: formData.notes.trim() || null,
+        is_mastered: formData.is_mastered,
       };
 
       const { data, error } = await updateExercise(exercise.id, input);
@@ -363,6 +369,22 @@ const ExerciseFormModal: React.FC<ExerciseFormModalProps> = ({
                     {eq}
                   </option>
                 ))}
+              </select>
+            </div>
+
+            {/* Experience Level Field */}
+            <div>
+              <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                Experience Level
+              </label>
+              <select
+                value={formData.is_mastered ? 'true' : 'false'}
+                onChange={(e) => setFormData((prev) => ({ ...prev, is_mastered: e.target.value === 'true' }))}
+                disabled={saving}
+                className='w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white'
+              >
+                <option value='false'>Not Learnt</option>
+                <option value='true'>Learnt</option>
               </select>
             </div>
 
