@@ -26,10 +26,7 @@ interface ExerciseCardProps {
   workoutId: string;
   bestSet: Set | null;
   loadingBestSet: boolean;
-  isFirst: boolean;
-  isLast: boolean;
-  onMoveUp: () => void;
-  onMoveDown: () => void;
+  animationDirection?: 'up' | 'down' | null;
 }
 
 const ExerciseCard: React.FC<ExerciseCardProps> = ({
@@ -37,10 +34,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
   workoutId,
   bestSet,
   loadingBestSet,
-  isFirst,
-  isLast,
-  onMoveUp,
-  onMoveDown,
+  animationDirection,
 }) => {
   const router = useRouter();
 
@@ -52,66 +46,100 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
   const sets = workoutExercise.sets || [];
   const setsSummary = formatSetsSummary(sets);
 
+  // Animation classes based on direction
+  const getAnimationClass = () => {
+    if (animationDirection === 'up') {
+      return 'animate-slide-up';
+    }
+    if (animationDirection === 'down') {
+      return 'animate-slide-down';
+    }
+    return '';
+  };
+
   return (
     <div
       onClick={handleClick}
-      className='bg-white dark:bg-gray-800 rounded-lg shadow p-10 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 active:shadow-md active:scale-[0.98] active:border-blue-600 dark:active:border-blue-500 transition-all border border-transparent flex items-stretch gap-4 relative cursor-pointer'>
-      {/* Up Arrow - Top Left */}
-      {!isFirst && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onMoveUp();
-          }}
-          className='absolute top-2 left-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 active:text-gray-700 dark:active:text-gray-200 active:scale-90 transition-all cursor-pointer z-10'
-          aria-label='Move up'>
-          <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 15l7-7 7 7' />
-          </svg>
-        </button>
-      )}
-
-      {/* Card Content */}
-      <div className='grow'>
-        <h3 className='text-xl font-semibold text-gray-900 dark:text-white mb-2'>
-          {workoutExercise.exercise.name}
-        </h3>
-        {/* Pattern - Prominent */}
-        <div className='mb-3'>
-          <span className='inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-md text-base font-semibold'>
-            {workoutExercise.exercise.pattern}
-          </span>
-        </div>
-        <div className='space-y-1 text-sm text-gray-600 dark:text-gray-400'>
-          <SectionLoader
-            loading={loadingBestSet}
-            skeleton='text'
-            skeletonLines={1}
-            isEmpty={!bestSet}>
-            {bestSet && (
-              <p>
-                <span className='font-medium'>Best Set:</span> {bestSet.weight}kg × {bestSet.reps}reps
-              </p>
-            )}
-          </SectionLoader>
-          <p className='font-medium text-gray-700 dark:text-gray-300'>{setsSummary}</p>
-        </div>
+      className={`bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg hover:border hover:border-blue-500 dark:hover:border-blue-400 active:shadow-md active:scale-[0.98] active:border-blue-600 dark:active:border-blue-500 transition-all border border-transparent cursor-pointer ${getAnimationClass()}`}>
+      <h3 className='text-xl font-semibold text-gray-900 dark:text-white mb-2'>
+        {workoutExercise.exercise.name}
+      </h3>
+      {/* Pattern - Prominent */}
+      <div className='mb-3'>
+        <span className='inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-md text-base font-semibold'>
+          {workoutExercise.exercise.pattern}
+        </span>
+      </div>
+      <div className='space-y-1 text-sm text-gray-600 dark:text-gray-400'>
+        <SectionLoader
+          loading={loadingBestSet}
+          skeleton='text'
+          skeletonLines={1}
+          isEmpty={!bestSet}>
+          {bestSet && (
+            <p>
+              <span className='font-medium'>Best Set:</span> {bestSet.weight}kg × {bestSet.reps}reps
+            </p>
+          )}
+        </SectionLoader>
+        <p className='font-medium text-gray-700 dark:text-gray-300'>{setsSummary}</p>
       </div>
 
-      {/* Down Arrow - Bottom Left */}
-      {!isLast && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onMoveDown();
-          }}
-          className='absolute bottom-2 left-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 active:text-gray-700 dark:active:text-gray-200 active:scale-90 transition-all cursor-pointer z-10'
-          aria-label='Move down'>
-          <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
-          </svg>
-        </button>
-      )}
+      {/* CSS for animations */}
+      <style jsx>{`
+        @keyframes slideUp {
+          0% {
+            transform: translateY(20px);
+            opacity: 0.7;
+          }
+          100% {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+        @keyframes slideDown {
+          0% {
+            transform: translateY(-20px);
+            opacity: 0.7;
+          }
+          100% {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+        .animate-slide-up {
+          animation: slideUp 0.3s ease-out;
+        }
+        .animate-slide-down {
+          animation: slideDown 0.3s ease-out;
+        }
+      `}</style>
+    </div>
+  );
+};
+
+// Swap Button Component - displayed between exercise cards
+interface SwapButtonProps {
+  onSwap: () => void;
+}
+
+const SwapButton: React.FC<SwapButtonProps> = ({ onSwap }) => {
+  return (
+    <div className='flex justify-center py-1'>
+      <button
+        onClick={onSwap}
+        className='p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full active:scale-90 transition-all cursor-pointer'
+        aria-label='Swap exercises'
+        title='Swap order'>
+        <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+          <path
+            strokeLinecap='round'
+            strokeLinejoin='round'
+            strokeWidth={2}
+            d='M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4'
+          />
+        </svg>
+      </button>
     </div>
   );
 };
@@ -127,6 +155,9 @@ const WorkoutDetailPage = () => {
   const [bestSets, setBestSets] = useState<Record<string, Set | null>>({});
   const [loading, setLoading] = useState(true);
   const [loadingBestSets, setLoadingBestSets] = useState(false);
+
+  // Animation state: tracks which cards are animating and their direction
+  const [animatingCards, setAnimatingCards] = useState<Record<string, 'up' | 'down'>>({});
 
   // Alert modal state
   const [alertModalOpen, setAlertModalOpen] = useState(false);
@@ -227,15 +258,25 @@ const WorkoutDetailPage = () => {
     }
   };
 
-  const handleMoveUp = (index: number) => {
-    if (index > 0) {
-      moveExercise(index, index - 1);
-    }
-  };
-
-  const handleMoveDown = (index: number) => {
+  const handleSwap = (index: number) => {
+    // Swap exercise at index with the one below it (index + 1)
     if (index < workoutExercises.length - 1) {
+      const topCardId = workoutExercises[index].id;
+      const bottomCardId = workoutExercises[index + 1].id;
+
+      // Set animation directions: top card moves down, bottom card moves up
+      setAnimatingCards({
+        [topCardId]: 'down',
+        [bottomCardId]: 'up',
+      });
+
+      // Perform the swap
       moveExercise(index, index + 1);
+
+      // Clear animations after they complete
+      setTimeout(() => {
+        setAnimatingCards({});
+      }, 300);
     }
   };
 
@@ -444,19 +485,21 @@ const WorkoutDetailPage = () => {
           </Link>
         ) : (
           <>
-            <div className='space-y-4'>
+            <div className='space-y-0'>
               {workoutExercises.map((we, index) => (
-                <ExerciseCard
-                  key={we.id}
-                  workoutExercise={we}
-                  workoutId={workoutId}
-                  bestSet={bestSets[we.exercise_id] || null}
-                  loadingBestSet={loadingBestSets}
-                  isFirst={index === 0}
-                  isLast={index === workoutExercises.length - 1}
-                  onMoveUp={() => handleMoveUp(index)}
-                  onMoveDown={() => handleMoveDown(index)}
-                />
+                <React.Fragment key={we.id}>
+                  <ExerciseCard
+                    workoutExercise={we}
+                    workoutId={workoutId}
+                    bestSet={bestSets[we.exercise_id] || null}
+                    loadingBestSet={loadingBestSets}
+                    animationDirection={animatingCards[we.id] || null}
+                  />
+                  {/* Swap button between cards (not after the last one) */}
+                  {index < workoutExercises.length - 1 && (
+                    <SwapButton onSwap={() => handleSwap(index)} />
+                  )}
+                </React.Fragment>
               ))}
             </div>
 
