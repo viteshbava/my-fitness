@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <rect width="192" height="192" rx="24" fill="#3B82F6"/>
+  <g fill="white">
+    <!-- Dumbbell icon -->
+    <rect x="30" y="86" width="30" height="20" rx="4"/>
+    <rect x="132" y="86" width="30" height="20" rx="4"/>
+    <rect x="55" y="76" width="15" height="40" rx="3"/>
+    <rect x="122" y="76" width="15" height="40" rx="3"/>
+    <rect x="70" y="91" width="52" height="10" rx="2"/>
+  </g>
+</svg>
