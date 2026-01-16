@@ -15,6 +15,8 @@ import {
 import { Exercise } from '@/types/database';
 import AlertModal from '@/components/AlertModal';
 import ExerciseCard from '@/components/ExerciseCard';
+import ExerciseFormModal from '@/components/ExerciseFormModal';
+import Button from '@/components/Button';
 
 const ExercisesPage = () => {
   const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -41,6 +43,9 @@ const ExercisesPage = () => {
     type: 'error' as 'error' | 'warning' | 'info' | 'success',
   });
 
+  // Create exercise modal state
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+
   const showAlert = (
     title: string,
     message: string,
@@ -48,6 +53,11 @@ const ExercisesPage = () => {
   ) => {
     setAlertModalContent({ title, message, type });
     setAlertModalOpen(true);
+  };
+
+  const handleCreateSuccess = (newExercise: Exercise) => {
+    // Add the new exercise to the list and re-sort
+    setExercises((prev) => [...prev, newExercise]);
   };
 
   // Load filters from localStorage on mount
@@ -185,13 +195,34 @@ const ExercisesPage = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Exercise Library
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Browse and search all exercises
-          </p>
+        <div className="mb-8 flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              Exercise Library
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400">
+              Browse and search all exercises
+            </p>
+          </div>
+          <Button
+            onClick={() => setCreateModalOpen(true)}
+            variant="primary"
+          >
+            <svg
+              className="w-5 h-5 mr-2 inline"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            Create Exercise
+          </Button>
         </div>
 
         {/* Search Bar */}
@@ -455,6 +486,15 @@ const ExercisesPage = () => {
         message={alertModalContent.message}
         type={alertModalContent.type}
         onClose={() => setAlertModalOpen(false)}
+      />
+
+      {/* Create Exercise Modal */}
+      <ExerciseFormModal
+        isOpen={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        onSuccess={handleCreateSuccess}
+        mode="create"
+        existingExercises={exercises}
       />
     </div>
   );

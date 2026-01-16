@@ -1,12 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   fetchExerciseById,
+  fetchExercises,
   updateExerciseNotes,
   updateExerciseIsLearnt,
   fetchExerciseHistoricalData,
   hasExerciseBeenDone,
+  checkExerciseUsage,
+  deleteExercise,
 } from '@/actions/exercises';
 import { fetchBestSetForExercise } from '@/actions/workout-exercises';
 import { Exercise, Set } from '@/types/database';
@@ -19,6 +23,9 @@ import VideoThumbnail from '@/components/VideoThumbnail';
 import Breadcrumb, { BreadcrumbItem } from '@/components/Breadcrumb';
 import SectionLoader from '@/components/SectionLoader';
 import AddToTemplateModal from '@/components/AddToTemplateModal';
+import ExerciseFormModal from '@/components/ExerciseFormModal';
+import ExerciseUsageSection from '@/components/ExerciseUsageSection';
+import ConfirmationModal from '@/components/ConfirmationModal';
 
 interface ExerciseDetailViewProps {
   exerciseId: string;
@@ -31,9 +38,11 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({
   breadcrumbItems,
   showAddToTemplate = false,
 }) => {
+  const router = useRouter();
   const { showToast } = useToast();
 
   const [exercise, setExercise] = useState<Exercise | null>(null);
+  const [allExercises, setAllExercises] = useState<Exercise[]>([]);
   const [historicalData, setHistoricalData] = useState<Array<{ date: string; sets: Set[] }>>([]);
   const [bestSet, setBestSet] = useState<Set | null>(null);
   const [loading, setLoading] = useState(true);
@@ -60,6 +69,13 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({
 
   // Add to Template modal state
   const [addToTemplateModalOpen, setAddToTemplateModalOpen] = useState(false);
+
+  // Edit exercise modal state
+  const [editModalOpen, setEditModalOpen] = useState(false);
+
+  // Delete confirmation state
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Alert modal state
   const [alertModalOpen, setAlertModalOpen] = useState(false);
@@ -218,6 +234,77 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({
     setIsEditingLearnt(false);
   };
 
+  const handleEditSuccess = (updatedExercise: Exercise) => {
+    setExercise(updatedExercise);
+    setNotes(updatedExercise.notes || '');
+    setIsLearnt(updatedExercise.is_mastered || false);
+  };
+
+  const handleDeleteClick = async () => {
+    if (!exercise) return;
+
+    // Check if exercise is used before showing delete confirmation
+    const { data: usage, error } = await checkExerciseUsage(exercise.id);
+
+    if (error) {
+      showAlert('Error', `Failed to check exercise usage: ${error}`, 'error');
+      return;
+    }
+
+    if (usage?.isUsed) {
+      const parts = [];
+      if (usage.workoutCount > 0) {
+        parts.push(`${usage.workoutCount} workout${usage.workoutCount > 1 ? 's' : ''}`);
+      }
+      if (usage.templateCount > 0) {
+        parts.push(`${usage.templateCount} template${usage.templateCount > 1 ? 's' : ''}`);
+      }
+      showAlert(
+        'Cannot Delete Exercise',
+        `This exercise is used in ${parts.join(' and ')}. Remove it from all workouts and templates first, or use "View Usage" below to see where it's used.`,
+        'warning'
+      );
+      return;
+    }
+
+    // Exercise is not used, show delete confirmation
+    setDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!exercise) return;
+
+    setIsDeleting(true);
+    const { success, error } = await deleteExercise(exercise.id);
+
+    if (error) {
+      showAlert('Error Deleting Exercise', error, 'error');
+      setIsDeleting(false);
+      setDeleteModalOpen(false);
+      return;
+    }
+
+    if (success) {
+      showToast('Exercise deleted successfully', 'success');
+      setDeleteModalOpen(false);
+      router.push('/exercises');
+    }
+
+    setIsDeleting(false);
+  };
+
+  const cancelDelete = () => {
+    setDeleteModalOpen(false);
+  };
+
+  // Load all exercises for the edit modal dropdowns
+  const loadAllExercises = async () => {
+    const { data } = await fetchExercises();
+    if (data) {
+      setAllExercises(data);
+    }
+  };
+
   if (loading) {
     return (
       <div className='min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center'>
@@ -248,12 +335,47 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({
         {/* Header */}
         <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6'>
           <div className='flex items-start justify-between mb-4'>
-            <h1 className='text-3xl font-bold text-gray-900 dark:text-white'>{exercise.name}</h1>
-            {exercise.is_mastered && (
-              <span className='inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'>
-                Learnt
-              </span>
-            )}
+            <div className='flex-1'>
+              <h1 className='text-3xl font-bold text-gray-900 dark:text-white'>{exercise.name}</h1>
+            </div>
+            <div className='flex items-center gap-2 ml-4'>
+              <button
+                onClick={() => {
+                  loadAllExercises();
+                  setEditModalOpen(true);
+                }}
+                className='p-2 text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 cursor-pointer transition-colors'
+                title='Edit exercise'
+              >
+                <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z'
+                  />
+                </svg>
+              </button>
+              <button
+                onClick={handleDeleteClick}
+                className='p-2 text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 cursor-pointer transition-colors'
+                title='Delete exercise'
+              >
+                <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16'
+                  />
+                </svg>
+              </button>
+              {exercise.is_mastered && (
+                <span className='inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 ml-2'>
+                  Learnt
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Pattern - Prominent */}
@@ -479,6 +601,12 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({
             </div>
           </SectionLoader>
         </div>
+
+        {/* Exercise Usage Section - Lazy Loaded */}
+        <ExerciseUsageSection
+          exerciseId={exercise.id}
+          exerciseName={exercise.name}
+        />
       </div>
 
       {/* Add to Template Modal */}
@@ -498,6 +626,30 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({
         message={alertModalContent.message}
         type={alertModalContent.type}
         onClose={() => setAlertModalOpen(false)}
+      />
+
+      {/* Edit Exercise Modal */}
+      {exercise && (
+        <ExerciseFormModal
+          isOpen={editModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          onSuccess={handleEditSuccess}
+          mode='edit'
+          exercise={exercise}
+          existingExercises={allExercises}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={deleteModalOpen}
+        title='Delete Exercise'
+        message={`Are you sure you want to delete "${exercise?.name}"? This action cannot be undone.`}
+        confirmText={isDeleting ? 'Deleting...' : 'Delete'}
+        cancelText='Cancel'
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+        isDangerous={true}
       />
     </div>
   );

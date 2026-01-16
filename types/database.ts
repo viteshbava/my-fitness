@@ -101,3 +101,38 @@ export interface ApiSuccessResponse {
   success: boolean;
   error: string | null;
 }
+
+// Exercise CRUD input types
+export interface CreateExerciseInput {
+  name: string;
+  video_url?: string | null;
+  movement_type?: string;
+  pattern?: string;
+  primary_body_part?: string;
+  secondary_body_part?: string;
+  equipment?: string;
+  notes?: string | null;
+}
+
+export interface UpdateExerciseInput {
+  name?: string;
+  video_url?: string | null;
+  movement_type?: string;
+  pattern?: string;
+  primary_body_part?: string;
+  secondary_body_part?: string;
+  equipment?: string;
+  notes?: string | null;
+}
+
+// Exercise usage types for delete protection and usage viewing
+export interface ExerciseUsageStatus {
+  isUsed: boolean;
+  workoutCount: number;
+  templateCount: number;
+}
+
+export interface ExerciseUsageDetails {
+  workouts: Array<{ id: string; name: string; date: string }>;
+  templates: Array<{ id: string; name: string }>;
+}
