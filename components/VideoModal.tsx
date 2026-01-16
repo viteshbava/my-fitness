@@ -11,20 +11,33 @@ interface VideoModalProps {
 }
 
 const VideoModal: React.FC<VideoModalProps> = ({ isOpen, videoUrl, exerciseName, onClose }) => {
-  // Convert Google Drive URL to embeddable format
+  // Convert video URL to embeddable format
   const getEmbedUrl = (url: string): string => {
+    // Handle YouTube URL formats:
+    // https://www.youtube.com/watch?v=VIDEO_ID
+    // https://youtube.com/watch?v=VIDEO_ID
+    // https://youtu.be/VIDEO_ID
+    // https://www.youtube.com/embed/VIDEO_ID
+    // https://www.youtube.com/shorts/VIDEO_ID
+    const youtubeMatch =
+      url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]+)/) ||
+      url.match(/youtube\.com\/watch\?.*v=([a-zA-Z0-9_-]+)/);
+
+    if (youtubeMatch && youtubeMatch[1]) {
+      return `https://www.youtube.com/embed/${youtubeMatch[1]}`;
+    }
+
     // Handle different Google Drive URL formats:
     // https://drive.google.com/file/d/FILE_ID/view
     // https://drive.google.com/open?id=FILE_ID
     // https://drive.google.com/uc?id=FILE_ID
-
-    const fileIdMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    const fileIdMatch = url.match(/drive\.google\.com.*\/d\/([a-zA-Z0-9_-]+)/) || url.match(/drive\.google\.com.*[?&]id=([a-zA-Z0-9_-]+)/);
 
     if (fileIdMatch && fileIdMatch[1]) {
       return `https://drive.google.com/file/d/${fileIdMatch[1]}/preview`;
     }
 
-    // If already in preview format or unknown format, return as-is
+    // If already in embed format or unknown format, return as-is
     return url;
   };
 
