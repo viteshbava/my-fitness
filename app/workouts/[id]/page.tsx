@@ -20,6 +20,7 @@ import KebabMenu from '@/components/KebabMenu';
 import { getColorPillClasses } from '@/lib/utils/colors';
 import SectionLoader from '@/components/SectionLoader';
 import SwapButton from '@/components/SwapButton';
+import SupersetButton from '@/components/SupersetButton';
 import SwapAnimationStyles from '@/components/SwapAnimationStyles';
 
 // Exercise Card Component
@@ -442,9 +443,16 @@ const WorkoutDetailPage = () => {
                     loadingBestSet={loadingBestSets}
                     animationDirection={animatingCards[we.id] || null}
                   />
-                  {/* Swap button between cards (not after the last one) */}
+                  {/* Swap and Superset buttons between cards (not after the last one) */}
                   {index < workoutExercises.length - 1 && (
-                    <SwapButton onSwap={() => handleSwap(index)} />
+                    <div className='flex justify-between items-center py-1'>
+                      <SwapButton onSwap={() => handleSwap(index)} />
+                      <SupersetButton
+                        workoutId={workoutId}
+                        exerciseId1={we.id}
+                        exerciseId2={workoutExercises[index + 1].id}
+                      />
+                    </div>
                   )}
                 </React.Fragment>
               ))}

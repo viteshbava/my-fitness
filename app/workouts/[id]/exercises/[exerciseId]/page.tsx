@@ -34,6 +34,10 @@ import ProgressChart from '@/components/ProgressChart';
 import Breadcrumb, { BreadcrumbItem } from '@/components/Breadcrumb';
 import KebabMenu from '@/components/KebabMenu';
 import SectionLoader from '@/components/SectionLoader';
+import SetsTable from '@/components/SetsTable';
+import ExerciseDetailsCollapsible from '@/components/ExerciseDetailsCollapsible';
+import WorkoutContextBox from '@/components/WorkoutContextBox';
+import ExerciseHeader from '@/components/ExerciseHeader';
 
 const WorkoutExerciseDetailPage = () => {
   const params = useParams();
@@ -57,7 +61,6 @@ const WorkoutExerciseDetailPage = () => {
   const [autoSaving, setAutoSaving] = useState(false);
   const [showHistorical, setShowHistorical] = useState(false);
   const [showProgressChart, setShowProgressChart] = useState(false);
-  const [showExerciseDetails, setShowExerciseDetails] = useState(false);
 
   // Exercise notes and learnt state
   const [notes, setNotes] = useState('');
@@ -438,17 +441,6 @@ const WorkoutExerciseDetailPage = () => {
     setSets(updatedSets);
   };
 
-  // Get placeholder text for a set based on previous workout data
-  const getPlaceholder = (setNumber: number, field: 'weight' | 'reps'): string => {
-    if (!previousSets || previousSets.length === 0) return '0';
-
-    const previousSet = previousSets.find((s: Set) => s.set_number === setNumber);
-    if (!previousSet) return '0';
-
-    const value = field === 'weight' ? previousSet.weight : previousSet.reps;
-    return value !== null && value !== undefined ? value.toString() : '0';
-  };
-
   const handleDeleteClick = () => {
     setDeleteModalOpen(true);
   };
@@ -515,68 +507,22 @@ const WorkoutExerciseDetailPage = () => {
 
         {/* Workout Context */}
         {workoutExercise.workout && (
-          <div className='mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg'>
-            <div className='flex items-center justify-between'>
-              <div>
-                <p className='text-sm text-blue-600 dark:text-blue-400 font-medium'>Workout</p>
-                <h2 className='text-xl font-semibold text-blue-900 dark:text-blue-100'>
-                  {workoutExercise.workout.name}
-                </h2>
-              </div>
-              <div className='text-right'>
-                <p className='text-sm text-blue-600 dark:text-blue-400 font-medium'>Date</p>
-                <p className='text-lg text-blue-900 dark:text-blue-100'>
-                  {format(new Date(workoutExercise.workout.date), 'MMM d, yyyy')}
-                </p>
-              </div>
-            </div>
-          </div>
+          <WorkoutContextBox
+            workoutName={workoutExercise.workout.name}
+            workoutDate={workoutExercise.workout.date}
+          />
         )}
 
         {/* Header */}
         <div className='mb-8'>
           <div className='flex items-start justify-between'>
-            <div>
-              <div className='flex items-center gap-3 mb-3'>
-                <h1 className='text-3xl font-bold text-gray-900 dark:text-white'>
-                  {workoutExercise.exercise.name}
-                </h1>
-                <Link
-                  href={`/exercises/${workoutExercise.exercise_id}`}
-                  className='p-2 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 cursor-pointer transition-colors'
-                  title='View exercise details'>
-                  <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      strokeWidth={2}
-                      d='M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14'
-                    />
-                  </svg>
-                </Link>
-              </div>
-              {/* Pattern - Always visible and prominent */}
-              <div className='mb-3'>
-                <span className='inline-block px-4 py-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-md text-lg font-bold'>
-                  {workoutExercise.exercise.pattern}
-                </span>
-              </div>
-              <SectionLoader
-                loading={loadingBestSet}
-                error={bestSetError}
-                skeleton='text'
-                skeletonLines={1}
-                isEmpty={!bestSet}>
-                {bestSet && (
-                  <p className='text-lg text-gray-600 dark:text-gray-400'>
-                    Best Set:{' '}
-                    <span className='font-semibold'>
-                      {bestSet.weight}kg × {bestSet.reps}reps
-                    </span>
-                  </p>
-                )}
-              </SectionLoader>
-            </div>
+            <ExerciseHeader
+              exercise={workoutExercise.exercise}
+              bestSet={bestSet}
+              loadingBestSet={loadingBestSet}
+              bestSetError={bestSetError}
+              headingLevel='h1'
+            />
             {!isInProgress && (
               <KebabMenu
                 items={[
@@ -602,69 +548,8 @@ const WorkoutExerciseDetailPage = () => {
         </div>
 
         {/* Exercise Details - Collapsible */}
-        <div className='bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6'>
-          <button
-            onClick={() => setShowExerciseDetails(!showExerciseDetails)}
-            className='w-full flex items-center justify-between text-left cursor-pointer hover:opacity-80 active:opacity-60 active:scale-[0.99] transition-all'>
-            <h2 className='text-xl font-semibold text-gray-900 dark:text-white'>
-              Exercise Details
-            </h2>
-            <svg
-              className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform ${
-                showExerciseDetails ? 'rotate-180' : ''
-              }`}
-              fill='none'
-              stroke='currentColor'
-              viewBox='0 0 24 24'>
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M19 9l-7 7-7-7'
-              />
-            </svg>
-          </button>
-
-          {showExerciseDetails && (
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-4'>
-              <div>
-                <p className='text-sm font-medium text-gray-500 dark:text-gray-400'>Pattern</p>
-                <p className='text-lg font-semibold text-gray-900 dark:text-white'>
-                  {workoutExercise.exercise.pattern}
-                </p>
-              </div>
-              <div>
-                <p className='text-sm font-medium text-gray-500 dark:text-gray-400'>
-                  Primary Body Part
-                </p>
-                <p className='text-lg text-gray-900 dark:text-white'>
-                  {workoutExercise.exercise.primary_body_part}
-                </p>
-              </div>
-              <div>
-                <p className='text-sm font-medium text-gray-500 dark:text-gray-400'>
-                  Secondary Body Part
-                </p>
-                <p className='text-lg text-gray-900 dark:text-white'>
-                  {workoutExercise.exercise.secondary_body_part}
-                </p>
-              </div>
-              <div>
-                <p className='text-sm font-medium text-gray-500 dark:text-gray-400'>Equipment</p>
-                <p className='text-lg text-gray-900 dark:text-white'>
-                  {workoutExercise.exercise.equipment}
-                </p>
-              </div>
-              <div>
-                <p className='text-sm font-medium text-gray-500 dark:text-gray-400'>
-                  Movement Type
-                </p>
-                <p className='text-lg text-gray-900 dark:text-white'>
-                  {workoutExercise.exercise.movement_type}
-                </p>
-              </div>
-            </div>
-          )}
+        <div className='mb-6'>
+          <ExerciseDetailsCollapsible exercise={workoutExercise.exercise} />
         </div>
 
         {/* Sets Section */}
@@ -691,77 +576,16 @@ const WorkoutExerciseDetailPage = () => {
             )}
           </div>
 
-          {sets.length === 0 ? (
-            <p className='text-gray-500 dark:text-gray-400'>No sets recorded yet</p>
-          ) : (
-            <div className='overflow-x-auto'>
-              <table className='w-full'>
-                <thead>
-                  <tr className='border-b border-gray-200 dark:border-gray-700'>
-                    <th className='text-left py-2 px-4 text-sm font-medium text-gray-700 dark:text-gray-300'>
-                      Set
-                    </th>
-                    <th className='text-left py-2 px-4 text-sm font-medium text-gray-700 dark:text-gray-300'>
-                      Weight (kg)
-                    </th>
-                    <th className='text-left py-2 px-4 text-sm font-medium text-gray-700 dark:text-gray-300'>
-                      Reps
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sets.map((set, index) => (
-                    <tr key={index} className='border-b border-gray-100 dark:border-gray-700'>
-                      <td className='py-2 px-4 text-gray-900 dark:text-white'>{set.set_number}</td>
-                      <td className='py-2 px-4'>
-                        {isInProgress ? (
-                          <input
-                            type='number'
-                            inputMode='numeric'
-                            step='0.5'
-                            min='0'
-                            value={set.weight ?? ''}
-                            onChange={(e) => handleUpdateSet(index, 'weight', e.target.value)}
-                            className='w-full px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
-                            placeholder={getPlaceholder(set.set_number, 'weight')}
-                          />
-                        ) : (
-                          <span className='text-gray-900 dark:text-white'>{set.weight ?? '-'}</span>
-                        )}
-                      </td>
-                      <td className='py-2 px-4'>
-                        {isInProgress ? (
-                          <input
-                            type='number'
-                            inputMode='numeric'
-                            step='1'
-                            min='0'
-                            value={set.reps ?? ''}
-                            onChange={(e) => handleUpdateSet(index, 'reps', e.target.value)}
-                            className='w-full px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
-                            placeholder={getPlaceholder(set.set_number, 'reps')}
-                          />
-                        ) : (
-                          <span className='text-gray-900 dark:text-white'>{set.reps ?? '-'}</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+          <SetsTable
+            sets={sets}
+            isEditing={isInProgress}
+            previousSets={previousSets}
+            onUpdateSet={handleUpdateSet}
+            onAddSet={handleAddSet}
+          />
 
           {isInProgress && (
-            <div className='mt-4 flex flex-col md:flex-row justify-end gap-2'>
-              <Button onClick={handleAddSet} variant='primary'>
-                Add Set
-              </Button>
-              {/* {sets.length > 1 && (
-                <Button onClick={handleDeleteLastSet} variant='danger'>
-                  Delete Last Set
-                </Button>
-              )} */}
+            <div className='mt-4 flex justify-end'>
               <Button onClick={handleSave} variant='success'>
                 Save Exercise
               </Button>
