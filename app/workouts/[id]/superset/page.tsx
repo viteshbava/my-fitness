@@ -156,6 +156,16 @@ const SupersetPage = () => {
     }
   }, [showDetails2, historicalLoaded2, workoutExercise2]);
 
+  // Toggle handlers that preserve scroll position
+  const toggleWithScrollPreservation = (toggleFn: () => void) => {
+    const scrollY = window.scrollY;
+    toggleFn();
+    // Use requestAnimationFrame to restore scroll after React re-render
+    requestAnimationFrame(() => {
+      window.scrollTo(0, scrollY);
+    });
+  };
+
   const loadBothExercises = async (showLoadingScreen: boolean = true) => {
     if (!exerciseId1 || !exerciseId2) return;
 
@@ -774,7 +784,8 @@ const SupersetPage = () => {
         {/* Exercise 1 Details Section - Collapsible */}
         <div className='bg-white dark:bg-gray-800 rounded-lg shadow mb-6'>
           <button
-            onClick={() => setShowDetails1(!showDetails1)}
+            type='button'
+            onClick={() => toggleWithScrollPreservation(() => setShowDetails1(!showDetails1))}
             className='w-full p-6 flex items-center justify-between text-left cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors'>
             <h2 className='text-xl font-semibold text-gray-900 dark:text-white'>
               {workoutExercise1.exercise.name}
@@ -844,7 +855,7 @@ const SupersetPage = () => {
               {/* Progress Chart */}
               <div className='bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4'>
                 <button
-                  onClick={() => setShowProgressChart1(!showProgressChart1)}
+                  onClick={() => toggleWithScrollPreservation(() => setShowProgressChart1(!showProgressChart1))}
                   className='w-full flex items-center justify-between text-left cursor-pointer hover:opacity-80 transition-opacity'>
                   <h3 className='text-lg font-semibold text-gray-900 dark:text-white'>Progress Chart</h3>
                   <svg
@@ -871,7 +882,7 @@ const SupersetPage = () => {
               {/* Previous Workouts */}
               <div className='bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4'>
                 <button
-                  onClick={() => setShowHistorical1(!showHistorical1)}
+                  onClick={() => toggleWithScrollPreservation(() => setShowHistorical1(!showHistorical1))}
                   className='w-full flex items-center justify-between text-left cursor-pointer hover:opacity-80 transition-opacity'>
                   <h3 className='text-lg font-semibold text-gray-900 dark:text-white'>
                     Previous Workouts
@@ -948,7 +959,8 @@ const SupersetPage = () => {
         {/* Exercise 2 Details Section - Collapsible */}
         <div className='bg-white dark:bg-gray-800 rounded-lg shadow mb-6'>
           <button
-            onClick={() => setShowDetails2(!showDetails2)}
+            type='button'
+            onClick={() => toggleWithScrollPreservation(() => setShowDetails2(!showDetails2))}
             className='w-full p-6 flex items-center justify-between text-left cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors'>
             <h2 className='text-xl font-semibold text-gray-900 dark:text-white'>
               {workoutExercise2.exercise.name}
@@ -1018,7 +1030,7 @@ const SupersetPage = () => {
               {/* Progress Chart */}
               <div className='bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4'>
                 <button
-                  onClick={() => setShowProgressChart2(!showProgressChart2)}
+                  onClick={() => toggleWithScrollPreservation(() => setShowProgressChart2(!showProgressChart2))}
                   className='w-full flex items-center justify-between text-left cursor-pointer hover:opacity-80 transition-opacity'>
                   <h3 className='text-lg font-semibold text-gray-900 dark:text-white'>Progress Chart</h3>
                   <svg
@@ -1045,7 +1057,7 @@ const SupersetPage = () => {
               {/* Previous Workouts */}
               <div className='bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4'>
                 <button
-                  onClick={() => setShowHistorical2(!showHistorical2)}
+                  onClick={() => toggleWithScrollPreservation(() => setShowHistorical2(!showHistorical2))}
                   className='w-full flex items-center justify-between text-left cursor-pointer hover:opacity-80 transition-opacity'>
                   <h3 className='text-lg font-semibold text-gray-900 dark:text-white'>
                     Previous Workouts
