@@ -17,16 +17,24 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ historicalData }) => {
     return workoutDate >= twelveMonthsAgo;
   });
 
-  // Prepare data for chart - calculate max weight and max reps for each workout
+  // Prepare data for chart - calculate average power per set and max weight (≥6 reps) for each workout_exercise
   const chartData = filteredData.map(workout => {
-    const maxWeight = Math.max(...workout.sets.map(set => set.weight || 0));
-    const maxReps = Math.max(...workout.sets.map(set => set.reps || 0));
+    // Calculate average power per set: (sum of weight×reps for all sets) / number of sets
+    const validSets = workout.sets.filter(set => set.weight != null && set.reps != null);
+    const totalPower = validSets.reduce((sum, set) => sum + (set.weight || 0) * (set.reps || 0), 0);
+    const avgPowerPerSet = validSets.length > 0 ? Math.round(totalPower / validSets.length) : null;
+
+    // Calculate max weight from sets with ≥6 reps only
+    const qualifyingSets = workout.sets.filter(set => (set.reps || 0) >= 6 && set.weight != null);
+    const maxWeight = qualifyingSets.length > 0
+      ? Math.max(...qualifyingSets.map(set => set.weight || 0))
+      : 0;
 
     return {
       date: workout.date,
       formattedDate: format(new Date(workout.date), 'MMM d, yyyy'),
-      weight: maxWeight > 0 ? maxWeight : null,
-      reps: maxReps > 0 ? maxReps : null,
+      avgPower: avgPowerPerSet,
+      maxWeight: maxWeight,
     };
   });
 
@@ -57,14 +65,14 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ historicalData }) => {
         />
         <YAxis
           yAxisId='left'
-          label={{ value: 'Weight (kg)', angle: -90, position: 'insideLeft', fill: '#3b82f6' }}
+          label={{ value: 'Avg Power/Set', angle: -90, position: 'insideLeft', fill: '#3b82f6' }}
           tick={{ fill: '#3b82f6' }}
           className='text-sm'
         />
         <YAxis
           yAxisId='right'
           orientation='right'
-          label={{ value: 'Reps', angle: 90, position: 'insideRight', fill: '#10b981' }}
+          label={{ value: 'Max Weight (kg)', angle: 90, position: 'insideRight', fill: '#10b981' }}
           tick={{ fill: '#10b981' }}
           className='text-sm'
         />
@@ -79,24 +87,23 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ historicalData }) => {
         <Line
           yAxisId='left'
           type='monotone'
-          dataKey='weight'
+          dataKey='avgPower'
           stroke='#3b82f6'
           strokeWidth={2}
           dot={{ fill: '#3b82f6', r: 4 }}
           activeDot={{ r: 6 }}
-          name='Weight (kg)'
+          name='Avg Power/Set'
           connectNulls
         />
         <Line
           yAxisId='right'
           type='monotone'
-          dataKey='reps'
+          dataKey='maxWeight'
           stroke='#10b981'
           strokeWidth={2}
           dot={{ fill: '#10b981', r: 4 }}
           activeDot={{ r: 6 }}
-          name='Reps'
-          connectNulls
+          name='Max Weight (≥6 reps)'
         />
       </LineChart>
     </ResponsiveContainer>
