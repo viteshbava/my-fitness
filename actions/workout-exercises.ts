@@ -495,11 +495,15 @@ export const fetchBestSetForExercise = cache(async (
     // Flatten all sets from all workouts
     const allSets: Set[] = allWorkoutExercises.flatMap((we: any) => we.sets || []);
 
-    // Find the best set (heaviest weight with ≥6 reps)
+    // Find the best set (heaviest weight with ≥6 reps, using reps as tiebreaker)
     const bestSet = allSets
       .filter((set: Set) => (set.reps || 0) >= 6)
       .reduce((best, set) => {
-        if (!best || (set.weight || 0) > (best.weight || 0)) {
+        if (!best) return set;
+        const setWeight = set.weight || 0;
+        const bestWeight = best.weight || 0;
+        // Prefer higher weight, or higher reps if weights are equal
+        if (setWeight > bestWeight || (setWeight === bestWeight && (set.reps || 0) > (best.reps || 0))) {
           return set;
         }
         return best;
@@ -549,7 +553,11 @@ export const fetchBestSetsForExercises = cache(async (
       const bestSet = exerciseSets
         .filter((set: Set) => (set.reps || 0) >= 6)
         .reduce((best, set) => {
-          if (!best || (set.weight || 0) > (best.weight || 0)) {
+          if (!best) return set;
+          const setWeight = set.weight || 0;
+          const bestWeight = best.weight || 0;
+          // Prefer higher weight, or higher reps if weights are equal
+          if (setWeight > bestWeight || (setWeight === bestWeight && (set.reps || 0) > (best.reps || 0))) {
             return set;
           }
           return best;
